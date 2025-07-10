@@ -1,0 +1,5738 @@
+[
+  {
+    "id": 1750397880.511318,
+    "name": "2SN-1/4",
+    "price": 2430.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1100.0,
+    "category": "Шланги"
+  },
+  {
+    "id": 1750397880.511465,
+    "name": "2SN-5/16",
+    "price": 2830.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1340.0,
+    "category": "Шланги"
+  },
+  {
+    "id": 1750397880.511547,
+    "name": "2SN -3/8",
+    "price": 3030.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1480.0,
+    "category": "Шланги"
+  },
+  {
+    "id": 1750397880.511619,
+    "name": "2SN-1/2",
+    "price": 3540.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1810.0,
+    "category": "Шланги"
+  },
+  {
+    "id": 1750397880.51169,
+    "name": "2SN -5/8",
+    "price": 4450.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2240.0,
+    "category": "Шланги"
+  },
+  {
+    "id": 1750397880.511759,
+    "name": "2SN -3/4",
+    "price": 4950.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2580.0,
+    "category": "Шланги"
+  },
+  {
+    "id": 1750397880.511827,
+    "name": "2SN -1",
+    "price": 6570.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 3510.0,
+    "category": "Шланги"
+  },
+  {
+    "id": 1750397880.511892,
+    "name": "2SN -1.1/4",
+    "price": 11820.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 5400.0,
+    "category": "Шланги"
+  },
+  {
+    "id": 1750397880.511958,
+    "name": "2SN -1.1/2",
+    "price": 13940.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 6330.0,
+    "category": "Шланги"
+  },
+  {
+    "id": 1750397880.512024,
+    "name": "2SN -2",
+    "price": 15560.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 7160.0,
+    "category": "Шланги"
+  },
+  {
+    "id": 1750398000.294939,
+    "name": "4SР -1/2 ТЮБИС",
+    "price": 8200.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Шланги"
+  },
+  {
+    "id": 1750398000.295141,
+    "name": "4SР -5/8",
+    "price": 7780.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4830.0,
+    "category": "Шланги"
+  },
+  {
+    "id": 1750398000.295267,
+    "name": "4SР -3/4",
+    "price": 9400.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4990.0,
+    "category": "Шланги"
+  },
+  {
+    "id": 1750398000.295379,
+    "name": "4SH -1",
+    "price": 11010.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 5990.0,
+    "category": "Шланги"
+  },
+  {
+    "id": 1750398000.295486,
+    "name": "4SH -1.1/4",
+    "price": 17280.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 9480.0,
+    "category": "Шланги"
+  },
+  {
+    "id": 1750398000.295591,
+    "name": "4SH-1.1/2",
+    "price": 24000.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 12600.0,
+    "category": "Шланги"
+  },
+  {
+    "id": 1750399933.615197,
+    "name": "ZMW121-12-03",
+    "price": 1010.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 430.0,
+    "category": "фитинг DKOL прямой"
+  },
+  {
+    "id": 1750399933.615504,
+    "name": "ZMW121-12-04",
+    "price": 910.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 430.0,
+    "category": "фитинг DKOL прямой"
+  },
+  {
+    "id": 1750399933.615652,
+    "name": "ZMW121-14-04",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 480.0,
+    "category": "фитинг DKOL прямой"
+  },
+  {
+    "id": 1750399933.615784,
+    "name": "ZMW121-16-04",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 480.0,
+    "category": "фитинг DKOL прямой"
+  },
+  {
+    "id": 1750399933.61592,
+    "name": "ZMW121-16-05",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 480.0,
+    "category": "фитинг DKOL прямой"
+  },
+  {
+    "id": 1750399933.616045,
+    "name": "ZMW121-16-06",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 480.0,
+    "category": "фитинг DKOL прямой"
+  },
+  {
+    "id": 1750399933.616167,
+    "name": "ZMW121-18-04",
+    "price": 1220.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 550.0,
+    "category": "фитинг DKOL прямой"
+  },
+  {
+    "id": 1750399933.616293,
+    "name": "ZMW121-18-05",
+    "price": 1220.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 550.0,
+    "category": "фитинг DKOL прямой"
+  },
+  {
+    "id": 1750399933.616412,
+    "name": "ZMW121-18-06",
+    "price": 1220.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 550.0,
+    "category": "фитинг DKOL прямой"
+  },
+  {
+    "id": 1750399933.616532,
+    "name": "ZMW121-22-05",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 650.0,
+    "category": "фитинг DKOL прямой"
+  },
+  {
+    "id": 1750399933.61665,
+    "name": "ZMW121-22-06",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 650.0,
+    "category": "фитинг DKOL прямой"
+  },
+  {
+    "id": 1750399933.616773,
+    "name": "ZMW121-22-08",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 650.0,
+    "category": "фитинг DKOL прямой"
+  },
+  {
+    "id": 1750399933.616897,
+    "name": "ZMW121-26-08",
+    "price": 1820.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 830.0,
+    "category": "фитинг DKOL прямой"
+  },
+  {
+    "id": 1750399933.617013,
+    "name": "ZMW121-26-10",
+    "price": 1820.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 830.0,
+    "category": "фитинг DKOL прямой"
+  },
+  {
+    "id": 1750399933.617129,
+    "name": "ZMW121-27-10",
+    "price": 1820.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 830.0,
+    "category": "фитинг DKOL прямой"
+  },
+  {
+    "id": 1750399933.617248,
+    "name": "ZMW121-30-10",
+    "price": 2330.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1090.0,
+    "category": "фитинг DKOL прямой"
+  },
+  {
+    "id": 1750399933.617367,
+    "name": "ZMW121-30-12",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1160.0,
+    "category": "фитинг DKOL прямой"
+  },
+  {
+    "id": 1750399933.617484,
+    "name": "ZMW121-36-12",
+    "price": 3640.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1680.0,
+    "category": "фитинг DKOL прямой"
+  },
+  {
+    "id": 1750399933.6176,
+    "name": "ZMW121-36-16",
+    "price": 3640.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1680.0,
+    "category": "фитинг DKOL прямой"
+  },
+  {
+    "id": 1750399933.617718,
+    "name": "ZMW121-45-16",
+    "price": 6370.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2970.0,
+    "category": "фитинг DKOL прямой"
+  },
+  {
+    "id": 1750399933.61784,
+    "name": "ZMW121-45-20",
+    "price": 7380.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 3480.0,
+    "category": "фитинг DKOL прямой"
+  },
+  {
+    "id": 1750399933.617958,
+    "name": "ZMW221-12-04",
+    "price": 1220.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 550.0,
+    "category": "фитинг DKOL угол 90"
+  },
+  {
+    "id": 1750399933.618075,
+    "name": "ZMW221-14-04",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 650.0,
+    "category": "фитинг DKOL угол 90"
+  },
+  {
+    "id": 1750399933.618195,
+    "name": "ZMW221-16-04",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 650.0,
+    "category": "фитинг DKOL угол 90"
+  },
+  {
+    "id": 1750399933.618313,
+    "name": "ZMW221-16-05",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 650.0,
+    "category": "фитинг DKOL угол 90"
+  },
+  {
+    "id": 1750399933.618429,
+    "name": "ZMW221-16-06",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 650.0,
+    "category": "фитинг DKOL угол 90"
+  },
+  {
+    "id": 1750399933.618547,
+    "name": "ZMW221-18-04",
+    "price": 1620.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 730.0,
+    "category": "фитинг DKOL угол 90"
+  },
+  {
+    "id": 1750399933.618665,
+    "name": "ZMW221-18-05",
+    "price": 1620.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 730.0,
+    "category": "фитинг DKOL угол 90"
+  },
+  {
+    "id": 1750399933.618782,
+    "name": "ZMW221-18-06",
+    "price": 1620.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 730.0,
+    "category": "фитинг DKOL угол 90"
+  },
+  {
+    "id": 1750399933.618902,
+    "name": "ZMW221-20-08",
+    "price": 2020.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 950.0,
+    "category": "фитинг DKOL угол 90"
+  },
+  {
+    "id": 1750399933.619017,
+    "name": "ZMW221-22-05",
+    "price": 2020.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 950.0,
+    "category": "фитинг DKOL угол 90"
+  },
+  {
+    "id": 1750399933.619135,
+    "name": "ZMW221-22-06",
+    "price": 2020.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 950.0,
+    "category": "фитинг DKOL угол 90"
+  },
+  {
+    "id": 1750399933.61925,
+    "name": "ZMW221-22-08",
+    "price": 2020.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 950.0,
+    "category": "фитинг DKOL угол 90"
+  },
+  {
+    "id": 1750399933.619367,
+    "name": "ZMW221-26-08",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1160.0,
+    "category": "фитинг DKOL угол 90"
+  },
+  {
+    "id": 1750399933.619482,
+    "name": "ZMW221-26-10",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1160.0,
+    "category": "фитинг DKOL угол 90"
+  },
+  {
+    "id": 1750399933.619597,
+    "name": "ZMW221-27-10",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1160.0,
+    "category": "фитинг DKOL угол 90"
+  },
+  {
+    "id": 1750399933.619711,
+    "name": "VMW221-30-10",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1550.0,
+    "category": "фитинг DKOL угол 90"
+  },
+  {
+    "id": 1750399933.619842,
+    "name": "ZMW221-30-12",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1550.0,
+    "category": "фитинг DKOL угол 90"
+  },
+  {
+    "id": 1750399933.619961,
+    "name": "ZMW221-36-12",
+    "price": 6370.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2970.0,
+    "category": "фитинг DKOL угол 90"
+  },
+  {
+    "id": 1750399933.620076,
+    "name": "ZMW221-36-16",
+    "price": 6060.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2840.0,
+    "category": "фитинг DKOL угол 90"
+  },
+  {
+    "id": 1750399933.620191,
+    "name": "ZMW221-45-16",
+    "price": 10210.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4770.0,
+    "category": "фитинг DKOL угол 90"
+  },
+  {
+    "id": 1750399933.620305,
+    "name": "ZMW221-45-20",
+    "price": 10210.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4770.0,
+    "category": "фитинг DKOL угол 90"
+  },
+  {
+    "id": 1750399933.62042,
+    "name": "ZMW221-52-24",
+    "price": 13640.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 5050.0,
+    "category": "фитинг DKOL угол 90"
+  },
+  {
+    "id": 1750399933.620536,
+    "name": "ZMW321-12-04",
+    "price": 1320.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 560.0,
+    "category": "фитинг DKOL угол 45"
+  },
+  {
+    "id": 1750399933.620651,
+    "name": "ZMW321-14-04",
+    "price": 1220.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 550.0,
+    "category": "фитинг DKOL угол 45"
+  },
+  {
+    "id": 1750399933.620766,
+    "name": "ZMW321-16-04",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 650.0,
+    "category": "фитинг DKOL угол 45"
+  },
+  {
+    "id": 1750399933.620885,
+    "name": "ZMW321-16-05",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 650.0,
+    "category": "фитинг DKOL угол 45"
+  },
+  {
+    "id": 1750399933.621004,
+    "name": "ZMW321-16-06",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 650.0,
+    "category": "фитинг DKOL угол 45"
+  },
+  {
+    "id": 1750399933.621118,
+    "name": "ZMW321-18-04",
+    "price": 1620.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 730.0,
+    "category": "фитинг DKOL угол 45"
+  },
+  {
+    "id": 1750399933.621233,
+    "name": "ZMW321-18-05",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 650.0,
+    "category": "фитинг DKOL угол 45"
+  },
+  {
+    "id": 1750399933.621348,
+    "name": "ZMW321-18-06",
+    "price": 1620.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 730.0,
+    "category": "фитинг DKOL угол 45"
+  },
+  {
+    "id": 1750399933.621462,
+    "name": "ZMW321-20-08",
+    "price": 2020.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 950.0,
+    "category": "фитинг DKOL угол 45"
+  },
+  {
+    "id": 1750399933.621577,
+    "name": "ZMW321-22-05",
+    "price": 2020.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 950.0,
+    "category": "фитинг DKOL угол 45"
+  },
+  {
+    "id": 1750399933.621693,
+    "name": "ZMW321-22-06",
+    "price": 2020.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 950.0,
+    "category": "фитинг DKOL угол 45"
+  },
+  {
+    "id": 1750399933.621814,
+    "name": "ZMW321-22-08",
+    "price": 2020.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 950.0,
+    "category": "фитинг DKOL угол 45"
+  },
+  {
+    "id": 1750399933.62193,
+    "name": "ZMW321-26-08",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1160.0,
+    "category": "фитинг DKOL угол 45"
+  },
+  {
+    "id": 1750399933.622044,
+    "name": "ZMW321-26-10",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1160.0,
+    "category": "фитинг DKOL угол 45"
+  },
+  {
+    "id": 1750399933.622162,
+    "name": "ZMW321-27-10",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1160.0,
+    "category": "фитинг DKOL угол 45"
+  },
+  {
+    "id": 1750399933.622279,
+    "name": "ZMW321-30-10",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1550.0,
+    "category": "фитинг DKOL угол 45"
+  },
+  {
+    "id": 1750399933.622399,
+    "name": "ZMW321-30-12",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1550.0,
+    "category": "фитинг DKOL угол 45"
+  },
+  {
+    "id": 1750399933.622514,
+    "name": "ZMW321-36-12",
+    "price": 6370.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2970.0,
+    "category": "фитинг DKOL угол 45"
+  },
+  {
+    "id": 1750399933.622629,
+    "name": "ZMW321-36-16",
+    "price": 6060.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2840.0,
+    "category": "фитинг DKOL угол 45"
+  },
+  {
+    "id": 1750399933.622744,
+    "name": "ZMW321-45-16",
+    "price": 10210.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4770.0,
+    "category": "фитинг DKOL угол 45"
+  },
+  {
+    "id": 1750399933.622863,
+    "name": "ZMW321-45-20",
+    "price": 10210.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4770.0,
+    "category": "фитинг DKOL угол 45"
+  },
+  {
+    "id": 1750399933.622979,
+    "name": "ZMW321-52-24",
+    "price": 12630.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 5930.0,
+    "category": "фитинг DKOL угол 45"
+  },
+  {
+    "id": 1750399933.623213,
+    "name": "ZMZ111-12-04",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 510.0,
+    "category": "Штуцер DKOL"
+  },
+  {
+    "id": 1750399933.623329,
+    "name": "ZMZ111-14-04",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 510.0,
+    "category": "Штуцер DKOL"
+  },
+  {
+    "id": 1750399933.623446,
+    "name": "ZMZ111-16-04",
+    "price": 1220.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 560.0,
+    "category": "Штуцер DKOL"
+  },
+  {
+    "id": 1750399933.623562,
+    "name": "ZMZ111-16-05",
+    "price": 1220.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 560.0,
+    "category": "Штуцер DKOL"
+  },
+  {
+    "id": 1750399933.62505,
+    "name": "ZMZ111-16-06",
+    "price": 1220.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 560.0,
+    "category": "Штуцер DKOL"
+  },
+  {
+    "id": 1750399933.62531,
+    "name": "ZMZ111-18-04",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 650.0,
+    "category": "Штуцер DKOL"
+  },
+  {
+    "id": 1750399933.625462,
+    "name": "ZMZ111-18-05",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 650.0,
+    "category": "Штуцер DKOL"
+  },
+  {
+    "id": 1750399933.625598,
+    "name": "ZMZ111-18-06",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 650.0,
+    "category": "Штуцер DKOL"
+  },
+  {
+    "id": 1750399933.625735,
+    "name": "ZMZ111-20-06",
+    "price": 1620.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 730.0,
+    "category": "Штуцер DKOL"
+  },
+  {
+    "id": 1750399933.625879,
+    "name": "ZMZ111-20-08",
+    "price": 1920.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 910.0,
+    "category": "Штуцер DKOL"
+  },
+  {
+    "id": 1750399933.626003,
+    "name": "ZMZ111-22-06",
+    "price": 1920.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 910.0,
+    "category": "Штуцер DKOL"
+  },
+  {
+    "id": 1750399933.626125,
+    "name": "ZMZ111-22-08",
+    "price": 1920.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 910.0,
+    "category": "Штуцер DKOL"
+  },
+  {
+    "id": 1750399933.626248,
+    "name": "ZMZ111-23-16",
+    "price": 3030.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1620.0,
+    "category": "Штуцер DKOL"
+  },
+  {
+    "id": 1750399933.626369,
+    "name": "ZMZ111-26-10",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1160.0,
+    "category": "Штуцер DKOL"
+  },
+  {
+    "id": 1750399933.626487,
+    "name": "ZMZ111-27-10",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1160.0,
+    "category": "Штуцер DKOL"
+  },
+  {
+    "id": 1750399933.626603,
+    "name": "ZMZ111-30-10",
+    "price": 3030.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1430.0,
+    "category": "Штуцер DKOL"
+  },
+  {
+    "id": 1750399933.626723,
+    "name": "ZMZ111-30-12",
+    "price": 3030.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1430.0,
+    "category": "Штуцер DKOL"
+  },
+  {
+    "id": 1750399933.626848,
+    "name": "ZMZ111-36-12",
+    "price": 3640.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1680.0,
+    "category": "Штуцер DKOL"
+  },
+  {
+    "id": 1750399933.626967,
+    "name": "ZMZ111-36-16",
+    "price": 3640.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1680.0,
+    "category": "Штуцер DKOL"
+  },
+  {
+    "id": 1750399933.627082,
+    "name": "ZMZ111-45-16",
+    "price": 5260.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2530.0,
+    "category": "Штуцер DKOL"
+  },
+  {
+    "id": 1750399933.627321,
+    "name": "00400-08",
+    "price": 810.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 330.0,
+    "category": "гильзы"
+  },
+  {
+    "id": 1750399933.627436,
+    "name": "00400-10",
+    "price": 910.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 340.0,
+    "category": "гильзы"
+  },
+  {
+    "id": 1750399933.627551,
+    "name": "00400-12",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 570.0,
+    "category": "гильзы"
+  },
+  {
+    "id": 1750399933.627666,
+    "name": "00400-16",
+    "price": 2130.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 860.0,
+    "category": "гильзы"
+  },
+  {
+    "id": 1750399933.627786,
+    "name": "00400-20",
+    "price": 3740.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1530.0,
+    "category": "гильзы"
+  },
+  {
+    "id": 1750399933.627911,
+    "name": "00400-24",
+    "price": 4750.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1910.0,
+    "category": "гильзы"
+  },
+  {
+    "id": 1750399933.628026,
+    "name": "03310-04",
+    "price": 610.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 230.0,
+    "category": "гильзы"
+  },
+  {
+    "id": 1750399933.628142,
+    "name": "03310-05",
+    "price": 710.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 250.0,
+    "category": "гильзы"
+  },
+  {
+    "id": 1750399933.628258,
+    "name": "03310-06",
+    "price": 710.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 270.0,
+    "category": "гильзы"
+  },
+  {
+    "id": 1750399933.628373,
+    "name": "03310-08",
+    "price": 810.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 310.0,
+    "category": "гильзы"
+  },
+  {
+    "id": 1750399933.628488,
+    "name": "03310-10",
+    "price": 910.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 350.0,
+    "category": "гильзы"
+  },
+  {
+    "id": 1750399933.628603,
+    "name": "03310-12",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 570.0,
+    "category": "гильзы"
+  },
+  {
+    "id": 1750399933.628719,
+    "name": "03310-16",
+    "price": 2130.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 860.0,
+    "category": "гильзы"
+  },
+  {
+    "id": 1750399933.629046,
+    "name": "03310-20",
+    "price": 3740.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1530.0,
+    "category": "гильзы"
+  },
+  {
+    "id": 1750399933.629156,
+    "name": "03310-24",
+    "price": 4750.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1910.0,
+    "category": "гильзы"
+  },
+  {
+    "id": 1750399933.629229,
+    "name": "03310-32",
+    "price": 8590.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4040.0,
+    "category": "гильзы"
+  },
+  {
+    "id": 1750399933.629363,
+    "name": "ZBW110-02-04",
+    "price": 1010.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 460.0,
+    "category": "Фитинг BSP прямой"
+  },
+  {
+    "id": 1750399933.629425,
+    "name": "ZBW110-04-04",
+    "price": 1010.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 460.0,
+    "category": "Фитинг BSP прямой"
+  },
+  {
+    "id": 1750399933.629487,
+    "name": "ZBW110-04-05",
+    "price": 1010.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 460.0,
+    "category": "Фитинг BSP прямой"
+  },
+  {
+    "id": 1750399933.629606,
+    "name": "ZBW110-06-05",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 480.0,
+    "category": "Фитинг BSP прямой"
+  },
+  {
+    "id": 1750399933.629667,
+    "name": "ZBW110-06-06",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 480.0,
+    "category": "Фитинг BSP прямой"
+  },
+  {
+    "id": 1750399933.629727,
+    "name": "ZBW110-06-08",
+    "price": 1320.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 480.0,
+    "category": "Фитинг BSP прямой"
+  },
+  {
+    "id": 1750399933.629789,
+    "name": "ZBW110-08-05",
+    "price": 1620.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 730.0,
+    "category": "Фитинг BSP прямой"
+  },
+  {
+    "id": 1750399933.629854,
+    "name": "ZBW110-08-06",
+    "price": 1620.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 730.0,
+    "category": "Фитинг BSP прямой"
+  },
+  {
+    "id": 1750399933.629914,
+    "name": "ZBW110-08-08",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 650.0,
+    "category": "Фитинг BSP прямой"
+  },
+  {
+    "id": 1750399933.629974,
+    "name": "ZBW110-08-10",
+    "price": 1820.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 830.0,
+    "category": "Фитинг BSP прямой"
+  },
+  {
+    "id": 1750399933.630035,
+    "name": "ZBW110-08-12",
+    "price": 2020.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 830.0,
+    "category": "Фитинг BSP прямой"
+  },
+  {
+    "id": 1750399933.630095,
+    "name": "ZBW110-10-08",
+    "price": 1820.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 830.0,
+    "category": "Фитинг BSP прямой"
+  },
+  {
+    "id": 1750399933.630155,
+    "name": "ZBW110-10-10",
+    "price": 1820.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 830.0,
+    "category": "Фитинг BSP прямой"
+  },
+  {
+    "id": 1750399933.630214,
+    "name": "ZBW110-12-08",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1160.0,
+    "category": "Фитинг BSP прямой"
+  },
+  {
+    "id": 1750399933.630275,
+    "name": "ZBW110-12-10",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1160.0,
+    "category": "Фитинг BSP прямой"
+  },
+  {
+    "id": 1750399933.630335,
+    "name": "ZBW110-12-12",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1160.0,
+    "category": "Фитинг BSP прямой"
+  },
+  {
+    "id": 1750399933.630394,
+    "name": "ZBW110-16-12",
+    "price": 3030.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1430.0,
+    "category": "Фитинг BSP прямой"
+  },
+  {
+    "id": 1750399933.630454,
+    "name": "ZBW110-16-16",
+    "price": 3240.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1500.0,
+    "category": "Фитинг BSP прямой"
+  },
+  {
+    "id": 1750399933.630514,
+    "name": "ZBW110-20-20",
+    "price": 6870.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 3230.0,
+    "category": "Фитинг BSP прямой"
+  },
+  {
+    "id": 1750399933.630574,
+    "name": "ZBW110-24-20",
+    "price": 7180.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 3230.0,
+    "category": "Фитинг BSP прямой"
+  },
+  {
+    "id": 1750399933.630635,
+    "name": "ZBW110-24-24",
+    "price": 7680.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 3230.0,
+    "category": "Фитинг BSP прямой"
+  },
+  {
+    "id": 1750399933.630694,
+    "name": "ZBW110-32-24",
+    "price": 9700.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 3230.0,
+    "category": "Фитинг BSP прямой"
+  },
+  {
+    "id": 1750399933.630754,
+    "name": "ZBW110-32-32",
+    "price": 11110.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 3230.0,
+    "category": "Фитинг BSP прямой"
+  },
+  {
+    "id": 1750399933.630816,
+    "name": "ZBW210-04-04",
+    "price": 1320.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 580.0,
+    "category": "Фитинг BSP угол 90"
+  },
+  {
+    "id": 1750399933.630876,
+    "name": "ZBW210-04-05",
+    "price": 1320.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 580.0,
+    "category": "Фитинг BSP угол 90"
+  },
+  {
+    "id": 1750399933.630936,
+    "name": "ZBW210-06-05",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 650.0,
+    "category": "Фитинг BSP угол 90"
+  },
+  {
+    "id": 1750399933.630999,
+    "name": "ZBW210-06-06",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 650.0,
+    "category": "Фитинг BSP угол 90"
+  },
+  {
+    "id": 1750399933.631059,
+    "name": "ZBW210-08-08",
+    "price": 2020.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 950.0,
+    "category": "Фитинг BSP угол 90"
+  },
+  {
+    "id": 1750399933.631117,
+    "name": "ZBW210-10-10",
+    "price": 2430.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1160.0,
+    "category": "Фитинг BSP угол 90"
+  },
+  {
+    "id": 1750399933.631177,
+    "name": "ZBW210-12-08",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1550.0,
+    "category": "Фитинг BSP угол 90"
+  },
+  {
+    "id": 1750399933.631237,
+    "name": "ZBW210-12-12",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1550.0,
+    "category": "Фитинг BSP угол 90"
+  },
+  {
+    "id": 1750399933.631296,
+    "name": "ZBW210-16-16",
+    "price": 6060.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2840.0,
+    "category": "Фитинг BSP угол 90"
+  },
+  {
+    "id": 1750399933.631355,
+    "name": "ZBW210-24-20",
+    "price": 15300.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4950.0,
+    "category": "Фитинг BSP угол 90"
+  },
+  {
+    "id": 1750399933.631413,
+    "name": "ZBW210-24-24",
+    "price": 16370.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 6900.0,
+    "category": "Фитинг BSP угол 90"
+  },
+  {
+    "id": 1750399933.631473,
+    "name": "ZBW310-04-04",
+    "price": 1320.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 580.0,
+    "category": "Фитинг BSP угол 45"
+  },
+  {
+    "id": 1750399933.631532,
+    "name": "ZBW310-06-06",
+    "price": 1520.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 720.0,
+    "category": "Фитинг BSP угол 45"
+  },
+  {
+    "id": 1750399933.631592,
+    "name": "ZBW310-08-08",
+    "price": 2020.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 950.0,
+    "category": "Фитинг BSP угол 45"
+  },
+  {
+    "id": 1750399933.631651,
+    "name": "ZBW310-10-08",
+    "price": 2330.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1090.0,
+    "category": "Фитинг BSP угол 45"
+  },
+  {
+    "id": 1750399933.63171,
+    "name": "ZBW310-10-10",
+    "price": 2330.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1090.0,
+    "category": "Фитинг BSP угол 45"
+  },
+  {
+    "id": 1750399933.631768,
+    "name": "ZBW310-12-12",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1550.0,
+    "category": "Фитинг BSP угол 45"
+  },
+  {
+    "id": 1750399933.631829,
+    "name": "ZBW310-16-16",
+    "price": 6060.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2840.0,
+    "category": "Фитинг BSP угол 45"
+  },
+  {
+    "id": 1750399933.631889,
+    "name": "ZBW310-24-24",
+    "price": 15300.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 6000.0,
+    "category": "Фитинг BSP угол 45"
+  },
+  {
+    "id": 1750399933.632008,
+    "name": "ZBZ110-02-04",
+    "price": 1320.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 600.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.632066,
+    "name": "ZBZ110-04-04",
+    "price": 1320.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 600.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.632126,
+    "name": "ZBZ110-04-05",
+    "price": 1320.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 600.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.632185,
+    "name": "ZBZ110-04-06",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 600.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.632245,
+    "name": "ZBZ110-06-04",
+    "price": 1320.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 620.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.632305,
+    "name": "ZBZ110-06-05",
+    "price": 1320.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 620.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.632364,
+    "name": "ZBZ110-06-06",
+    "price": 1320.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 620.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.632426,
+    "name": "ZBZ110-06-08",
+    "price": 1620.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 620.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.632486,
+    "name": "ZBZ110-08-05",
+    "price": 1820.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 910.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.632545,
+    "name": "ZBZ110-08-06",
+    "price": 1620.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 910.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.632604,
+    "name": "ZBZ110-08-08",
+    "price": 1920.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 910.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.632662,
+    "name": "ZBZ110-08-08LN",
+    "price": 2800.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1800.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.632722,
+    "name": "ZBZ110-08-10",
+    "price": 2020.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 910.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.632781,
+    "name": "ZBZ110-10-08",
+    "price": 2130.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1430.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.632843,
+    "name": "ZBZ110-10-10",
+    "price": 2330.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1430.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.632902,
+    "name": "ZBZ110-10-12",
+    "price": 3030.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1430.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.63296,
+    "name": "ZBZ110-12-08",
+    "price": 2430.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1430.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.633019,
+    "name": "ZBZ110-12-10",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1430.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.633136,
+    "name": "ZBZ110-12-12",
+    "price": 3030.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1430.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.633194,
+    "name": "ZBZ110-12-12LN",
+    "price": 5100.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.633252,
+    "name": "ZBZ110-12-14",
+    "price": 3740.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1430.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.633311,
+    "name": "ZBZ110-12-16",
+    "price": 4450.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1430.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.63337,
+    "name": "ZBZ110-16-10",
+    "price": 2330.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1810.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.633429,
+    "name": "ZBZ110-16-12",
+    "price": 2730.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1810.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.63349,
+    "name": "ZBZ110-16-16",
+    "price": 3840.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1810.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.633548,
+    "name": "ZBZ110-16-20",
+    "price": 5260.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1810.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.633607,
+    "name": "ZBZ110-20-16",
+    "price": 10510.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1810.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.633666,
+    "name": "ZBZ110-20-20",
+    "price": 11110.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1810.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.633727,
+    "name": "ZBZ110-20-24",
+    "price": 13640.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1810.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.633787,
+    "name": "ZBZ110-24-20",
+    "price": 13130.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1810.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.633849,
+    "name": "ZBZ110-24-24",
+    "price": 15050.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1810.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.633908,
+    "name": "ZBZ110-32-24",
+    "price": 16270.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1810.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750399933.633968,
+    "name": "ZBZ110-32-32",
+    "price": 17980.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1810.0,
+    "category": "Штуцер BSP"
+  },
+  {
+    "id": 1750418851.931209,
+    "name": "VBW110-06-04",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 480.0,
+    "category": "Фитинг BSP прямой"
+  },
+  {
+    "id": 1750420977.848522,
+    "name": "ZMW122-14-04",
+    "price": 910.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 430.0,
+    "category": "фитинг DKOS прямой"
+  },
+  {
+    "id": 1750420977.848803,
+    "name": "ZMW122-16-04",
+    "price": 1010.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 460.0,
+    "category": "фитинг DKOS прямой"
+  },
+  {
+    "id": 1750420977.84889,
+    "name": "ZMW122-16-05",
+    "price": 1010.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 460.0,
+    "category": "фитинг DKOS прямой"
+  },
+  {
+    "id": 1750420977.850038,
+    "name": "ZMW122-16-06",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 480.0,
+    "category": "фитинг DKOS прямой"
+  },
+  {
+    "id": 1750420977.85021,
+    "name": "ZMW122-18-04",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 510.0,
+    "category": "фитинг DKOS прямой"
+  },
+  {
+    "id": 1750420977.850316,
+    "name": "ZMW122-18-05",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 510.0,
+    "category": "фитинг DKOS прямой"
+  },
+  {
+    "id": 1750420977.850407,
+    "name": "ZMW122-18-06",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 510.0,
+    "category": "фитинг DKOS прямой"
+  },
+  {
+    "id": 1750420977.850489,
+    "name": "ZMW122-20-05",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 650.0,
+    "category": "фитинг DKOS прямой"
+  },
+  {
+    "id": 1750420977.850574,
+    "name": "ZMW122-20-06",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 650.0,
+    "category": "фитинг DKOS прямой"
+  },
+  {
+    "id": 1750420977.850649,
+    "name": "ZMW122-20-08",
+    "price": 1620.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 730.0,
+    "category": "фитинг DKOS прямой"
+  },
+  {
+    "id": 1750420977.85072,
+    "name": "ZMW122-22-06",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 650.0,
+    "category": "фитинг DKOS прямой"
+  },
+  {
+    "id": 1750420977.850788,
+    "name": "ZMW122-22-08",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 650.0,
+    "category": "фитинг DKOS прямой"
+  },
+  {
+    "id": 1750420977.850855,
+    "name": "ZMW122-24-08",
+    "price": 1820.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 830.0,
+    "category": "фитинг DKOS прямой"
+  },
+  {
+    "id": 1750420977.85092,
+    "name": "ZMW122-30-10",
+    "price": 3640.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1680.0,
+    "category": "фитинг DKOS прямой"
+  },
+  {
+    "id": 1750420977.850984,
+    "name": "ZMW122-30-12",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1160.0,
+    "category": "фитинг DKOS прямой"
+  },
+  {
+    "id": 1750420977.851049,
+    "name": "ZMW122-36-12",
+    "price": 3640.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1680.0,
+    "category": "фитинг DKOS прямой"
+  },
+  {
+    "id": 1750420977.851114,
+    "name": "ZMW122-36-16",
+    "price": 4150.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1940.0,
+    "category": "фитинг DKOS прямой"
+  },
+  {
+    "id": 1750420977.851177,
+    "name": "ZMW122-42-16",
+    "price": 6060.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2840.0,
+    "category": "фитинг DKOS прямой"
+  },
+  {
+    "id": 1750420977.851239,
+    "name": "ZMW122-42-20",
+    "price": 7480.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2840.0,
+    "category": "фитинг DKOS прямой"
+  },
+  {
+    "id": 1750420977.851301,
+    "name": "ZMW122-52-20",
+    "price": 8790.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4130.0,
+    "category": "фитинг DKOS прямой"
+  },
+  {
+    "id": 1750420977.851364,
+    "name": "ZMW122-52-24",
+    "price": 9900.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4630.0,
+    "category": "фитинг DKOS прямой"
+  },
+  {
+    "id": 1750420977.851428,
+    "name": "ZMW222-14-04",
+    "price": 1320.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 580.0,
+    "category": "фитинг DKOS угол 90"
+  },
+  {
+    "id": 1750420977.85149,
+    "name": "ZMW222-16-04",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 650.0,
+    "category": "фитинг DKOS угол 90"
+  },
+  {
+    "id": 1750420977.851556,
+    "name": "ZMW222-16-05",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 650.0,
+    "category": "фитинг DKOS угол 90"
+  },
+  {
+    "id": 1750420977.851621,
+    "name": "ZMW222-16-06",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 650.0,
+    "category": "фитинг DKOS угол 90"
+  },
+  {
+    "id": 1750420977.851684,
+    "name": "ZMW222-18-04",
+    "price": 1620.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 730.0,
+    "category": "фитинг DKOS угол 90"
+  },
+  {
+    "id": 1750420977.851746,
+    "name": "ZMW222-18-05",
+    "price": 1620.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 730.0,
+    "category": "фитинг DKOS угол 90"
+  },
+  {
+    "id": 1750420977.851807,
+    "name": "ZMW222-18-06",
+    "price": 1620.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 730.0,
+    "category": "фитинг DKOS угол 90"
+  },
+  {
+    "id": 1750420977.851868,
+    "name": "ZMW222-20-05",
+    "price": 1720.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 780.0,
+    "category": "фитинг DKOS угол 90"
+  },
+  {
+    "id": 1750420977.851928,
+    "name": "ZMW222-20-06",
+    "price": 1720.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 780.0,
+    "category": "фитинг DKOS угол 90"
+  },
+  {
+    "id": 1750420977.851988,
+    "name": "ZMW222-22-06",
+    "price": 2020.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 950.0,
+    "category": "фитинг DKOS угол 90"
+  },
+  {
+    "id": 1750420977.852048,
+    "name": "ZMW222-22-08",
+    "price": 2020.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 950.0,
+    "category": "фитинг DKOS угол 90"
+  },
+  {
+    "id": 1750420977.852109,
+    "name": "ZMW222-24-08",
+    "price": 2330.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1090.0,
+    "category": "фитинг DKOS угол 90"
+  },
+  {
+    "id": 1750420977.85217,
+    "name": "ZMW222-30-10",
+    "price": 3740.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1550.0,
+    "category": "фитинг DKOS угол 90"
+  },
+  {
+    "id": 1750420977.85223,
+    "name": "ZMW222-30-12",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1550.0,
+    "category": "фитинг DKOS угол 90"
+  },
+  {
+    "id": 1750420977.85229,
+    "name": "ZMW222-36-12",
+    "price": 5560.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2580.0,
+    "category": "фитинг DKOS угол 90"
+  },
+  {
+    "id": 1750420977.85235,
+    "name": "ZMW222-36-16",
+    "price": 6270.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2590.0,
+    "category": "фитинг DKOS угол 90"
+  },
+  {
+    "id": 1750420977.85241,
+    "name": "ZMW222-42-16",
+    "price": 9900.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4640.0,
+    "category": "фитинг DKOS угол 90"
+  },
+  {
+    "id": 1750420977.85247,
+    "name": "ZMW222-42-20",
+    "price": 10410.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4640.0,
+    "category": "фитинг DKOS угол 90"
+  },
+  {
+    "id": 1750420977.852531,
+    "name": "ZMW222-52-20",
+    "price": 12330.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4640.0,
+    "category": "фитинг DKOS угол 90"
+  },
+  {
+    "id": 1750420977.852601,
+    "name": "ZMW322-14-04",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 650.0,
+    "category": "фитинг DKOS угол 45"
+  },
+  {
+    "id": 1750420977.852663,
+    "name": "ZMW322-16-04",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 650.0,
+    "category": "фитинг DKOS угол 45"
+  },
+  {
+    "id": 1750420977.852723,
+    "name": "ZMW322-18-04",
+    "price": 1620.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 730.0,
+    "category": "фитинг DKOS угол 45"
+  },
+  {
+    "id": 1750420977.852783,
+    "name": "ZMW322-18-05",
+    "price": 1620.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 730.0,
+    "category": "фитинг DKOS угол 45"
+  },
+  {
+    "id": 1750420977.852843,
+    "name": "ZMW322-18-06",
+    "price": 1620.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 730.0,
+    "category": "фитинг DKOS угол 45"
+  },
+  {
+    "id": 1750420977.852903,
+    "name": "ZMW322-20-05",
+    "price": 1720.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 780.0,
+    "category": "фитинг DKOS угол 45"
+  },
+  {
+    "id": 1750420977.852963,
+    "name": "ZMW322-20-06",
+    "price": 1720.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 780.0,
+    "category": "фитинг DKOS угол 45"
+  },
+  {
+    "id": 1750420977.853023,
+    "name": "ZMW322-22-06",
+    "price": 2230.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1040.0,
+    "category": "фитинг DKOS угол 45"
+  },
+  {
+    "id": 1750420977.853084,
+    "name": "ZMW322-22-08",
+    "price": 2230.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1040.0,
+    "category": "фитинг DKOS угол 45"
+  },
+  {
+    "id": 1750420977.853145,
+    "name": "ZMW322-24-08",
+    "price": 2330.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1090.0,
+    "category": "фитинг DKOS угол 45"
+  },
+  {
+    "id": 1750420977.853206,
+    "name": "ZMW322-30-10",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1550.0,
+    "category": "фитинг DKOS угол 45"
+  },
+  {
+    "id": 1750420977.853268,
+    "name": "ZMW322-30-12",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1550.0,
+    "category": "фитинг DKOS угол 45"
+  },
+  {
+    "id": 1750420977.85333,
+    "name": "ZMW322-36-12",
+    "price": 5560.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2580.0,
+    "category": "фитинг DKOS угол 45"
+  },
+  {
+    "id": 1750420977.853392,
+    "name": "ZMW322-36-16",
+    "price": 6170.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2580.0,
+    "category": "фитинг DKOS угол 45"
+  },
+  {
+    "id": 1750420977.853452,
+    "name": "ZMW322-42-16",
+    "price": 9900.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4640.0,
+    "category": "фитинг DKOS угол 45"
+  },
+  {
+    "id": 1750420977.853513,
+    "name": "ZMW322-42-20",
+    "price": 10410.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4640.0,
+    "category": "фитинг DKOS угол 45"
+  },
+  {
+    "id": 1750420977.853576,
+    "name": "ZMW322-52-20",
+    "price": 12330.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4640.0,
+    "category": "фитинг DKOS угол 45"
+  },
+  {
+    "id": 1750420977.853637,
+    "name": "ZMW322-52-24",
+    "price": 14850.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4640.0,
+    "category": "фитинг DKOS угол 45"
+  },
+  {
+    "id": 1750420977.853697,
+    "name": "ZMZ122-12-04",
+    "price": 1220.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 560.0,
+    "category": "штуцер DKOS"
+  },
+  {
+    "id": 1750420977.853758,
+    "name": "ZMZ122-14-04",
+    "price": 1220.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 560.0,
+    "category": "штуцер DKOS"
+  },
+  {
+    "id": 1750420977.853818,
+    "name": "ZMZ122-16-04",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 650.0,
+    "category": "штуцер DKOS"
+  },
+  {
+    "id": 1750420977.853877,
+    "name": "ZMZ122-16-06",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 650.0,
+    "category": "штуцер DKOS"
+  },
+  {
+    "id": 1750420977.853937,
+    "name": "ZMZ122-18-06",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 650.0,
+    "category": "штуцер DKOS"
+  },
+  {
+    "id": 1750420977.853996,
+    "name": "ZMZ122-20-06",
+    "price": 1920.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 860.0,
+    "category": "штуцер DKOS"
+  },
+  {
+    "id": 1750420977.854056,
+    "name": "ZMZ122-22-08",
+    "price": 1920.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 910.0,
+    "category": "штуцер DKOS"
+  },
+  {
+    "id": 1750420977.854114,
+    "name": "ZMZ122-24-08",
+    "price": 1920.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 910.0,
+    "category": "штуцер DKOS"
+  },
+  {
+    "id": 1750420977.854174,
+    "name": "ZMZ122-30-12",
+    "price": 3240.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4550.0,
+    "category": "штуцер DKOS"
+  },
+  {
+    "id": 1750420977.854233,
+    "name": "ZMZ122-36-12",
+    "price": 3740.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1720.0,
+    "category": "штуцер DKOS"
+  },
+  {
+    "id": 1750420977.854293,
+    "name": "ZMZ122-36-16",
+    "price": 3740.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1720.0,
+    "category": "штуцер DKOS"
+  },
+  {
+    "id": 1750420977.854352,
+    "name": "ZMZ122-39-16",
+    "price": 4950.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2530.0,
+    "category": "штуцер DKOS"
+  },
+  {
+    "id": 1750420977.854411,
+    "name": "ZMZ122-42-16",
+    "price": 9090.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4250.0,
+    "category": "штуцер DKOS"
+  },
+  {
+    "id": 1750420977.854471,
+    "name": "ZMZ122-45-20",
+    "price": 9900.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4250.0,
+    "category": "штуцер DKOS"
+  },
+  {
+    "id": 1750420977.85453,
+    "name": "ZMZ122-52-20",
+    "price": 13640.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 5760.0,
+    "category": "штуцер DKOS"
+  },
+  {
+    "id": 1750420977.854594,
+    "name": "ZOW110-09-04",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 420.0,
+    "category": "фитинг ORFS прямой"
+  },
+  {
+    "id": 1750420977.854654,
+    "name": "ZOW110-11-04",
+    "price": 1220.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 480.0,
+    "category": "фитинг ORFS прямой"
+  },
+  {
+    "id": 1750420977.854714,
+    "name": "ZOW110-11-06",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 420.0,
+    "category": "фитинг ORFS прямой"
+  },
+  {
+    "id": 1750420977.854774,
+    "name": "ZOW110-13-06",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 570.0,
+    "category": "фитинг ORFS прямой"
+  },
+  {
+    "id": 1750420977.854832,
+    "name": "ZOW110-13-08",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 570.0,
+    "category": "фитинг ORFS прямой"
+  },
+  {
+    "id": 1750420977.854891,
+    "name": "ZOW110-16-08",
+    "price": 1920.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 790.0,
+    "category": "фитинг ORFS прямой"
+  },
+  {
+    "id": 1750420977.854951,
+    "name": "ZOW110-16-10",
+    "price": 1820.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 720.0,
+    "category": "фитинг ORFS прямой"
+  },
+  {
+    "id": 1750420977.855009,
+    "name": "ZOW110-19-08",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1010.0,
+    "category": "фитинг ORFS прямой"
+  },
+  {
+    "id": 1750420977.855068,
+    "name": "ZOW110-19-10",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1010.0,
+    "category": "фитинг ORFS прямой"
+  },
+  {
+    "id": 1750420977.855126,
+    "name": "ZOW110-19-12",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1010.0,
+    "category": "фитинг ORFS прямой"
+  },
+  {
+    "id": 1750420977.855185,
+    "name": "ZOW110-23-10",
+    "price": 3030.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1240.0,
+    "category": "фитинг ORFS прямой"
+  },
+  {
+    "id": 1750420977.855245,
+    "name": "ZOW110-23-12",
+    "price": 3240.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1310.0,
+    "category": "фитинг ORFS прямой"
+  },
+  {
+    "id": 1750420977.855304,
+    "name": "ZOW110-23-16",
+    "price": 3240.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1310.0,
+    "category": "фитинг ORFS прямой"
+  },
+  {
+    "id": 1750420977.855362,
+    "name": "ZOW110-27-20",
+    "price": 6570.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2690.0,
+    "category": "фитинг ORFS прямой"
+  },
+  {
+    "id": 1750420977.855421,
+    "name": "ZOW110-32-24",
+    "price": 8890.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 3640.0,
+    "category": "фитинг ORFS прямой"
+  },
+  {
+    "id": 1750420977.85548,
+    "name": "ZOW210-09-04",
+    "price": 1220.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 500.0,
+    "category": "фитинг ORFS угол 90"
+  },
+  {
+    "id": 1750420977.855539,
+    "name": "ZOW210-11-04",
+    "price": 1620.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 640.0,
+    "category": "фитинг ORFS угол 90"
+  },
+  {
+    "id": 1750420977.855603,
+    "name": "ZOW210-11-06",
+    "price": 1620.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 640.0,
+    "category": "фитинг ORFS угол 90"
+  },
+  {
+    "id": 1750420977.855661,
+    "name": "ZOW210-13-06",
+    "price": 2020.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 820.0,
+    "category": "фитинг ORFS угол 90"
+  },
+  {
+    "id": 1750420977.85572,
+    "name": "ZOW210-13-08",
+    "price": 2020.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 820.0,
+    "category": "фитинг ORFS угол 90"
+  },
+  {
+    "id": 1750420977.855779,
+    "name": "ZOW210-16-08",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1010.0,
+    "category": "фитинг ORFS угол 90"
+  },
+  {
+    "id": 1750420977.855838,
+    "name": "ZOW210-16-10",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1010.0,
+    "category": "фитинг ORFS угол 90"
+  },
+  {
+    "id": 1750420977.855898,
+    "name": "ZOW210-19-08",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1350.0,
+    "category": "фитинг ORFS угол 90"
+  },
+  {
+    "id": 1750420977.855956,
+    "name": "ZOW210-19-10",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1350.0,
+    "category": "фитинг ORFS угол 90"
+  },
+  {
+    "id": 1750420977.856015,
+    "name": "ZOW210-19-12",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1350.0,
+    "category": "фитинг ORFS угол 90"
+  },
+  {
+    "id": 1750420977.856075,
+    "name": "ZOW210-23-10",
+    "price": 6870.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2810.0,
+    "category": "фитинг ORFS угол 90"
+  },
+  {
+    "id": 1750420977.856134,
+    "name": "ZOW210-23-12",
+    "price": 6870.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2810.0,
+    "category": "фитинг ORFS угол 90"
+  },
+  {
+    "id": 1750420977.856193,
+    "name": "ZOW210-23-16",
+    "price": 6870.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2810.0,
+    "category": "фитинг ORFS угол 90"
+  },
+  {
+    "id": 1750420977.856253,
+    "name": "ZOW210-27-20",
+    "price": 11520.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4710.0,
+    "category": "фитинг ORFS угол 90"
+  },
+  {
+    "id": 1750420977.856312,
+    "name": "ZOW210-32-24",
+    "price": 11520.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4710.0,
+    "category": "фитинг ORFS угол 90"
+  },
+  {
+    "id": 1750420977.856371,
+    "name": "ZOW310-09-04",
+    "price": 1220.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 500.0,
+    "category": "фитинг ORFS угол 45"
+  },
+  {
+    "id": 1750420977.856431,
+    "name": "ZOW310-11-04",
+    "price": 1620.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 640.0,
+    "category": "фитинг ORFS угол 45"
+  },
+  {
+    "id": 1750420977.856491,
+    "name": "ZOW310-11-06",
+    "price": 1620.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 640.0,
+    "category": "фитинг ORFS угол 45"
+  },
+  {
+    "id": 1750420977.856552,
+    "name": "ZOW310-13-06",
+    "price": 2020.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 820.0,
+    "category": "фитинг ORFS угол 45"
+  },
+  {
+    "id": 1750420977.856612,
+    "name": "ZOW310-13-08",
+    "price": 2020.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 820.0,
+    "category": "фитинг ORFS угол 45"
+  },
+  {
+    "id": 1750420977.856671,
+    "name": "ZOW310-16-08",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1010.0,
+    "category": "фитинг ORFS угол 45"
+  },
+  {
+    "id": 1750420977.856731,
+    "name": "ZOW310-16-10",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1010.0,
+    "category": "фитинг ORFS угол 45"
+  },
+  {
+    "id": 1750420977.856792,
+    "name": "ZOW310-19-08",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1350.0,
+    "category": "фитинг ORFS угол 45"
+  },
+  {
+    "id": 1750420977.856851,
+    "name": "ZOW310-19-10",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1350.0,
+    "category": "фитинг ORFS угол 45"
+  },
+  {
+    "id": 1750420977.85691,
+    "name": "ZOW310-19-12",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1350.0,
+    "category": "фитинг ORFS угол 45"
+  },
+  {
+    "id": 1750420977.856968,
+    "name": "ZOW310-23-10",
+    "price": 6870.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2810.0,
+    "category": "фитинг ORFS угол 45"
+  },
+  {
+    "id": 1750420977.85703,
+    "name": "ZOW310-23-12",
+    "price": 6870.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2810.0,
+    "category": "фитинг ORFS угол 45"
+  },
+  {
+    "id": 1750420977.857091,
+    "name": "ZOW310-23-16",
+    "price": 6870.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2810.0,
+    "category": "фитинг ORFS угол 45"
+  },
+  {
+    "id": 1750420977.857156,
+    "name": "ZOW310-27-20",
+    "price": 11520.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4710.0,
+    "category": "фитинг ORFS угол 45"
+  },
+  {
+    "id": 1750420977.857217,
+    "name": "ZOW310-32-24",
+    "price": 11520.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4710.0,
+    "category": "фитинг ORFS угол 45"
+  },
+  {
+    "id": 1750420977.857277,
+    "name": "ZOZ110-09-04",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 420.0,
+    "category": "штуцер ORFS"
+  },
+  {
+    "id": 1750420977.857338,
+    "name": "ZOZ110-11-06",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 570.0,
+    "category": "штуцер ORFS"
+  },
+  {
+    "id": 1750420977.857397,
+    "name": "ZOZ110-13-06",
+    "price": 1820.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 720.0,
+    "category": "штуцер ORFS"
+  },
+  {
+    "id": 1750420977.857457,
+    "name": "ZOZ110-13-08",
+    "price": 1920.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 790.0,
+    "category": "штуцер ORFS"
+  },
+  {
+    "id": 1750420977.857516,
+    "name": "ZOZ110-16-08",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1010.0,
+    "category": "штуцер ORFS"
+  },
+  {
+    "id": 1750420977.857578,
+    "name": "ZOZ110-16-10",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1010.0,
+    "category": "штуцер ORFS"
+  },
+  {
+    "id": 1750420977.857638,
+    "name": "ZOZ110-19-10",
+    "price": 3030.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1240.0,
+    "category": "штуцер ORFS"
+  },
+  {
+    "id": 1750420977.857697,
+    "name": "ZOZ110-19-12",
+    "price": 3030.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1240.0,
+    "category": "штуцер ORFS"
+  },
+  {
+    "id": 1750420977.857757,
+    "name": "ZOZ110-23-12",
+    "price": 3640.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1460.0,
+    "category": "штуцер ORFS"
+  },
+  {
+    "id": 1750420977.857816,
+    "name": "ZOZ110-23-16",
+    "price": 3840.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1580.0,
+    "category": "штуцер ORFS"
+  },
+  {
+    "id": 1750420977.857875,
+    "name": "ZOZ110-27-20",
+    "price": 4950.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2020.0,
+    "category": "штуцер ORFS"
+  },
+  {
+    "id": 1750420977.857934,
+    "name": "ZOZ110-32-24",
+    "price": 7480.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 3030.0,
+    "category": "штуцер ORFS"
+  },
+  {
+    "id": 1750420977.857994,
+    "name": "ZJW110-07-04",
+    "price": 910.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 380.0,
+    "category": "фитинг JIC прямой"
+  },
+  {
+    "id": 1750420977.858053,
+    "name": "ZJW110-07-05",
+    "price": 1010.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 410.0,
+    "category": "фитинг JIC прямой"
+  },
+  {
+    "id": 1750420977.858112,
+    "name": "ZJW110-08-04",
+    "price": 1010.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 410.0,
+    "category": "фитинг JIC прямой"
+  },
+  {
+    "id": 1750420977.85817,
+    "name": "ZJW110-08-05",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 430.0,
+    "category": "фитинг JIC прямой"
+  },
+  {
+    "id": 1750420977.858229,
+    "name": "ZJW110-09-04",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 430.0,
+    "category": "фитинг JIC прямой"
+  },
+  {
+    "id": 1750420977.858288,
+    "name": "ZJW110-09-05",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 430.0,
+    "category": "фитинг JIC прямой"
+  },
+  {
+    "id": 1750420977.858347,
+    "name": "ZJW110-09-06",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 430.0,
+    "category": "фитинг JIC прямой"
+  },
+  {
+    "id": 1750420977.858406,
+    "name": "ZJW110-12-05",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 580.0,
+    "category": "фитинг JIC прямой"
+  },
+  {
+    "id": 1750420977.858464,
+    "name": "ZJW110-12-06",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 580.0,
+    "category": "фитинг JIC прямой"
+  },
+  {
+    "id": 1750420977.858522,
+    "name": "ZJW110-12-08",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 580.0,
+    "category": "фитинг JIC прямой"
+  },
+  {
+    "id": 1750420977.858585,
+    "name": "ZJW110-14-06",
+    "price": 1820.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 730.0,
+    "category": "фитинг JIC прямой"
+  },
+  {
+    "id": 1750420977.858644,
+    "name": "ZJW110-14-08",
+    "price": 1820.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 730.0,
+    "category": "фитинг JIC прямой"
+  },
+  {
+    "id": 1750420977.858702,
+    "name": "ZJW110-14-10",
+    "price": 1720.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 690.0,
+    "category": "фитинг JIC прямой"
+  },
+  {
+    "id": 1750420977.858761,
+    "name": "ZJW110-14-12",
+    "price": 1920.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 770.0,
+    "category": "фитинг JIC прямой"
+  },
+  {
+    "id": 1750420977.858819,
+    "name": "ZJW110-17-08",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1030.0,
+    "category": "фитинг JIC прямой"
+  },
+  {
+    "id": 1750420977.858878,
+    "name": "ZJW110-17-10",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1030.0,
+    "category": "фитинг JIC прямой"
+  },
+  {
+    "id": 1750420977.858937,
+    "name": "ZJW110-17-12",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1030.0,
+    "category": "фитинг JIC прямой"
+  },
+  {
+    "id": 1750420977.858995,
+    "name": "ZJW110-17-16",
+    "price": 2930.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1240.0,
+    "category": "фитинг JIC прямой"
+  },
+  {
+    "id": 1750420977.859053,
+    "name": "ZJW110-19-12",
+    "price": 2930.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1140.0,
+    "category": "фитинг JIC прямой"
+  },
+  {
+    "id": 1750420977.859112,
+    "name": "ZJW110-21-12",
+    "price": 2930.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1230.0,
+    "category": "фитинг JIC прямой"
+  },
+  {
+    "id": 1750420977.859171,
+    "name": "ZJW110-21-16",
+    "price": 3030.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1260.0,
+    "category": "фитинг JIC прямой"
+  },
+  {
+    "id": 1750420977.859229,
+    "name": "ZJW110-26-16",
+    "price": 4650.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1890.0,
+    "category": "фитинг JIC прямой"
+  },
+  {
+    "id": 1750420977.859288,
+    "name": "ZJW110-26-20",
+    "price": 4650.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1890.0,
+    "category": "фитинг JIC прямой"
+  },
+  {
+    "id": 1750420977.859347,
+    "name": "ZJW110-30-20",
+    "price": 5260.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2160.0,
+    "category": "фитинг JIC прямой"
+  },
+  {
+    "id": 1750420977.859406,
+    "name": "ZJW110-30-24",
+    "price": 5260.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2210.0,
+    "category": "фитинг JIC прямой"
+  },
+  {
+    "id": 1750420977.859465,
+    "name": "ZJW110-40-32",
+    "price": 7070.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2910.0,
+    "category": "фитинг JIC прямой"
+  },
+  {
+    "id": 1750420977.859524,
+    "name": "ZJW210-07-04",
+    "price": 1320.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 510.0,
+    "category": "фитинг JIC угол 90"
+  },
+  {
+    "id": 1750420977.859587,
+    "name": "ZJW210-07-05",
+    "price": 1520.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 580.0,
+    "category": "фитинг JIC угол 90"
+  },
+  {
+    "id": 1750420977.859646,
+    "name": "ZJW210-08-04",
+    "price": 1520.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 580.0,
+    "category": "фитинг JIC угол 90"
+  },
+  {
+    "id": 1750420977.859704,
+    "name": "ZJW210-08-05",
+    "price": 1520.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 580.0,
+    "category": "фитинг JIC угол 90"
+  },
+  {
+    "id": 1750420977.859765,
+    "name": "ZJW210-09-04",
+    "price": 1520.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 580.0,
+    "category": "фитинг JIC угол 90"
+  },
+  {
+    "id": 1750420977.859824,
+    "name": "ZJW210-09-05",
+    "price": 1520.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 580.0,
+    "category": "фитинг JIC угол 90"
+  },
+  {
+    "id": 1750420977.859883,
+    "name": "ZJW210-09-06",
+    "price": 1520.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 580.0,
+    "category": "фитинг JIC угол 90"
+  },
+  {
+    "id": 1750420977.859941,
+    "name": "ZJW210-12-05",
+    "price": 1520.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 580.0,
+    "category": "фитинг JIC угол 90"
+  },
+  {
+    "id": 1750420977.86,
+    "name": "ZJW210-12-06",
+    "price": 1920.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 800.0,
+    "category": "фитинг JIC угол 90"
+  },
+  {
+    "id": 1750420977.860058,
+    "name": "ZJW210-12-08",
+    "price": 1920.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 800.0,
+    "category": "фитинг JIC угол 90"
+  },
+  {
+    "id": 1750420977.860117,
+    "name": "ZJW210-14-06",
+    "price": 1920.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 800.0,
+    "category": "фитинг JIC угол 90"
+  },
+  {
+    "id": 1750420977.860176,
+    "name": "ZJW210-14-08",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1370.0,
+    "category": "фитинг JIC угол 90"
+  },
+  {
+    "id": 1750420977.860235,
+    "name": "ZJW210-14-10",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1370.0,
+    "category": "фитинг JIC угол 90"
+  },
+  {
+    "id": 1750420977.860293,
+    "name": "ZJW210-14-12",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1370.0,
+    "category": "фитинг JIC угол 90"
+  },
+  {
+    "id": 1750420977.860351,
+    "name": "ZJW210-17-08",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1370.0,
+    "category": "фитинг JIC угол 90"
+  },
+  {
+    "id": 1750420977.86041,
+    "name": "ZJW210-17-10",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1370.0,
+    "category": "фитинг JIC угол 90"
+  },
+  {
+    "id": 1750420977.860469,
+    "name": "ZJW210-17-12",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1370.0,
+    "category": "фитинг JIC угол 90"
+  },
+  {
+    "id": 1750420977.860527,
+    "name": "ZJW210-17-16",
+    "price": 4450.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1840.0,
+    "category": "фитинг JIC угол 90"
+  },
+  {
+    "id": 1750420977.860691,
+    "name": "ZJW210-19-12",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1370.0,
+    "category": "фитинг JIC угол 90"
+  },
+  {
+    "id": 1750420977.86078,
+    "name": "ZJW210-21-12",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1370.0,
+    "category": "фитинг JIC угол 90"
+  },
+  {
+    "id": 1750420977.860851,
+    "name": "ZJW210-21-16",
+    "price": 4750.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1940.0,
+    "category": "фитинг JIC угол 90"
+  },
+  {
+    "id": 1750420977.860917,
+    "name": "ZJW210-26-16",
+    "price": 5260.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2160.0,
+    "category": "фитинг JIC угол 90"
+  },
+  {
+    "id": 1750420977.860981,
+    "name": "ZJW210-26-20",
+    "price": 5260.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2160.0,
+    "category": "фитинг JIC угол 90"
+  },
+  {
+    "id": 1750420977.861043,
+    "name": "ZJW210-30-20",
+    "price": 8390.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 3480.0,
+    "category": "фитинг JIC угол 90"
+  },
+  {
+    "id": 1750420977.861104,
+    "name": "ZJW210-30-24",
+    "price": 9200.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 3780.0,
+    "category": "фитинг JIC угол 90"
+  },
+  {
+    "id": 1750420977.86117,
+    "name": "ZJW210-40-32",
+    "price": 12120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4990.0,
+    "category": "фитинг JIC угол 90"
+  },
+  {
+    "id": 1750420977.86123,
+    "name": "ZJW310-07-04",
+    "price": 1320.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 510.0,
+    "category": "фитинг JIC угол 45"
+  },
+  {
+    "id": 1750420977.861291,
+    "name": "ZJW310-07-05",
+    "price": 1520.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 580.0,
+    "category": "фитинг JIC угол 45"
+  },
+  {
+    "id": 1750420977.861351,
+    "name": "ZJW310-08-04",
+    "price": 1520.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 580.0,
+    "category": "фитинг JIC угол 45"
+  },
+  {
+    "id": 1750420977.861412,
+    "name": "ZJW310-08-05",
+    "price": 1520.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 580.0,
+    "category": "фитинг JIC угол 45"
+  },
+  {
+    "id": 1750420977.861471,
+    "name": "ZJW310-09-04",
+    "price": 1520.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 580.0,
+    "category": "фитинг JIC угол 45"
+  },
+  {
+    "id": 1750420977.861531,
+    "name": "ZJW310-09-05",
+    "price": 1520.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 580.0,
+    "category": "фитинг JIC угол 45"
+  },
+  {
+    "id": 1750420977.861591,
+    "name": "ZJW310-09-06",
+    "price": 1520.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 580.0,
+    "category": "фитинг JIC угол 45"
+  },
+  {
+    "id": 1750420977.861654,
+    "name": "ZJW310-12-05",
+    "price": 1520.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 580.0,
+    "category": "фитинг JIC угол 45"
+  },
+  {
+    "id": 1750420977.861715,
+    "name": "ZJW310-12-06",
+    "price": 1920.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 800.0,
+    "category": "фитинг JIC угол 45"
+  },
+  {
+    "id": 1750420977.861774,
+    "name": "ZJW310-12-08",
+    "price": 1920.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 800.0,
+    "category": "фитинг JIC угол 45"
+  },
+  {
+    "id": 1750420977.861834,
+    "name": "ZJW310-14-06",
+    "price": 1920.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 800.0,
+    "category": "фитинг JIC угол 45"
+  },
+  {
+    "id": 1750420977.861893,
+    "name": "ZJW310-14-08",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1370.0,
+    "category": "фитинг JIC угол 45"
+  },
+  {
+    "id": 1750420977.861953,
+    "name": "ZJW310-14-10",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1370.0,
+    "category": "фитинг JIC угол 45"
+  },
+  {
+    "id": 1750420977.862012,
+    "name": "ZJW310-14-12",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1370.0,
+    "category": "фитинг JIC угол 45"
+  },
+  {
+    "id": 1750420977.862071,
+    "name": "ZJW310-17-08",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1370.0,
+    "category": "фитинг JIC угол 45"
+  },
+  {
+    "id": 1750420977.862131,
+    "name": "ZJW310-17-10",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1370.0,
+    "category": "фитинг JIC угол 45"
+  },
+  {
+    "id": 1750420977.86219,
+    "name": "ZJW310-17-12",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1370.0,
+    "category": "фитинг JIC угол 45"
+  },
+  {
+    "id": 1750420977.862249,
+    "name": "ZJW310-17-16",
+    "price": 4450.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1840.0,
+    "category": "фитинг JIC угол 45"
+  },
+  {
+    "id": 1750420977.862309,
+    "name": "ZJW310-19-12",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1370.0,
+    "category": "фитинг JIC угол 45"
+  },
+  {
+    "id": 1750420977.862368,
+    "name": "ZJW310-21-12",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1370.0,
+    "category": "фитинг JIC угол 45"
+  },
+  {
+    "id": 1750420977.862427,
+    "name": "ZJW310-21-16",
+    "price": 4750.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1940.0,
+    "category": "фитинг JIC угол 45"
+  },
+  {
+    "id": 1750420977.862487,
+    "name": "ZJW310-26-16",
+    "price": 5260.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2160.0,
+    "category": "фитинг JIC угол 45"
+  },
+  {
+    "id": 1750420977.862548,
+    "name": "ZJW310-26-20",
+    "price": 5260.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2160.0,
+    "category": "фитинг JIC угол 45"
+  },
+  {
+    "id": 1750420977.862607,
+    "name": "ZJW310-30-20",
+    "price": 8390.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 3480.0,
+    "category": "фитинг JIC угол 45"
+  },
+  {
+    "id": 1750420977.86267,
+    "name": "ZJW310-30-24",
+    "price": 9200.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 3780.0,
+    "category": "фитинг JIC угол 45"
+  },
+  {
+    "id": 1750420977.86273,
+    "name": "ZJW310-40-32",
+    "price": 12120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4990.0,
+    "category": "фитинг JIC угол 45"
+  },
+  {
+    "id": 1750420977.862795,
+    "name": "ZJZ110-07-04",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 420.0,
+    "category": "штуцер JIC"
+  },
+  {
+    "id": 1750420977.862856,
+    "name": "ZJZ110-08-04",
+    "price": 1220.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 490.0,
+    "category": "штуцер JIC"
+  },
+  {
+    "id": 1750420977.862916,
+    "name": "ZJZ110-08-05",
+    "price": 1220.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 490.0,
+    "category": "штуцер JIC"
+  },
+  {
+    "id": 1750420977.862976,
+    "name": "ZJZ110-09-05",
+    "price": 1220.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 490.0,
+    "category": "штуцер JIC"
+  },
+  {
+    "id": 1750420977.863035,
+    "name": "ZJZ110-09-06",
+    "price": 1220.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 490.0,
+    "category": "штуцер JIC"
+  },
+  {
+    "id": 1750420977.863095,
+    "name": "ZJZ110-12-06",
+    "price": 4150.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1680.0,
+    "category": "штуцер JIC"
+  },
+  {
+    "id": 1750420977.863155,
+    "name": "ZJZ110-12-08",
+    "price": 4150.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1680.0,
+    "category": "штуцер JIC"
+  },
+  {
+    "id": 1750420977.863214,
+    "name": "ZJZ110-14-06",
+    "price": 4150.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1680.0,
+    "category": "штуцер JIC"
+  },
+  {
+    "id": 1750420977.863274,
+    "name": "ZJZ110-14-08",
+    "price": 4150.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1680.0,
+    "category": "штуцер JIC"
+  },
+  {
+    "id": 1750420977.863333,
+    "name": "ZJZ110-14-10",
+    "price": 4150.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1680.0,
+    "category": "штуцер JIC"
+  },
+  {
+    "id": 1750420977.863392,
+    "name": "ZJZ110-17-08",
+    "price": 4150.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1680.0,
+    "category": "штуцер JIC"
+  },
+  {
+    "id": 1750420977.863451,
+    "name": "ZJZ110-17-10",
+    "price": 4150.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1680.0,
+    "category": "штуцер JIC"
+  },
+  {
+    "id": 1750420977.863511,
+    "name": "ZJZ110-17-12",
+    "price": 4150.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1680.0,
+    "category": "штуцер JIC"
+  },
+  {
+    "id": 1750420977.863571,
+    "name": "ZJZ110-19-12",
+    "price": 4150.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1680.0,
+    "category": "штуцер JIC"
+  },
+  {
+    "id": 1750420977.86363,
+    "name": "ZJZ110-21-12",
+    "price": 4150.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1680.0,
+    "category": "штуцер JIC"
+  },
+  {
+    "id": 1750420977.863692,
+    "name": "ZJZ110-21-16",
+    "price": 6170.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2530.0,
+    "category": "штуцер JIC"
+  },
+  {
+    "id": 1750420977.863752,
+    "name": "ZJZ110-26-16",
+    "price": 9090.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 3700.0,
+    "category": "штуцер JIC"
+  },
+  {
+    "id": 1750420977.863811,
+    "name": "ZJZ110-26-20",
+    "price": 9090.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 3700.0,
+    "category": "штуцер JIC"
+  },
+  {
+    "id": 1750420977.863871,
+    "name": "ZJZ110-30-24",
+    "price": 9800.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4000.0,
+    "category": "штуцер JIC"
+  },
+  {
+    "id": 1750420977.863931,
+    "name": "ZJZ110-40-32",
+    "price": 10410.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4250.0,
+    "category": "штуцер JIC"
+  },
+  {
+    "id": 1750420977.86399,
+    "name": "ZMW150-10-04",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 570.0,
+    "category": "фитинг JIS прямой"
+  },
+  {
+    "id": 1750420977.864049,
+    "name": "ZMW150-12-04",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 570.0,
+    "category": "фитинг JIS прямой"
+  },
+  {
+    "id": 1750420977.864109,
+    "name": "ZMW150-14-04",
+    "price": 1620.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 640.0,
+    "category": "фитинг JIS прямой"
+  },
+  {
+    "id": 1750420977.864169,
+    "name": "ZMW150-16-06",
+    "price": 2020.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 820.0,
+    "category": "фитинг JIS прямой"
+  },
+  {
+    "id": 1750420977.864228,
+    "name": "ZMW150-18-06",
+    "price": 2130.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 870.0,
+    "category": "фитинг JIS прямой"
+  },
+  {
+    "id": 1750420977.864288,
+    "name": "ZMW150-18-06",
+    "price": 2130.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 394.0,
+    "category": "фитинг JIS прямой"
+  },
+  {
+    "id": 1750420977.864347,
+    "name": "ZMW150-20-08",
+    "price": 2330.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 950.0,
+    "category": "фитинг JIS прямой"
+  },
+  {
+    "id": 1750420977.864407,
+    "name": "ZMW150-22-08",
+    "price": 2830.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1130.0,
+    "category": "фитинг JIS прямой"
+  },
+  {
+    "id": 1750420977.864466,
+    "name": "ZMW150-22-08",
+    "price": 1000.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1130.0,
+    "category": "фитинг JIS прямой"
+  },
+  {
+    "id": 1750420977.864527,
+    "name": "ZMW150-24-10",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1350.0,
+    "category": "фитинг JIS прямой"
+  },
+  {
+    "id": 1750420977.864586,
+    "name": "ZMW150-27-10",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1350.0,
+    "category": "фитинг JIS прямой"
+  },
+  {
+    "id": 1750420977.864648,
+    "name": "ZMW150-30-12",
+    "price": 4750.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1910.0,
+    "category": "фитинг JIS прямой"
+  },
+  {
+    "id": 1750420977.864708,
+    "name": "ZMW150-33-16",
+    "price": 7380.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 3030.0,
+    "category": "фитинг JIS прямой"
+  },
+  {
+    "id": 1750420977.86477,
+    "name": "ZMW150-36-20",
+    "price": 10210.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4150.0,
+    "category": "фитинг JIS прямой"
+  },
+  {
+    "id": 1750420977.864831,
+    "name": "ZMW250-18-06",
+    "price": 2400.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1020.0,
+    "category": "фитинг JIS угол 90"
+  },
+  {
+    "id": 1750420977.864891,
+    "name": "ZMW250-33-16",
+    "price": 9500.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "фитинг JIS угол 90"
+  },
+  {
+    "id": 1750420977.864952,
+    "name": "ZMW140-14-04",
+    "price": 910.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 370.0,
+    "category": "фитинг ORFS METRIC прямой"
+  },
+  {
+    "id": 1750420977.865015,
+    "name": "ZMW140-16-04",
+    "price": 1010.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 400.0,
+    "category": "фитинг ORFS METRIC прямой"
+  },
+  {
+    "id": 1750420977.865075,
+    "name": "ZMW140-16-05",
+    "price": 1010.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 400.0,
+    "category": "фитинг ORFS METRIC прямой"
+  },
+  {
+    "id": 1750420977.865135,
+    "name": "ZMW140-16-06",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 420.0,
+    "category": "фитинг ORFS METRIC прямой"
+  },
+  {
+    "id": 1750420977.865196,
+    "name": "ZMW140-18-06",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 420.0,
+    "category": "фитинг ORFS METRIC прямой"
+  },
+  {
+    "id": 1750420977.865255,
+    "name": "ZMW140-20-06",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 570.0,
+    "category": "фитинг ORFS METRIC прямой"
+  },
+  {
+    "id": 1750420977.865314,
+    "name": "ZMW140-22-08",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 570.0,
+    "category": "фитинг ORFS METRIC прямой"
+  },
+  {
+    "id": 1750420977.865374,
+    "name": "ZMW140-24-08",
+    "price": 1720.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 680.0,
+    "category": "фитинг ORFS METRIC прямой"
+  },
+  {
+    "id": 1750420977.865434,
+    "name": "ZMW140-26-10",
+    "price": 1720.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 680.0,
+    "category": "фитинг ORFS METRIC прямой"
+  },
+  {
+    "id": 1750420977.865493,
+    "name": "ZMW140-27-10",
+    "price": 1720.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 680.0,
+    "category": "фитинг ORFS METRIC прямой"
+  },
+  {
+    "id": 1750420977.865552,
+    "name": "ZMW140-30-12",
+    "price": 2330.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 950.0,
+    "category": "фитинг ORFS METRIC прямой"
+  },
+  {
+    "id": 1750420977.866365,
+    "name": "ZMW140-36-12",
+    "price": 3200.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1020.0,
+    "category": "фитинг ORFS METRIC прямой"
+  },
+  {
+    "id": 1750420977.867211,
+    "name": "ZMW140-45-20",
+    "price": 4500.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "фитинг ORFS METRIC прямой"
+  },
+  {
+    "id": 1750420977.867478,
+    "name": "ZMW240-14-04",
+    "price": 1220.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 500.0,
+    "category": "фитинг ORFS METRIC угол 90"
+  },
+  {
+    "id": 1750420977.867771,
+    "name": "ZMW240-16-05",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 570.0,
+    "category": "фитинг ORFS METRIC угол 90"
+  },
+  {
+    "id": 1750420977.867887,
+    "name": "ZMW240-18-06",
+    "price": 1520.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 620.0,
+    "category": "фитинг ORFS METRIC угол 90"
+  },
+  {
+    "id": 1750420977.867973,
+    "name": "ZMW240-20-06",
+    "price": 1720.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 680.0,
+    "category": "фитинг ORFS METRIC угол 90"
+  },
+  {
+    "id": 1750420977.868053,
+    "name": "ZMW240-22-08",
+    "price": 1920.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 790.0,
+    "category": "фитинг ORFS METRIC угол 90"
+  },
+  {
+    "id": 1750420977.868127,
+    "name": "ZMW240-27-10",
+    "price": 2330.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 950.0,
+    "category": "фитинг ORFS METRIC угол 90"
+  },
+  {
+    "id": 1750420977.868198,
+    "name": "ZMW240-30-12",
+    "price": 2880.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "фитинг ORFS METRIC угол 90"
+  },
+  {
+    "id": 1750420977.868273,
+    "name": "ZMW240-36-16",
+    "price": 3200.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "фитинг ORFS METRIC угол 90"
+  },
+  {
+    "id": 1750420977.868341,
+    "name": "ZMW240-39-16",
+    "price": 4100.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "фитинг ORFS METRIC угол 90"
+  },
+  {
+    "id": 1750420977.868407,
+    "name": "ZMW160-10-04",
+    "price": 1010.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 400.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.868472,
+    "name": "ZMW160-12-04",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 420.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.868537,
+    "name": "ZMW160-12-05",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 420.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.8686,
+    "name": "ZMW160-12-06",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 420.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.868672,
+    "name": "ZMW160-14-04",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 420.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.868736,
+    "name": "ZMW160-14-05",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 420.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.868798,
+    "name": "ZMW160-14-06",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 420.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.868859,
+    "name": "ZMW160-16-04",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 420.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.868921,
+    "name": "ZMW160-16-05",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 420.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.868981,
+    "name": "ZMW160-16-06",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 420.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.869042,
+    "name": "ZMW160-16-08",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 420.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.869103,
+    "name": "ZMW160-18-04",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 420.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.869164,
+    "name": "ZMW160-18-05",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 420.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.869224,
+    "name": "ZMW160-18-06",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 420.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.869286,
+    "name": "ZMW160-18-08",
+    "price": 1720.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 680.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.869347,
+    "name": "ZMW160-20-05",
+    "price": 1720.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 680.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.869408,
+    "name": "ZMW160-20-06",
+    "price": 1720.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 680.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.869467,
+    "name": "ZMW160-20-08",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 570.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.869527,
+    "name": "ZMW160-22-05",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 570.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.869588,
+    "name": "ZMW160-22-06",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 570.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.869652,
+    "name": "ZMW160-22-08",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 570.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.869715,
+    "name": "ZMW160-22-10",
+    "price": 1820.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 720.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.869774,
+    "name": "ZMW160-24-08",
+    "price": 1820.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 720.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.869835,
+    "name": "ZMW160-24-10",
+    "price": 1820.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 720.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.869896,
+    "name": "ZMW160-26-10",
+    "price": 1820.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 720.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.869957,
+    "name": "ZMW160-27-08",
+    "price": 1820.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 720.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.870017,
+    "name": "ZMW160-27-08(1,5)",
+    "price": 1820.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 720.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.870077,
+    "name": "ZMW160-27-10",
+    "price": 1820.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 720.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.870136,
+    "name": "ZMW160-27-10(1,5)",
+    "price": 1820.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 720.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.870197,
+    "name": "ZMW160-27-12",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1010.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.870257,
+    "name": "ZMW160-27-12(1,5)",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1010.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.870317,
+    "name": "ZMW160-30-10",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1010.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.870377,
+    "name": "ZMW160-30-10(1,5)",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1010.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.870437,
+    "name": "ZMW160-30-12",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1010.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.870496,
+    "name": "ZMW160-30-12(1,5)",
+    "price": 2530.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1010.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.870556,
+    "name": "ZMW160-33-12",
+    "price": 3640.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1460.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.870616,
+    "name": "ZMW160-33-12(1,5)",
+    "price": 3640.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1460.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.87068,
+    "name": "ZMW160-33-16",
+    "price": 3640.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1460.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.870739,
+    "name": "ZMW160-33-16(1,5)",
+    "price": 3640.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1460.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.870799,
+    "name": "ZMW160-36-12",
+    "price": 3640.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1460.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.870859,
+    "name": "ZMW160-36-12(1,5)",
+    "price": 3640.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1460.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.870918,
+    "name": "ZMW160-36-16",
+    "price": 3840.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1580.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.870978,
+    "name": "ZMW160-36-16(1,5)",
+    "price": 3840.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1580.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.871037,
+    "name": "ZMW160-38-16",
+    "price": 3840.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1580.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.871097,
+    "name": "ZMW160-38-16(1,5)",
+    "price": 3840.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1580.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.871157,
+    "name": "ZMW160-39-12",
+    "price": 3840.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1580.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.871217,
+    "name": "ZMW160-39-12(1,5)",
+    "price": 3840.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1580.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.871277,
+    "name": "ZMW160-39-16",
+    "price": 3840.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1580.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.871336,
+    "name": "ZMW160-39-16(1,5)",
+    "price": 3840.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1580.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.871395,
+    "name": "ZMW160-42-16",
+    "price": 6060.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2470.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.871455,
+    "name": "ZMW160-42-20",
+    "price": 6060.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2470.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.871515,
+    "name": "ZMW160-45-20",
+    "price": 7380.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 3030.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.871575,
+    "name": "ZMW160-45-24",
+    "price": 7380.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 3030.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.871637,
+    "name": "ZMW160-45-24(1,5)",
+    "price": 7380.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 3030.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.871698,
+    "name": "ZMW160-48-20(1,5)",
+    "price": 8190.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 3340.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.871757,
+    "name": "ZMW160-52-20",
+    "price": 9090.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 3700.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.871817,
+    "name": "ZMW160-52-24",
+    "price": 9090.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 3700.0,
+    "category": "фитинг DK прямой"
+  },
+  {
+    "id": 1750420977.871877,
+    "name": "ZMW260-10-04",
+    "price": 1220.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 500.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.871937,
+    "name": "ZMW260-12-04",
+    "price": 1220.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 500.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.871996,
+    "name": "ZMW260-12-05",
+    "price": 1220.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 500.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.872056,
+    "name": "ZMW260-12-06",
+    "price": 1220.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 500.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.872116,
+    "name": "ZMW260-14-04",
+    "price": 1220.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 500.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.872181,
+    "name": "ZMW260-14-05",
+    "price": 1220.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 500.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.87224,
+    "name": "ZMW260-14-06",
+    "price": 1220.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 500.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.872299,
+    "name": "ZMW260-16-04",
+    "price": 1520.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 600.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.872358,
+    "name": "ZMW260-16-05",
+    "price": 1520.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 600.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.872418,
+    "name": "ZMW260-16-06",
+    "price": 1520.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 620.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.872478,
+    "name": "ZMW260-16-08",
+    "price": 1520.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 620.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.872538,
+    "name": "ZMW260-18-04",
+    "price": 1620.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 640.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.872597,
+    "name": "ZMW260-18-05",
+    "price": 1620.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 640.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.87266,
+    "name": "ZMW260-18-06",
+    "price": 1620.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 640.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.872721,
+    "name": "ZMW260-18-08",
+    "price": 1620.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 640.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.87278,
+    "name": "ZMW260-20-05",
+    "price": 1820.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 730.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.87284,
+    "name": "ZMW260-20-06",
+    "price": 1820.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 730.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.872899,
+    "name": "ZMW260-20-08",
+    "price": 1820.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 730.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.872959,
+    "name": "ZMW260-22-05",
+    "price": 1820.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 730.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.873017,
+    "name": "ZMW260-22-06",
+    "price": 2020.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 820.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.873077,
+    "name": "ZMW260-22-08",
+    "price": 2020.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 820.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.873136,
+    "name": "ZMW260-22-10",
+    "price": 2020.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 820.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.873195,
+    "name": "ZMW260-24-08",
+    "price": 2330.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 950.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.873253,
+    "name": "ZMW260-24-10",
+    "price": 2330.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 950.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.873313,
+    "name": "ZMW260-26-10",
+    "price": 2330.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 950.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.873372,
+    "name": "ZMW260-27-08",
+    "price": 2330.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 950.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.873433,
+    "name": "ZMW260-27-08(1,5)",
+    "price": 2330.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 950.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.873492,
+    "name": "ZMW260-27-10",
+    "price": 2330.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 950.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.873552,
+    "name": "ZMW260-27-10(1,5)",
+    "price": 2330.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 950.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.873612,
+    "name": "ZMW260-27-12",
+    "price": 2330.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 950.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.873676,
+    "name": "ZMW260-27-12(1,5)",
+    "price": 2330.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 950.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.873736,
+    "name": "ZMW260-30-10",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1350.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.873796,
+    "name": "ZMW260-30-10(1,5)",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1350.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.873855,
+    "name": "ZMW260-30-12",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1350.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.873914,
+    "name": "ZMW260-30-12(1,5)",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1350.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.873974,
+    "name": "ZMW260-33-12",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1350.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.874034,
+    "name": "ZMW260-33-12(1,5)",
+    "price": 4040.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1640.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.874093,
+    "name": "ZMW260-33-16",
+    "price": 4040.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1640.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.874152,
+    "name": "ZMW260-33-16(1,5)",
+    "price": 4040.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1640.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.874212,
+    "name": "ZMW260-36-12",
+    "price": 4850.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1980.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.874272,
+    "name": "ZMW260-36-12(1,5)",
+    "price": 4850.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1980.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.874333,
+    "name": "ZMW260-36-16",
+    "price": 4850.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1980.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.874393,
+    "name": "ZMW260-36-16(1,5)",
+    "price": 4850.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1980.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.874452,
+    "name": "ZMW260-38-16",
+    "price": 6060.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2470.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.874512,
+    "name": "ZMW260-38-16(1,5)",
+    "price": 6060.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2470.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.874571,
+    "name": "ZMW260-39-12",
+    "price": 6060.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2470.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.874634,
+    "name": "ZMW260-39-12(1,5)",
+    "price": 6060.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2470.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.874695,
+    "name": "ZMW260-39-16",
+    "price": 6060.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2470.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.874754,
+    "name": "ZMW260-39-16(1,5)",
+    "price": 6060.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2470.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.874814,
+    "name": "ZMW260-42-16",
+    "price": 10210.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4150.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.874874,
+    "name": "ZMW260-42-20",
+    "price": 10210.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4150.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.874933,
+    "name": "ZMW260-45-20",
+    "price": 10210.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4150.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.874992,
+    "name": "ZMW260-45-24",
+    "price": 11920.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4850.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.875052,
+    "name": "ZMW260-45-24(1,5)",
+    "price": 11920.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4850.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.875111,
+    "name": "ZMW260-48-20(1,5)",
+    "price": 11920.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4850.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.875171,
+    "name": "ZMW260-52-20",
+    "price": 13740.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 5610.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.875232,
+    "name": "ZMW260-52-24",
+    "price": 13740.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 5610.0,
+    "category": "фитинг DK угол 90"
+  },
+  {
+    "id": 1750420977.875291,
+    "name": "ZMW360-27-10",
+    "price": 1658.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 995.0,
+    "category": "фитинг DK угол 45"
+  },
+  {
+    "id": 1750420977.875351,
+    "name": "ZSK111-08-08",
+    "price": 3030.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1240.0,
+    "category": "фланец легкая серия прямой"
+  },
+  {
+    "id": 1750420977.875409,
+    "name": "ZSK111-12-12",
+    "price": 3640.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1460.0,
+    "category": "фланец легкая серия прямой"
+  },
+  {
+    "id": 1750420977.875469,
+    "name": "ZSK111-16-12",
+    "price": 5260.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2130.0,
+    "category": "фланец легкая серия прямой"
+  },
+  {
+    "id": 1750420977.875528,
+    "name": "ZSK111-16-16",
+    "price": 5260.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2130.0,
+    "category": "фланец легкая серия прямой"
+  },
+  {
+    "id": 1750420977.875587,
+    "name": "ZSK111-20-16",
+    "price": 8290.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 3360.0,
+    "category": "фланец легкая серия прямой"
+  },
+  {
+    "id": 1750420977.87565,
+    "name": "ZSK111-20-20",
+    "price": 9090.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 3700.0,
+    "category": "фланец легкая серия прямой"
+  },
+  {
+    "id": 1750420977.87571,
+    "name": "ZSK111-32-32",
+    "price": 13000.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "фланец легкая серия прямой"
+  },
+  {
+    "id": 1750420977.87577,
+    "name": "ZSK113-16-16",
+    "price": 6570.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "фланец легкая серия прямой"
+  },
+  {
+    "id": 1750420977.875829,
+    "name": "ZSK211-08-08",
+    "price": 3340.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1350.0,
+    "category": "фланец легкая серия угол 90"
+  },
+  {
+    "id": 1750420977.87589,
+    "name": "ZSK211-12-12",
+    "price": 4150.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1680.0,
+    "category": "фланец легкая серия угол 90"
+  },
+  {
+    "id": 1750420977.875949,
+    "name": "ZSK211-16-12",
+    "price": 6060.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2470.0,
+    "category": "фланец легкая серия угол 90"
+  },
+  {
+    "id": 1750420977.876007,
+    "name": "ZSK211-16-12H100",
+    "price": 6690.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "фланец легкая серия угол 90"
+  },
+  {
+    "id": 1750420977.876067,
+    "name": "ZSK211-16-16",
+    "price": 6060.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2470.0,
+    "category": "фланец легкая серия угол 90"
+  },
+  {
+    "id": 1750420977.876128,
+    "name": "ZSK211-20-16",
+    "price": 7880.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4710.0,
+    "category": "фланец легкая серия угол 90"
+  },
+  {
+    "id": 1750420977.876187,
+    "name": "ZSK211-20-16H140",
+    "price": 14750.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "фланец легкая серия угол 90"
+  },
+  {
+    "id": 1750420977.876247,
+    "name": "ZSK211-20-16H150",
+    "price": 5528.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "фланец легкая серия угол 90"
+  },
+  {
+    "id": 1750420977.876306,
+    "name": "ZSK211-20-20",
+    "price": 11520.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4710.0,
+    "category": "фланец легкая серия угол 90"
+  },
+  {
+    "id": 1750420977.876366,
+    "name": "ZSK311-12-12",
+    "price": 4150.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1680.0,
+    "category": "фланец легкая серия угол 45"
+  },
+  {
+    "id": 1750420977.876426,
+    "name": "ZSK311-16-12",
+    "price": 6060.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2470.0,
+    "category": "фланец легкая серия угол 45"
+  },
+  {
+    "id": 1750420977.876488,
+    "name": "ZSK311-16-16",
+    "price": 6060.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2470.0,
+    "category": "фланец легкая серия угол 45"
+  },
+  {
+    "id": 1750420977.876548,
+    "name": "ZSK311-20-16",
+    "price": 11520.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4710.0,
+    "category": "фланец легкая серия угол 45"
+  },
+  {
+    "id": 1750420977.876607,
+    "name": "ZSK311-20-20",
+    "price": 11520.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4710.0,
+    "category": "фланец легкая серия угол 45"
+  },
+  {
+    "id": 1750420977.876801,
+    "name": "ZSK311-32-32",
+    "price": 16000.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "фланец легкая серия угол 45"
+  },
+  {
+    "id": 1750420977.876881,
+    "name": "ZSK112-12-12",
+    "price": 3840.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1580.0,
+    "category": "фланец тяжелая серия прямой"
+  },
+  {
+    "id": 1750420977.87695,
+    "name": "ZSK112-16-12",
+    "price": 5560.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2250.0,
+    "category": "фланец тяжелая серия прямой"
+  },
+  {
+    "id": 1750420977.877015,
+    "name": "ZSK112-16-16",
+    "price": 5560.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2250.0,
+    "category": "фланец тяжелая серия прямой"
+  },
+  {
+    "id": 1750420977.877079,
+    "name": "ZSK112-20-16",
+    "price": 8790.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 3590.0,
+    "category": "фланец тяжелая серия прямой"
+  },
+  {
+    "id": 1750420977.877143,
+    "name": "ZSK112-20-20",
+    "price": 8790.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 3590.0,
+    "category": "фланец тяжелая серия прямой"
+  },
+  {
+    "id": 1750420977.877205,
+    "name": "ZSK112-24-24",
+    "price": 15150.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "фланец тяжелая серия прямой"
+  },
+  {
+    "id": 1750420977.877265,
+    "name": "ZSK211-16-16H200",
+    "price": 14180.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "фланец тяжелая серия угол 90"
+  },
+  {
+    "id": 1750420977.877325,
+    "name": "ZSK212-12-12",
+    "price": 4450.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1800.0,
+    "category": "фланец тяжелая серия угол 90"
+  },
+  {
+    "id": 1750420977.877386,
+    "name": "ZSK212-12-12H150",
+    "price": 7980.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "фланец тяжелая серия угол 90"
+  },
+  {
+    "id": 1750420977.877446,
+    "name": "ZSK212-16-12",
+    "price": 6370.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2580.0,
+    "category": "фланец тяжелая серия угол 90"
+  },
+  {
+    "id": 1750420977.877507,
+    "name": "ZSK212-16-16",
+    "price": 6370.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2580.0,
+    "category": "фланец тяжелая серия угол 90"
+  },
+  {
+    "id": 1750420977.877567,
+    "name": "ZSK212-16-16H100",
+    "price": 7580.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "фланец тяжелая серия угол 90"
+  },
+  {
+    "id": 1750420977.877627,
+    "name": "ZSK212-20-16",
+    "price": 12120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4930.0,
+    "category": "фланец тяжелая серия угол 90"
+  },
+  {
+    "id": 1750420977.87769,
+    "name": "ZSK212-20-20",
+    "price": 12120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4930.0,
+    "category": "фланец тяжелая серия угол 90"
+  },
+  {
+    "id": 1750420977.877751,
+    "name": "ZSK212-20-20H100",
+    "price": 14000.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "фланец тяжелая серия угол 90"
+  },
+  {
+    "id": 1750420977.877812,
+    "name": "ZSK212-20-20H150",
+    "price": 15150.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "фланец тяжелая серия угол 90"
+  },
+  {
+    "id": 1750420977.877872,
+    "name": "ZSK212-24-24",
+    "price": 17500.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "фланец тяжелая серия угол 90"
+  },
+  {
+    "id": 1750420977.877931,
+    "name": "ZSK213-16-16",
+    "price": 6370.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2580.0,
+    "category": "фланец тяжелая серия угол 90"
+  },
+  {
+    "id": 1750420977.87799,
+    "name": "ZSK312-12-12",
+    "price": 4450.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1800.0,
+    "category": "фланец тяжелая серия угол 45"
+  },
+  {
+    "id": 1750420977.878051,
+    "name": "ZSK312-16-12",
+    "price": 6370.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2580.0,
+    "category": "фланец тяжелая серия угол 45"
+  },
+  {
+    "id": 1750420977.878111,
+    "name": "ZSK312-16-16",
+    "price": 6370.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2580.0,
+    "category": "фланец тяжелая серия угол 45"
+  },
+  {
+    "id": 1750420977.87817,
+    "name": "ZSK312-20-16",
+    "price": 12120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4930.0,
+    "category": "фланец тяжелая серия угол 45"
+  },
+  {
+    "id": 1750420977.87823,
+    "name": "ZSK312-20-20",
+    "price": 12120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 4930.0,
+    "category": "фланец тяжелая серия угол 45"
+  },
+  {
+    "id": 1750420977.878289,
+    "name": "ZMB600-10-04",
+    "price": 1320.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 520.0,
+    "category": "фитинг BANJO METRIC"
+  },
+  {
+    "id": 1750420977.87835,
+    "name": "ZMB600-10-05",
+    "price": 1320.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 520.0,
+    "category": "фитинг BANJO METRIC"
+  },
+  {
+    "id": 1750420977.87841,
+    "name": "ZMB600-10-06",
+    "price": 1320.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 520.0,
+    "category": "фитинг BANJO METRIC"
+  },
+  {
+    "id": 1750420977.87847,
+    "name": "ZMB600-12-04",
+    "price": 1320.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 520.0,
+    "category": "фитинг BANJO METRIC"
+  },
+  {
+    "id": 1750420977.878529,
+    "name": "ZMB600-12-06",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 570.0,
+    "category": "фитинг BANJO METRIC"
+  },
+  {
+    "id": 1750420977.878587,
+    "name": "ZMB600-14-04",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 570.0,
+    "category": "фитинг BANJO METRIC"
+  },
+  {
+    "id": 1750420977.878662,
+    "name": "ZMB600-14-05",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 570.0,
+    "category": "фитинг BANJO METRIC"
+  },
+  {
+    "id": 1750420977.878724,
+    "name": "ZMB600-14-06",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 570.0,
+    "category": "фитинг BANJO METRIC"
+  },
+  {
+    "id": 1750420977.878785,
+    "name": "ZMB600-16-05",
+    "price": 1520.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 600.0,
+    "category": "фитинг BANJO METRIC"
+  },
+  {
+    "id": 1750420977.878844,
+    "name": "ZMB600-16-06",
+    "price": 1620.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 640.0,
+    "category": "фитинг BANJO METRIC"
+  },
+  {
+    "id": 1750420977.878903,
+    "name": "ZMB600-18-04",
+    "price": 1720.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 680.0,
+    "category": "фитинг BANJO METRIC"
+  },
+  {
+    "id": 1750420977.878963,
+    "name": "ZMB600-18-05",
+    "price": 1720.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 680.0,
+    "category": "фитинг BANJO METRIC"
+  },
+  {
+    "id": 1750420977.879022,
+    "name": "ZMB600-18-06",
+    "price": 1720.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 680.0,
+    "category": "фитинг BANJO METRIC"
+  },
+  {
+    "id": 1750420977.879082,
+    "name": "ZMB600-22-06",
+    "price": 3030.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1240.0,
+    "category": "фитинг BANJO METRIC"
+  },
+  {
+    "id": 1750420977.879142,
+    "name": "ZMB600-22-08",
+    "price": 3030.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1240.0,
+    "category": "фитинг BANJO METRIC"
+  },
+  {
+    "id": 1750420977.879202,
+    "name": "ZMB600-26-12",
+    "price": 4350.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1750.0,
+    "category": "фитинг BANJO METRIC"
+  },
+  {
+    "id": 1750420977.879262,
+    "name": "ZMB603-18-06",
+    "price": 2300.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "фитинг BANJO METRIC"
+  },
+  {
+    "id": 1750420977.879321,
+    "name": "Спираль  13-18 желт.",
+    "price": 500.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 400.0,
+    "category": "спираль защитная"
+  },
+  {
+    "id": 1750420977.879381,
+    "name": "Спираль 16-22 желт.",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 510.0,
+    "category": "спираль защитная"
+  },
+  {
+    "id": 1750420977.879441,
+    "name": "Спираль 20-27 желт.",
+    "price": 1720.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 750.0,
+    "category": "спираль защитная"
+  },
+  {
+    "id": 1750420977.8795,
+    "name": "Спираль 24-30 желт",
+    "price": 2130.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 910.0,
+    "category": "спираль защитная"
+  },
+  {
+    "id": 1750420977.87956,
+    "name": "Спираль 27-36 желт.",
+    "price": 2430.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1100.0,
+    "category": "спираль защитная"
+  },
+  {
+    "id": 1750420977.87962,
+    "name": "Спираль 30-40 желт.",
+    "price": 2930.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1470.0,
+    "category": "спираль защитная"
+  },
+  {
+    "id": 1750420977.879683,
+    "name": "Спираль 34-50 желт.",
+    "price": 3840.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1620.0,
+    "category": "спираль защитная"
+  },
+  {
+    "id": 1750420977.879743,
+    "name": "Спираль 44-65 желт.",
+    "price": 4850.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 2230.0,
+    "category": "спираль защитная"
+  },
+  {
+    "id": 1750420977.879803,
+    "name": "СПИТРАЛЬ 55",
+    "price": 5800.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "спираль защитная"
+  },
+  {
+    "id": 1750501725.161928,
+    "name": "КОНДЕР 5000",
+    "price": 5000.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "КОНДЕРЫ"
+  },
+  {
+    "id": 1750504052.465808,
+    "name": "Мойка фитинг 1/4",
+    "price": 3000.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Мойка"
+  },
+  {
+    "id": 1750577169.019194,
+    "name": "USK110-12",
+    "price": 250.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Колечки USK"
+  },
+  {
+    "id": 1750577203.941449,
+    "name": "USK110-16",
+    "price": 250.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Колечки USK"
+  },
+  {
+    "id": 1750663129.144603,
+    "name": "3Шланга",
+    "price": 0.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Количество "
+  },
+  {
+    "id": 1750663943.594378,
+    "name": "Тест",
+    "price": 0.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Тест"
+  },
+  {
+    "id": 1750678245.898935,
+    "name": "Гур",
+    "price": 9000.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Гур"
+  },
+  {
+    "id": 1750678246.898935,
+    "name": "123",
+    "price": 123,
+    "stock": 123,
+    "code": "231",
+    "category": "123"
+  },
+  {
+    "id": 1750753065.129963,
+    "name": "2B-08",
+    "price": 2020.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1250.0,
+    "category": "Адаптера"
+  },
+  {
+    "id": 1750834189.650843,
+    "name": "ZSK212-12-12H100",
+    "price": 6500.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Фланец тяжелая серия H"
+  },
+  {
+    "id": 1750836360.46902,
+    "name": "Мойка 5/16",
+    "price": 1850.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Шланги мойка"
+  },
+  {
+    "id": 1750836403.382703,
+    "name": "Мойка фитинг 5/15",
+    "price": 3000.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Мойка"
+  },
+  {
+    "id": 1750836465.202302,
+    "name": "Соединитель5/16",
+    "price": 3000.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Мойка"
+  },
+  {
+    "id": 1750846557.731765,
+    "name": "БРС Сухой \"1\" Китий",
+    "price": 45000.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "БРС"
+  },
+  {
+    "id": 1750846617.316354,
+    "name": "OIL STAR DN45",
+    "price": 13000.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "тюбис шланги"
+  },
+  {
+    "id": 1750849857.41586,
+    "name": "Адаптер 2C-22",
+    "price": 2250.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Адаптера"
+  },
+  {
+    "id": 1750849893.40694,
+    "name": "Адаптер 2C9-22",
+    "price": 3000.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Адаптера"
+  },
+  {
+    "id": 1750850346.516121,
+    "name": "1B-06",
+    "price": 710.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 440.0,
+    "category": "Адаптера"
+  },
+  {
+    "id": 1750916045.467692,
+    "name": "Лазурит",
+    "price": 0.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Контрагент"
+  },
+  {
+    "id": 1750916262.145048,
+    "name": "Гранулит",
+    "price": 0.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Контрагент"
+  },
+  {
+    "id": 1750916431.141085,
+    "name": "3шт.",
+    "price": 0.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "колличество"
+  },
+  {
+    "id": 1750922675.293649,
+    "name": "1B-24",
+    "price": 4250.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Адаптера"
+  },
+  {
+    "id": 1750924009.00865,
+    "name": "КОНСТРАКШЕН ПЛАНТ",
+    "price": 0.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Контрагент"
+  },
+  {
+    "id": 1751089918.97029,
+    "name": "Мойка фитинг 1/4",
+    "price": 3000.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Мойка"
+  },
+  {
+    "id": 1751090956.281347,
+    "name": "КОНДЕР 7000",
+    "price": 7000.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "КОНДЕРЫ"
+  },
+  {
+    "id": 1751095350.449631,
+    "name": "Пагрузчик стрела",
+    "price": 11400.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "доп."
+  },
+  {
+    "id": 1751098196.336733,
+    "name": "Мойка шланг 1/4",
+    "price": 1650.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Шланги мойка "
+  },
+  {
+    "id": 1751182346.729457,
+    "name": "MPX20 DN8",
+    "price": 1365.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "тюбис шланги"
+  },
+  {
+    "id": 1751259992.01046,
+    "name": "фитинг ремонт 3000",
+    "price": 3000.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "фитинги ремонт"
+  },
+  {
+    "id": 1751264111.134801,
+    "name": "1C-30",
+    "price": 1720.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1070.0,
+    "category": "Адаптера"
+  },
+  {
+    "id": 1751264144.714216,
+    "name": "1C-27",
+    "price": 1420.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 890.0,
+    "category": "Адаптера"
+  },
+  {
+    "id": 1751274048.883377,
+    "name": "1B-08",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 650.0,
+    "category": "Адаптера"
+  },
+  {
+    "id": 1751274110.345027,
+    "name": "1J-10",
+    "price": 1320.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 800.0,
+    "category": "Адаптера"
+  },
+  {
+    "id": 1751278439.477321,
+    "name": "DB-12",
+    "price": 5560.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 3460.0,
+    "category": "Адаптера"
+  },
+  {
+    "id": 1751278528.998979,
+    "name": "1C-30-22",
+    "price": 1720.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1070.0,
+    "category": "Адаптера"
+  },
+  {
+    "id": 1751278635.530959,
+    "name": "UDM-22",
+    "price": 1350.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Колечки UDM"
+  },
+  {
+    "id": 1751278667.921438,
+    "name": "Услуга обжим",
+    "price": 500.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Услуги"
+  },
+  {
+    "id": 1751291674.819423,
+    "name": "Жасыл Тас даму ",
+    "price": 0.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Контрагент "
+  },
+  {
+    "id": 1751346941.16563,
+    "name": "Ремонт фитинг 5000",
+    "price": 5000.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "фитинги ремонт"
+  },
+  {
+    "id": 1751457503.986983,
+    "name": "5B-12-10",
+    "price": 1500.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 950.0,
+    "category": "Адаптера"
+  },
+  {
+    "id": 1751459099.869266,
+    "name": "Шланг 2TE-DN8",
+    "price": 2400.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Шланги Тюбис"
+  },
+  {
+    "id": 1751459183.882916,
+    "name": "00018-05",
+    "price": 250.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 100.0,
+    "category": "гильзы"
+  },
+  {
+    "id": 1751459220.95016,
+    "name": "Ремонт 7000",
+    "price": 0.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Услуги"
+  },
+  {
+    "id": 1751464706.431472,
+    "name": "1B-12",
+    "price": 1620.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 1010.0,
+    "category": "Адаптера"
+  },
+  {
+    "id": 1751464768.032152,
+    "name": "UDB-12",
+    "price": 300.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Колечки UDB"
+  },
+  {
+    "id": 1751466478.328844,
+    "name": "1/2-2SC",
+    "price": 3800.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Шланги"
+  },
+  {
+    "id": 1751527556.394362,
+    "name": "Гур 12000",
+    "price": 12000.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Гур"
+  },
+  {
+    "id": 1751603295.063444,
+    "name": "MPX20 DN13",
+    "price": 1945.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "тюбис шланги"
+  },
+  {
+    "id": 1751603356.289914,
+    "name": "1C-16-22",
+    "price": 1120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 670.0,
+    "category": "Адаптера"
+  },
+  {
+    "id": 1751603477.083945,
+    "name": "Хомут ASFA-L 12-22",
+    "price": 300.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Хомуты"
+  },
+  {
+    "id": 1751603977.158992,
+    "name": "Соеденитель 5/8",
+    "price": 3500.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "соеденитель"
+  },
+  {
+    "id": 1751607278.427198,
+    "name": "Кондер8000",
+    "price": 8000.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "КОНДЕРЫ"
+  },
+  {
+    "id": 1751612820.872339,
+    "name": "ZSK211-16-16H140",
+    "price": 14750.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Фланец легкая серия H"
+  },
+  {
+    "id": 1751612940.936712,
+    "name": "USK110-16",
+    "price": 250.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Колечки USK"
+  },
+  {
+    "id": 1751613188.049937,
+    "name": "ВЧЕРА ",
+    "price": 0.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": ""
+  },
+  {
+    "id": 1751711860.560805,
+    "name": "3B-16",
+    "price": 4000.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Адаптера"
+  },
+  {
+    "id": 1751711977.06368,
+    "name": "Даулет взял на 37.200",
+    "price": 37200.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Даулет взял"
+  },
+  {
+    "id": 1751712042.303713,
+    "name": "Даулет взял на 9.700",
+    "price": 9700.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Даулет взял"
+  },
+  {
+    "id": 1751712153.538048,
+    "name": "крот 1/4-2SN 30метров",
+    "price": 56300.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": ""
+  },
+  {
+    "id": 1751712845.676381,
+    "name": "фитинг крот 3000",
+    "price": 3000.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "фитинги ремонт"
+  },
+  {
+    "id": 1751719339.339839,
+    "name": "2C-12",
+    "price": 1350.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Адаптера"
+  },
+  {
+    "id": 1751719391.877103,
+    "name": "Ремонт трубка 6мм врезное кольцо+гайка",
+    "price": 2000.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "ремонт"
+  },
+  {
+    "id": 1751719458.298673,
+    "name": "медные колечки 10-14",
+    "price": 200.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Медные колечки"
+  },
+  {
+    "id": 1751783297.593395,
+    "name": "1j-08-12",
+    "price": 2000.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Адаптера"
+  },
+  {
+    "id": 1751786856.896762,
+    "name": "шланг 1/4-2SN 30см и 2 гильзы",
+    "price": 3000.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": ""
+  },
+  {
+    "id": 1751862976.511391,
+    "name": "Ремонт фитинг 4000",
+    "price": 4000.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "фитинг ремонт"
+  },
+  {
+    "id": 1751863130.118878,
+    "name": "Мойка опт 1/4",
+    "price": 1100.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": ""
+  },
+  {
+    "id": 1751963420.628193,
+    "name": "2шт",
+    "price": 0.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "колличество"
+  },
+  {
+    "id": 1751970636.266879,
+    "name": "MPX20 DN16",
+    "price": 2000.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "тюбис шланги"
+  },
+  {
+    "id": 1751970689.965098,
+    "name": "MPX20 DN19",
+    "price": 3090.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "тюбис шланги"
+  },
+  {
+    "id": 1752039498.48607,
+    "name": "ZSK211-16-12H140",
+    "price": 12120.0,
+    "price_wholesale": 0.0,
+    "price_bulk": 0.0,
+    "category": "Фланец легкая серия H"
+  }
+]
