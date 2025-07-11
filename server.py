@@ -28,7 +28,7 @@ PRODUCTS_FILE = DATA_DIR / "products.json"
 UPLOAD_FOLDER = DATA_DIR / 'uploads'
 UPLOAD_FOLDER.mkdir(exist_ok=True)
 app.config['UPLOAD_FOLDER'] = str(UPLOAD_FOLDER)
-DB_PATH = DATA_DIR / "database.db"
+# DB_PATH = DATA_DIR / "database.db"
 
 
 @app.before_request
@@ -46,17 +46,21 @@ def check_db_connection():
 
 # Функции работы с базой данных
 def get_db():
-    """Подключение к PostgreSQL"""
+    """Подключение к PostgreSQL на Render"""
     try:
         conn = psycopg2.connect(
-            os.getenv("DATABASE_URL"),  # Используем полный URL
-            sslmode="require",
+            host=os.getenv("DB_HOST"),       # dpg-d1odjg49c44c73fg14h0-a
+            database=os.getenv("DB_NAME"),    # vortex_db_nyxr
+            user=os.getenv("DB_USER"),       # vortex_db_nyxr_user
+            password=os.getenv("DB_PASSWORD"), # Wcq7XNNi5sWZN0HOC1IsvSIfnVH51vIr
+            port=os.getenv("DB_PORT"),       # 5432
+            sslmode="require",               # Обязательно для Render!
             cursor_factory=DictCursor
         )
         conn.autocommit = True
         return conn
     except Exception as e:
-        print(f"⚠️ Ошибка подключения к БД: {e}")
+        print(f"❌ Ошибка подключения к PostgreSQL: {e}")
         raise
 
 
