@@ -887,15 +887,15 @@ def delete_counterparty(counterparty_id):
 
 @app.route("/counterparties")
 def counterparties_page():
-    with get_db() as conn:  # Получаем соединение
-        with conn.cursor() as cur:  # Создаем курсор
+    with get_db() as conn:
+        with conn.cursor() as cur:
             cur.execute("""
                 SELECT id, name, bin, type, address, phone, email,
                        to_char(created_at, 'YYYY-MM-DD HH24:MI') as created_at
                 FROM counterparties
                 ORDER BY name
             """)
-            counterparties = cur.fetchall()  # Получаем все записи
+            counterparties = cur.fetchall()
     
     return render_template("counterparties.html", counterparties=counterparties)
 
