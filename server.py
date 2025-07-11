@@ -175,11 +175,12 @@ def save_products(products):
 
 def add_counterparties_table():
     """Добавляем таблицу контрагентов, если её нет"""
-    with get_db() as db:
+    with get_db() as conn:
+        cur = conn.cursor()
         try:
-            db.execute("""
-                CREATE TABLE counterparties (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS counterparties (
+                    id SERIAL PRIMARY KEY,
                     name TEXT NOT NULL,
                     bin TEXT,
                     type TEXT NOT NULL,
@@ -190,11 +191,12 @@ def add_counterparties_table():
                     updated_at TEXT NOT NULL
                 )
             """)
-            db.commit()
+            conn.commit()
             print("[БАЗА] Создана таблица counterparties")
-       # except sqlite3.OperationalError as e:
-            if "already exists" not in str(e):
-                print(f"[БАЗА] Ошибка при создании таблицы counterparties: {e}")
+        except Exception as e:
+            print(f"[БАЗА] Ошибка при создании таблицы counterparties: {e}")
+        finally:
+            cur.close()
 
 def add_counterparty_column():
     """Добавляем колонку counterparty_id в таблицу receipts"""
@@ -629,6 +631,7 @@ def add_organization_column():
 # ================ ИНВЕНТАРИЗАЦИЯ ================
 @app.route("/inventory")
 def show_inventory():
+    """Страница учета товаров"""
     try:
         with get_db() as conn:
             cur = conn.cursor()
@@ -641,7 +644,7 @@ def show_inventory():
             items = cur.fetchall()
             return render_template("inventory.html", items=items)
     except Exception as e:
-        print(f"Ошибка: {str(e)}")
+        print(f"Ошибка при работе с базой: {str(e)}")
         return render_template("inventory.html", items=[])
 
 
