@@ -5,4 +5,4 @@ eventlet
 pandas
 openpyxl
 openai
-psycopg2-binary
+psycopg2-binary>=2.9.3
