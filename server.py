@@ -139,13 +139,13 @@ def init_db():
         # add_counterparties_table()
 
 
-def create_backup():
-    """Создание резервной копии базы данных"""
-    if DB_PATH.exists():
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        backup_path = DATA_DIR / f"database_backup_{timestamp}.db"
-        shutil.copy(DB_PATH, backup_path)
-        print(f"[БЭКАП] Создана резервная копия: {backup_path}")
+#def create_backup():
+ #   """Создание резервной копии базы данных"""
+  #  if DB_PATH.exists():
+   #     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    #    backup_path = DATA_DIR / f"database_backup_{timestamp}.db"
+     #   shutil.copy(DB_PATH, backup_path)
+      #  print(f"[БЭКАП] Создана резервная копия: {backup_path}")
 
 
 # Создаем бэкап при старте и при завершении
@@ -412,12 +412,14 @@ def kassa():
     return render_template("kassa.html", products=products)
 
 
+
 @app.route("/stats")
 def stats():
     date_from = request.args.get('date_from', '')
     date_to = request.args.get('date_to', '')
 
-    with get_db() as db:
+    with get_db() as conn:
+        cur = conn.cursor()
         query = """
             SELECT r.id, r.date, r.total, r.payment_method, r.organization, 
                    c.name as counterparty_name,
@@ -430,14 +432,15 @@ def stats():
         params = []
 
         if date_from:
-            query += " AND r.date >= ?"
+            query += " AND r.date >= %s"
             params.append(date_from)
         if date_to:
-            query += " AND r.date <= ?"
+            query += " AND r.date <= %s"
             params.append(date_to + " 23:59:59")
 
         query += " GROUP BY r.id ORDER BY r.date DESC"
-        receipts = db.execute(query, params).fetchall()
+        cur.execute(query, params)
+        receipts = cur.fetchall()
 
     return render_template("stats.html", receipts=receipts, date_from=date_from, date_to=date_to)
 
@@ -572,18 +575,21 @@ def process_sale():
 
 @app.route("/receipt_details/<int:receipt_id>")
 def receipt_details(receipt_id):
-    with get_db() as db:
-        receipt = db.execute("""
+    with get_db() as conn:
+        cur = conn.cursor()
+        cur.execute("""
             SELECT r.*, c.name as counterparty_name, c.bin as counterparty_bin
             FROM receipts r
             LEFT JOIN counterparties c ON r.counterparty_id = c.id
-            WHERE r.id = ?
-        """, (receipt_id,)).fetchone()
+            WHERE r.id = %s
+        """, (receipt_id,))
+        receipt = cur.fetchone()
 
-        items = db.execute(
-            "SELECT * FROM sales WHERE receipt_id = ?",
+        cur.execute(
+            "SELECT * FROM sales WHERE receipt_id = %s",
             (receipt_id,)
-        ).fetchall()
+        )
+        items = cur.fetchall()
 
     return render_template("receipt_details.html", receipt=receipt, items=items)
 
@@ -653,23 +659,25 @@ def show_inventory():
 
 
 @app.route("/inventory/add", methods=["POST"])
+@app.route("/inventory/add", methods=["POST"])
 def add_inventory():
     """Добавление товара"""
     try:
         name = request.form["name"]
-        name_chinese = request.form.get("name_chinese", "")  # Получаем китайское название
+        name_chinese = request.form.get("name_chinese", "")
         quantity = float(request.form["quantity"])
         unit = request.form["unit"]
 
-        with get_db() as db:
-            db.execute(
+        with get_db() as conn:
+            cur = conn.cursor()
+            cur.execute(
                 """INSERT INTO inventory 
                 (product_id, name, name_chinese, quantity, unit, last_updated)
-                VALUES (?, ?, ?, ?, ?, ?)""",
+                VALUES (%s, %s, %s, %s, %s, %s)""",
                 (int(datetime.now().timestamp()), name, name_chinese, quantity, unit,
                  datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
             )
-            db.commit()
+            conn.commit()
 
         return redirect(url_for("show_inventory"))
     except Exception as e:
@@ -738,14 +746,16 @@ def delete_inventory_item(item_id):
 def get_counterparties():
     """Получение списка контрагентов"""
     try:
-        with get_db() as db:
-            counterparties = db.execute("""
+        with get_db() as conn:
+            cur = conn.cursor()
+            cur.execute("""
                 SELECT id, name, bin, type, address, phone, email,
-                       strftime('%Y-%m-%d %H:%M', created_at) as created_at,
-                       strftime('%Y-%m-%d %H:%M', updated_at) as updated_at
+                       to_char(created_at, 'YYYY-MM-DD HH24:MI') as created_at,
+                       to_char(updated_at, 'YYYY-MM-DD HH24:MI') as updated_at
                 FROM counterparties
                 ORDER BY name
-            """).fetchall()
+            """)
+            counterparties = cur.fetchall()
             return jsonify([dict(row) for row in counterparties])
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
@@ -849,8 +859,10 @@ def counterparties_page():
 # ================ КОНЕЦ API для контрагентов ================
 
 if __name__ == '__main__':
-    init_db()
-    print("[СЕРВЕР] Сервер запущен на http://localhost:8080")
-    print(f"[СЕРВЕР] База данных: {DB_PATH}")
-    print(f"[СЕРВЕР] Папка с данными: {DATA_DIR}")
-    socketio.run(app, host='0.0.0.0', port=8080, debug=True)
+    try:
+        init_db()
+        print("[СЕРВЕР] Сервер запущен на http://localhost:8080")
+        print(f"[СЕРВЕР] Папка с данными: {DATA_DIR}")
+        socketio.run(app, host='0.0.0.0', port=8080, debug=True)
+    except Exception as e:
+        print(f"[ОШИБКА] При запуске сервера: {e}")
