@@ -31,6 +31,16 @@ app.config['UPLOAD_FOLDER'] = str(UPLOAD_FOLDER)
 DB_PATH = DATA_DIR / "database.db"
 
 
+@app.before_first_request
+def check_db_connection():
+    try:
+        conn = get_db()
+        cur = conn.cursor()
+        cur.execute("SELECT 1")
+        print("✅ Подключение к базе данных успешно!")
+    except Exception as e:
+        print(f"❌ Ошибка подключения к БД: {e}")
+
 # Функции работы с базой данных
 def get_db():
     """Безопасное подключение через переменные окружения"""
