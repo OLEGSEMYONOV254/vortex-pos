@@ -148,8 +148,8 @@ def init_db():
 
 
 # Создаем бэкап при старте и при завершении
-create_backup()
-atexit.register(create_backup)
+#create_backup()
+#atexit.register(create_backup)
 
 
 # Функции работы с товарами
