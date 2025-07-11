@@ -819,7 +819,7 @@ def add_counterparty():
             cursor.execute("""
                 INSERT INTO counterparties 
                 (name, bin, type, address, phone, email, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             """, (
                 data["name"],
                 data.get("bin"),
