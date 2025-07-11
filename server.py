@@ -49,13 +49,12 @@ def get_db():
     """Подключение к PostgreSQL на Render"""
     try:
         conn = psycopg2.connect(
-            host=os.getenv("DB_HOST"),       # dpg-d1odjg49c44c73fg14h0-a
-            database=os.getenv("DB_NAME"),    # vortex_db_nyxr
-            user=os.getenv("DB_USER"),       # vortex_db_nyxr_user
-            password=os.getenv("DB_PASSWORD"), # Wcq7XNNi5sWZN0HOC1IsvSIfnVH51vIr
-            port=os.getenv("DB_PORT"),       # 5432
-            sslmode="require",               # Обязательно для Render!
-            cursor_factory=DictCursor
+            host=os.getenv("DB_HOST"),  # Например: "dpg-d1odjg49c44c73fg14h0-a"
+            database=os.getenv("DB_NAME"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            port=os.getenv("DB_PORT", "5432"),  # Порт по умолчанию для PostgreSQL
+            sslmode="require"
         )
         conn.autocommit = True
         return conn
