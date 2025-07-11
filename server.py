@@ -234,6 +234,49 @@ def home():
 def test():
     return render_template("test.html")
 
+@app.route('/fix_dates')
+def fix_dates():
+    try:
+        with get_db() as conn:
+            with conn.cursor() as cur:
+                # 1. Добавляем временные колонки с правильным типом
+                cur.execute("""
+                    ALTER TABLE counterparties 
+                    ADD COLUMN IF NOT EXISTS created_at_temp TIMESTAMP;
+                    
+                    ALTER TABLE counterparties 
+                    ADD COLUMN IF NOT EXISTS updated_at_temp TIMESTAMP;
+                """)
+                
+                # 2. Конвертируем данные из TEXT в TIMESTAMP
+                cur.execute("""
+                    UPDATE counterparties 
+                    SET created_at_temp = created_at::TIMESTAMP,
+                        updated_at_temp = updated_at::TIMESTAMP;
+                """)
+                
+                # 3. Удаляем старые колонки
+                cur.execute("""
+                    ALTER TABLE counterparties DROP COLUMN created_at;
+                    ALTER TABLE counterparties DROP COLUMN updated_at;
+                """)
+                
+                # 4. Переименовываем временные колонки
+                cur.execute("""
+                    ALTER TABLE counterparties 
+                    RENAME COLUMN created_at_temp TO created_at;
+                    
+                    ALTER TABLE counterparties 
+                    RENAME COLUMN updated_at_temp TO updated_at;
+                """)
+                
+                conn.commit()
+        
+        return "Типы данных успешно изменены на TIMESTAMP!"
+    
+    except Exception as e:
+        return f"Ошибка: {str(e)}", 500
+
 
 @app.route("/products")
 def products():
