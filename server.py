@@ -46,14 +46,10 @@ def check_db_connection():
 
 # Функции работы с базой данных
 def get_db():
-    """Безопасное подключение через переменные окружения"""
+    """Подключение к PostgreSQL"""
     try:
         conn = psycopg2.connect(
-            dbname=os.getenv("DB_NAME"),
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASSWORD"),
-            host=os.getenv("DB_HOST"),
-            port=os.getenv("DB_PORT"),
+            os.getenv("DATABASE_URL"),  # Используем полный URL
             sslmode="require",
             cursor_factory=DictCursor
         )
@@ -66,13 +62,14 @@ def get_db():
 
 
 def init_db():
-    """Инициализация базы данных"""
-    if not DB_PATH.exists():
-        with get_db() as db:
-            # Создаем все таблицы
-            db.execute("""
-                CREATE TABLE receipts (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    """Инициализация базы данных PostgreSQL"""
+    with get_db() as conn:
+        cur = conn.cursor()
+        try:
+            # Создаем таблицу receipts если её нет
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS receipts (
+                    id SERIAL PRIMARY KEY,
                     date TEXT NOT NULL,
                     total REAL NOT NULL,
                     payment_method TEXT NOT NULL,
@@ -80,10 +77,11 @@ def init_db():
                     counterparty_id INTEGER
                 )
             """)
-
-            db.execute("""
-                CREATE TABLE sales (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+            
+            # Создаем таблицу sales если её нет
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS sales (
+                    id SERIAL PRIMARY KEY,
                     receipt_id INTEGER NOT NULL,
                     name TEXT NOT NULL,
                     price REAL NOT NULL,
@@ -94,10 +92,11 @@ def init_db():
                     FOREIGN KEY(receipt_id) REFERENCES receipts(id)
                 )
             """)
-
-            db.execute("""
-                CREATE TABLE counterparties (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+            
+            # Создаем таблицу counterparties если её нет
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS counterparties (
+                    id SERIAL PRIMARY KEY,
                     name TEXT NOT NULL,
                     bin TEXT,
                     type TEXT NOT NULL,
@@ -108,10 +107,11 @@ def init_db():
                     updated_at TEXT NOT NULL
                 )
             """)
-
-            db.execute("""
+            
+            # Создаем таблицу inventory если её нет
+            cur.execute("""
                 CREATE TABLE IF NOT EXISTS inventory (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    id SERIAL PRIMARY KEY,
                     product_id REAL NOT NULL,
                     name TEXT NOT NULL,
                     name_chinese TEXT,
@@ -120,15 +120,19 @@ def init_db():
                     last_updated TEXT NOT NULL
                 )
             """)
-
-            db.commit()
-        print(f"[ИНИЦИАЛИЗАЦИЯ] Создана новая база: {DB_PATH}")
-    else:
-        print(f"[ИНИЦИАЛИЗАЦИЯ] Используется существующая база: {DB_PATH}")
+            
+            conn.commit()
+            print("[ИНИЦИАЛИЗАЦИЯ] Таблицы созданы/проверены в PostgreSQL")
+            
+        except Exception as e:
+            print(f"[ОШИБКА] При создании таблиц: {e}")
+            conn.rollback()
+        finally:
+            cur.close()
         # Добавляем недостающие колонки
-        add_organization_column()
-        add_counterparty_column()
-        add_counterparties_table()
+        # add_organization_column()
+        # add_counterparty_column()
+        # add_counterparties_table()
 
 
 def create_backup():
@@ -188,7 +192,7 @@ def add_counterparties_table():
             """)
             db.commit()
             print("[БАЗА] Создана таблица counterparties")
-        except sqlite3.OperationalError as e:
+       # except sqlite3.OperationalError as e:
             if "already exists" not in str(e):
                 print(f"[БАЗА] Ошибка при создании таблицы counterparties: {e}")
 
@@ -528,7 +532,7 @@ def process_sale():
             cursor.execute(
                 """INSERT INTO receipts 
                 (date, total, payment_method, organization, counterparty_id) 
-                VALUES (?, ?, ?, ?, ?)""",
+                VALUES (%s, %s, %s, %s, %s)""",
                 (date, total, payment_method, organization, counterparty_id)
             )
             receipt_id = cursor.lastrowid
@@ -537,7 +541,7 @@ def process_sale():
                 cursor.execute("""
                     INSERT INTO sales 
                     (receipt_id, name, price, quantity, total, date, currency) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)
                 """, (
                     receipt_id,
                     item.get("name"),
@@ -625,28 +629,20 @@ def add_organization_column():
 # ================ ИНВЕНТАРИЗАЦИЯ ================
 @app.route("/inventory")
 def show_inventory():
-    """Страница учета товаров"""
     try:
-        with get_db() as db:
-            # Проверяем существует ли таблица
-            try:
-                db.execute("SELECT name_chinese FROM inventory LIMIT 1")
-            except sqlite3.OperationalError:
-                # Если столбца нет - добавляем
-                db.execute("ALTER TABLE inventory ADD COLUMN name_chinese TEXT")
-                db.commit()
-
-            items = db.execute("""
+        with get_db() as conn:
+            cur = conn.cursor()
+            cur.execute("""
                 SELECT id, name, name_chinese, quantity, unit, 
-                       strftime('%Y-%m-%d %H:%M', last_updated) as last_updated 
+                       to_char(last_updated, 'YYYY-MM-DD HH24:MI') as last_updated 
                 FROM inventory
                 ORDER BY last_updated DESC
-            """).fetchall()
+            """)
+            items = cur.fetchall()
+            return render_template("inventory.html", items=items)
     except Exception as e:
-        print(f"Ошибка при работе с базой: {str(e)}")
-        items = []
-
-    return render_template("inventory.html", items=items)
+        print(f"Ошибка: {str(e)}")
+        return render_template("inventory.html", items=[])
 
 
 @app.route("/inventory/add", methods=["POST"])
