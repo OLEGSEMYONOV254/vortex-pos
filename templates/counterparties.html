@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Контрагенты</title>
+    <style>
+
+
+        body { font-family: sans-serif; margin: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .actions { display: flex; gap: 5px; }
+        .add-form { margin: 20px 0; padding: 20px; background: #f5f5f5; }
+
+        .glow-text { text-align: center; color: #00ffcc; grid-column: 1 / -1; }
+        .nav-grid {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: space-around;
+          background: #2a2a2a;
+          padding: 10px;
+          grid-column: 1 / -1;
+          margin-bottom: 15px;
+        }
+        .nav-card {
+          padding: 10px 15px;
+          background: #3a3a3a;
+          color: white;
+          text-decoration: none;
+          margin: 5px;
+          border-radius: 5px;
+          text-align: center;
+          flex: 1 1 40%;
+          transition: background 0.2s ease;
+        }
+        .nav-card:hover { background: #444; }
+        .product-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+          gap: 10px;
+          grid-column: 1;
+        }
+    </style>
+</head>
+<body>
+    <h1>Управление контрагентами</h1>
+
+    <nav class="nav-grid">
+    <a href="/" class="nav-card">🏠 Главная</a>
+    <a href="/products" class="nav-card">📦 Товары</a>
+    <a href="/kassa" class="nav-card">💵 Касса</a>
+    <a href="/counterparties" class="nav-card" >👥 Контрагенты</a>
+    <a href="/stats" class="nav-card">📊 Отчёты</a>
+  </nav>
+
+    <div class="add-form">
+        <h2>Добавить нового контрагента</h2>
+        <form id="addCounterpartyForm">
+            <input type="text" name="name" placeholder="Наименование" required>
+            <input type="text" name="bin" placeholder="БИН">
+            <select name="type" required>
+                <option value="supplier">Поставщик</option>
+                <option value="buyer">Покупатель</option>
+                <option value="partner">Партнер</option>
+                <option value="other">Другое</option>
+            </select>
+            <input type="text" name="address" placeholder="Адрес">
+            <input type="text" name="phone" placeholder="Телефон">
+            <input type="email" name="email" placeholder="Email">
+            <button type="submit">Добавить</button>
+        </form>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Наименование</th>
+                <th>БИН</th>
+                <th>Тип</th>
+                <th>Телефон</th>
+                <th>Дата создания</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for counterparty in counterparties %}
+            <tr>
+                <td>{{ counterparty.id }}</td>
+                <td>{{ counterparty.name }}</td>
+                <td>{{ counterparty.bin or '' }}</td>
+                <td>
+                    {% if counterparty.type == 'supplier' %}Поставщик
+                    {% elif counterparty.type == 'buyer' %}Покупатель
+                    {% elif counterparty.type == 'partner' %}Партнер
+                    {% else %}Другое{% endif %}
+                </td>
+                <td>{{ counterparty.phone or '' }}</td>
+                <td>{{ counterparty.created_at }}</td>
+                <td class="actions">
+                    <button onclick="editCounterparty({{ counterparty.id }})">✏️</button>
+                    <button onclick="deleteCounterparty({{ counterparty.id }})">🗑️</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        document.getElementById('addCounterpartyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch('/api/counterparties', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    alert('Контрагент успешно добавлен');
+                    location.reload();
+                } else {
+                    const error = await response.json();
+                    alert(`Ошибка: ${error.message}`);
+                }
+            } catch (err) {
+                alert(`Ошибка сети: ${err.message}`);
+            }
+        });
+
+        function editCounterparty(id) {
+            alert(`Редактирование контрагента ${id} - эта функция будет реализована позже`);
+        }
+
+        async function deleteCounterparty(id) {
+            if (!confirm('Вы уверены, что хотите удалить этого контрагента?')) return;
+
+            try {
+                const response = await fetch(`/api/counterparties/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    alert('Контрагент удален');
+                    location.reload();
+                } else {
+                    const error = await response.json();
+                    alert(`Ошибка: ${error.message}`);
+                }
+            } catch (err) {
+                alert(`Ошибка сети: ${err.message}`);
+            }
+        }
+    </script>
+</body>
+</html>

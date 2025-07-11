@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>VORTEX AI</title>
+  <style>
+    body { font-family: sans-serif; margin: 40px; background: #f5f5f5; }
+    textarea, input { width: 100%; padding: 10px; margin-top: 10px; }
+    #response { white-space: pre-wrap; background: #fff; padding: 15px; margin-top: 20px; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h2>🤖 VORTEX AI – помощник</h2>
+  <form id="chatForm">
+    <textarea id="prompt" placeholder="Напиши команду... (например: добавь товар Фитинг 1/2 по 1500)" rows="3"></textarea>
+    <button type="submit">Отправить</button>
+  </form>
+  <div id="response"></div>
+
+  <script>
+    document.getElementById("chatForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const prompt = document.getElementById("prompt").value;
+      document.getElementById("response").textContent = "Обработка...";
+      const res = await fetch("/ai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt })
+      });
+      const data = await res.json();
+      document.getElementById("response").textContent = data.response;
+    });
+  </script>
+</body>
+</html>

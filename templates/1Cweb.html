@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>1С:Интерфейс</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f0f0;
+      color: #000;
+      margin: 0;
+      padding: 0;
+      font-size: 14px;
+    }
+
+    .container-1c {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar-1c {
+      width: 220px;
+      background: #2a5885;
+      color: white;
+      padding: 10px 0;
+    }
+
+    .sidebar-header-1c {
+      padding: 10px 15px;
+      font-weight: bold;
+      background: #1e3c6b;
+      border-bottom: 1px solid #3a6ea5;
+    }
+
+    .sidebar-menu-1c {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sidebar-menu-1c li {
+      padding: 8px 15px;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .sidebar-menu-1c li:hover {
+      background: #3a6ea5;
+      border-left: 3px solid #ffb700;
+    }
+
+    .sidebar-menu-1c li.active {
+      background: #1e3c6b;
+      border-left: 3px solid #ffb700;
+    }
+
+    .main-content-1c {
+      flex: 1;
+      background: white;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .toolbar-1c {
+      background: #e6e6e6;
+      padding: 5px 10px;
+      border-bottom: 1px solid #ccc;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .toolbar-btn-1c {
+      background: #f5f5f5;
+      border: 1px solid #ccc;
+      padding: 5px 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      border-radius: 3px;
+    }
+
+    .toolbar-btn-1c:hover {
+      background: #e0e0e0;
+    }
+
+    .toolbar-btn-1c.primary {
+      background: #2a5885;
+      color: white;
+      border-color: #1e3c6b;
+    }
+
+    .toolbar-btn-1c.primary:hover {
+      background: #1e3c6b;
+    }
+
+    .table-1c {
+      width: 100%;
+      border-collapse: collapse;
+      flex: 1;
+    }
+
+    .table-1c th {
+      background: #e6e6e6;
+      padding: 8px 10px;
+      text-align: left;
+      border: 1px solid #ccc;
+      font-weight: normal;
+    }
+
+    .table-1c td {
+      padding: 8px 10px;
+      border: 1px solid #e6e6e6;
+    }
+
+    .table-1c tr:nth-child(even) {
+      background: #f9f9f9;
+    }
+
+    .table-1c tr:hover {
+      background: #e6f2ff;
+    }
+
+    .statusbar-1c {
+      background: #e6e6e6;
+      padding: 5px 10px;
+      border-top: 1px solid #ccc;
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+
+    .form-1c {
+      padding: 15px;
+    }
+
+    .form-row-1c {
+      display: flex;
+      margin-bottom: 10px;
+      align-items: center;
+    }
+
+    .form-label-1c {
+      width: 150px;
+      color: #555;
+    }
+
+    .form-input-1c {
+      flex: 1;
+      padding: 6px 10px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+    }
+
+    .tabs-1c {
+      display: flex;
+      border-bottom: 1px solid #ccc;
+      background: #f5f5f5;
+    }
+
+    .tab-1c {
+      padding: 8px 15px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      border-bottom: none;
+      margin-right: 5px;
+      border-radius: 3px 3px 0 0;
+    }
+
+    .tab-1c.active {
+      background: white;
+      border-color: #ccc;
+      border-bottom: 1px solid white;
+      margin-bottom: -1px;
+      font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+      .container-1c {
+        flex-direction: column;
+      }
+
+      .sidebar-1c {
+        width: 100%;
+      }
+
+      .form-row-1c {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .form-label-1c {
+        width: 100%;
+        margin-bottom: 5px;
+      }
+    }
+    /* Все стили из предыдущего примера остаются без изменений */
+    /* Добавим только новые стили для модальных окон */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 5px;
+      width: 400px;
+      max-width: 90%;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    /* Добавьте в секцию стилей */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin: 15px 0;
+    gap: 5px;
+}
+
+.pagination button {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    background: white;
+    cursor: pointer;
+}
+
+.pagination button.active {
+    background: #2a5885;
+    color: white;
+    border-color: #1e3c6b;
+}
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px;
+    border-radius: 5px;
+    color: white;
+    z-index: 1000;
+    animation: slideIn 0.3s ease-out;
+}
+
+.notification.success {
+    background: #4CAF50;
+}
+
+.notification.error {
+    background: #F44336;
+}
+
+.notification.info {
+    background: #2196F3;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+.search-box-1c {
+    padding: 10px;
+    background: #e6e6e6;
+    display: flex;
+    gap: 10px;
+}
+
+.search-box-1c input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+  </style>
+</head>
+<body>
+  <div class="pagination" id="pagination"></div>
+  <div class="container-1c">
+    <!-- Сайдбар -->
+    <div class="sidebar-1c">
+      <div class="sidebar-header-1c">Меню</div>
+      <ul class="sidebar-menu-1c">
+        <li class="active">Товары</li>
+        <li>Касса</li>
+        <li>Клиенты</li>
+        <li>Поставщики</li>
+        <li>Отчёты</li>
+      </ul>
+    </div>
+
+    <!-- Основное содержимое -->
+    <div class="main-content-1c">
+      <!-- Панель инструментов -->
+      <div class="toolbar-1c">
+        <button class="toolbar-btn-1c primary" onclick="showAddForm()">
+          <i class="fas fa-plus"></i> Добавить
+        </button>
+        <button class="toolbar-btn-1c" onclick="editSelected()">
+          <i class="fas fa-edit"></i> Изменить
+        </button>
+        <button class="toolbar-btn-1c" onclick="deleteSelected()">
+          <i class="fas fa-trash"></i> Удалить
+        </button>
+        <button class="toolbar-btn-1c" onclick="refreshData()">
+          <i class="fas fa-sync-alt"></i> Обновить
+        </button>
+      </div>
+      <div class="search-box-1c">
+          <input type="text" id="searchInput" placeholder="Поиск по названию или категории...">
+          <button onclick="refreshData()"><i class="fas fa-sync-alt"></i></button>
+      </div>
+      <!-- Таблица товаров -->
+      <table class="table-1c" id="productsTable">
+        <thead>
+          <tr>
+            <th width="50px"><input type="checkbox" id="selectAll"></th>
+            <th width="100px">Код</th>
+            <th>Наименование</th>
+            <th width="120px">Цена</th>
+            <th width="100px">Остаток</th>
+          </tr>
+        </thead>
+        <tbody id="productsBody">
+          <!-- Данные будут загружены через JS -->
+        </tbody>
+      </table>
+
+      <!-- Статус бар -->
+      <div class="statusbar-1c">
+        <div id="statusText">Загрузка данных...</div>
+        <div id="itemCount">0 элементов</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно добавления/редактирования -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <h3 id="modalTitle">Добавить товар</h3>
+      <form id="productForm">
+          <input type="hidden" id="productId">
+          <div class="form-row-1c">
+              <div class="form-label-1c">Код:</div>
+              <input type="text" id="productCode" class="form-input-1c" required>
+          </div>
+          <div class="form-row-1c">
+              <div class="form-label-1c">Наименование:</div>
+              <input type="text" id="productName" class="form-input-1c" required>
+          </div>
+          <div class="form-row-1c">
+              <div class="form-label-1c">Категория:</div>
+              <input type="text" id="productCategory" class="form-input-1c">
+          </div>
+          <div class="form-row-1c">
+              <div class="form-label-1c">Цена:</div>
+              <input type="number" id="productPrice" class="form-input-1c" required step="0.01">
+          </div>
+          <div class="form-row-1c">
+              <div class="form-label-1c">Остаток:</div>
+              <input type="number" id="productStock" class="form-input-1c" required>
+          </div>
+          <div class="form-actions">
+              <button type="button" class="toolbar-btn-1c" onclick="closeModal()">
+                  <i class="fas fa-times"></i> Отмена
+              </button>
+              <button type="submit" class="toolbar-btn-1c primary">
+                  <i class="fas fa-save"></i> Сохранить
+              </button>
+          </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let selectedIds = [];
+    let currentEditId = null;
+
+    // Загрузка данных при открытии страницы
+    document.addEventListener('DOMContentLoaded', function() {
+      loadProducts();
+      setupEventListeners();
+    });
+
+    function setupEventListeners() {
+      // Кнопка добавления
+      document.querySelector('.toolbar-btn-1c.primary').addEventListener('click', showAddForm);
+
+      // Кнопка сохранения в модальном окне
+      document.getElementById('productForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        saveProduct();
+      });
+
+      // Поиск при вводе текста
+      document.getElementById('searchInput').addEventListener('input', function() {
+        searchProducts(this.value);
+      });
+
+      // Выбрать все
+      document.getElementById('selectAll').addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('#productsBody input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+          checkbox.checked = this.checked;
+          updateSelection(checkbox);
+        });
+      });
+    }
+
+    async function searchProducts(query) {
+      try {
+        const response = await fetch(`/api/1c/search_products?q=${encodeURIComponent(query)}`);
+        const products = await response.json();
+        renderProducts(products);
+      } catch (error) {
+        console.error('Ошибка поиска:', error);
+        showNotification('Ошибка поиска', 'error');
+      }
+    }
+
+    // Функция сохранения товара
+    async function saveProduct() {
+      const form = document.getElementById('productForm');
+      const productData = {
+        id: form.productId.value || null,
+        name: form.productName.value,
+        price: parseFloat(form.productPrice.value),
+        stock: parseInt(form.productStock.value),
+        code: form.productCode.value,
+        category: form.productCategory.value
+      };
+
+      try {
+        const url = productData.id ? '/api/1c/update_product' : '/api/1c/add_product';
+        const method = 'POST';
+
+        const response = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(productData)
+        });
+
+        if (!response.ok) throw new Error('Ошибка сервера');
+
+        closeModal();
+        loadProducts();
+        showNotification('Товар успешно сохранен', 'success');
+      } catch (error) {
+        console.error('Ошибка:', error);
+        showNotification('Ошибка сохранения: ' + error.message, 'error');
+      }
+    }
+
+    // Функция уведомлений
+    function showNotification(message, type = 'info') {
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.textContent = message;
+      document.body.appendChild(notification);
+
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+
+    // Загрузка списка товаров
+    async function loadProducts(page = 1) {
+      try {
+        updateStatus('Загрузка данных...');
+        const response = await fetch(`/api/1c/products?page=${page}`);
+        const data = await response.json();
+        renderProducts(data.products);
+        updateStatus('Готово');
+        updateItemCount(data.total);
+        setupPagination(data.total, data.page, data.per_page);
+      } catch (error) {
+        console.error('Ошибка загрузки:', error);
+        updateStatus('Ошибка загрузки');
+        showNotification('Ошибка загрузки данных', 'error');
+      }
+    }
+
+    // Функция пагинации
+    function setupPagination(total, currentPage, perPage) {
+      const totalPages = Math.ceil(total / perPage);
+      const pagination = document.getElementById('pagination');
+
+      pagination.innerHTML = '';
+
+      for (let i = 1; i <= totalPages; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        btn.className = i === currentPage ? 'active' : '';
+        btn.onclick = () => loadProducts(i);
+        pagination.appendChild(btn);
+      }
+    }
+
+    // Отображение товаров в таблице
+    function renderProducts(products) {
+      const tbody = document.getElementById('productsBody');
+      tbody.innerHTML = '';
+
+      products.forEach(product => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><input type="checkbox" data-id="${product.id}" onchange="updateSelection(this)"></td>
+          <td>${product.code || ''}</td>
+          <td>${product.name}</td>
+          <td>${formatPrice(product.price)} ₸</td>
+          <td>${product.stock}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Форматирование цены
+    function formatPrice(price) {
+      return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    }
+
+    // Обновление статуса
+    function updateStatus(text) {
+      document.getElementById('statusText').textContent = text;
+    }
+
+    // Обновление счетчика элементов
+    function updateItemCount(count) {
+      document.getElementById('itemCount').textContent = `${count} элементов`;
+    }
+
+    // Обновление выбранных элементов
+    function updateSelection(checkbox) {
+      const id = parseInt(checkbox.dataset.id);
+      if (checkbox.checked) {
+        if (!selectedIds.includes(id)) selectedIds.push(id);
+      } else {
+        selectedIds = selectedIds.filter(item => item !== id);
+        document.getElementById('selectAll').checked = false;
+      }
+    }
+
+    // Показать форму добавления
+    function showAddForm() {
+      document.getElementById('modalTitle').textContent = 'Добавить товар';
+      document.getElementById('productForm').reset();
+      document.getElementById('productId').value = '';
+      currentEditId = null;
+      document.getElementById('editModal').style.display = 'flex';
+    }
+
+    // Показать форму редактирования
+    async function editSelected() {
+      if (selectedIds.length !== 1) {
+        showNotification('Выберите один товар для редактирования', 'error');
+        return;
+      }
+
+      const productId = selectedIds[0];
+      try {
+        updateStatus('Загрузка данных товара...');
+        const response = await fetch('/api/1c/products');
+        const data = await response.json();
+        const product = data.products.find(p => p.id === productId);
+
+        if (product) {
+          document.getElementById('modalTitle').textContent = 'Редактировать товар';
+          document.getElementById('productId').value = product.id;
+          document.getElementById('productCode').value = product.code || '';
+          document.getElementById('productName').value = product.name;
+          document.getElementById('productPrice').value = product.price;
+          document.getElementById('productStock').value = product.stock;
+          document.getElementById('productCategory').value = product.category || '';
+          currentEditId = product.id;
+          document.getElementById('editModal').style.display = 'flex';
+        }
+        updateStatus('Готово');
+      } catch (error) {
+        console.error('Ошибка:', error);
+        updateStatus('Ошибка загрузки товара');
+        showNotification('Ошибка загрузки товара', 'error');
+      }
+    }
+
+    // Удаление выбранных товаров
+    async function deleteSelected() {
+      if (selectedIds.length === 0) {
+        showNotification('Выберите товары для удаления', 'error');
+        return;
+      }
+
+      if (!confirm(`Удалить ${selectedIds.length} выбранных товаров?`)) return;
+
+      try {
+        updateStatus('Удаление...');
+        for (const id of selectedIds) {
+          await fetch('/api/1c/delete_product', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: id })
+          });
+        }
+        selectedIds = [];
+        await loadProducts();
+        updateStatus('Товары удалены');
+        showNotification('Товары успешно удалены', 'success');
+      } catch (error) {
+        console.error('Ошибка:', error);
+        updateStatus('Ошибка удаления');
+        showNotification('Ошибка при удалении товаров', 'error');
+      }
+    }
+
+    // Закрытие модального окна
+    function closeModal() {
+      document.getElementById('editModal').style.display = 'none';
+    }
+
+    // Обновление данных
+    async function refreshData() {
+      selectedIds = [];
+      document.getElementById('selectAll').checked = false;
+      await loadProducts();
+      showNotification('Данные обновлены', 'success');
+    }
+  </script>
+</body>
+</html>

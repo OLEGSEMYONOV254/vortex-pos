@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Детали чека #{{ receipt.id }}</title>
+    <style>
+        body { font-family: sans-serif; background: #1a1a1a; color: white; margin: 0; padding: 20px; }
+        .nav-grid { display: flex; background: #2a2a2a; padding: 10px; margin-bottom: 20px; }
+        .nav-card { padding: 10px 15px; background: #3a3a3a; color: white; text-decoration: none; margin: 0 5px; border-radius: 5px; }
+        .receipt-header { margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; background: #2a2a2a; margin-bottom: 20px; }
+        th, td { padding: 10px; border: 1px solid #444; text-align: left; }
+        th { background: #333; }
+        .total { font-size: 1.2em; font-weight: bold; text-align: right; }
+    </style>
+</head>
+<body>
+    <nav class="nav-grid">
+        <a href="/" class="nav-card">🏠 Главная</a>
+        <a href="/stats" class="nav-card">← Назад к отчетам</a>
+    </nav>
+
+    <div class="receipt-header">
+        <h1>Чек #{{ receipt.id }}</h1>
+        <p>Дата: {{ receipt.date }}</p>
+        <p>Способ оплаты: {{ receipt.payment_method }}</p>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Товар</th>
+                <th>Цена</th>
+                <th>Кол-во</th>
+                <th>Сумма</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.name }}</td>
+                <td>{{ item.price }} ₸</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.total }} ₸</td>
+            </tr>
+            {% endfor %}
+            <!-- Добавьте где-нибудь в шаблоне, например перед списком товаров -->
+            {% if receipt.counterparty_name %}
+            <div class="receipt-info">
+                <h3>Контрагент</h3>
+                <p><strong>Наименование:</strong> {{ receipt.counterparty_name }}</p>
+                {% if receipt.counterparty_bin %}
+                <p><strong>БИН:</strong> {{ receipt.counterparty_bin }}</p>
+                {% endif %}
+            </div>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <div class="total">
+        Итого: {{ receipt.total }} ₸
+    </div>
+</body>
+</html>

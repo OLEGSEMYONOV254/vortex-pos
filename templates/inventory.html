@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Учет товаров</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .mobile-card {
+            margin-bottom: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .mobile-table {
+            display: none;
+        }
+        @media (min-width: 768px) {
+            .mobile-cards {
+                display: none;
+            }
+            .mobile-table {
+                display: table;
+            }
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container-fluid p-3">
+        <h4 class="text-center mb-3">📦 Учет товаров</h4>
+
+        <!-- Форма добавления (оптимизирована для мобильных) -->
+        <div class="card mobile-card">
+            <div class="card-body p-3">
+                <h5 class="card-title">➕ Добавить товар</h5>
+                <form action="/inventory/add" method="POST">
+                    <div class="mb-3">
+                        <label>Название (рус):</label>
+                        <input type="text" name="name" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Название (кит):</label>
+                        <input type="text" name="name_chinese" class="form-control">
+                    </div>
+                    <div class="row g-2 mb-2">
+                        <div class="col-6">
+                            <input type="number" step="0.01" name="quantity" class="form-control form-control-sm" placeholder="Кол-во" required>
+                        </div>
+                        <div class="col-6">
+                            <select name="unit" class="form-select form-select-sm">
+                                <option value="шт">Шт</option>
+                                <option value="коробка">Коробки</option>
+                                <option value="бухта">Бухты</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm w-100">Добавить</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Мобильные карточки (для маленьких экранов) -->
+        <div class="mobile-cards">
+            {% for item in items %}
+            <div class="card mobile-card">
+                <div class="card-body p-3">
+                    <h6 class="card-subtitle mb-1">{{ item.name }}</h6>
+                    {% if item.name_chinese %}
+                    <small class="text-muted d-block mb-1">{{ item.name_chinese }}</small>
+                    {% endif %}
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>{{ item.quantity }} {{ item.unit }}</span>
+                        <div>
+                            <a href="/inventory/edit/{{ item.id }}" class="btn btn-sm btn-outline-warning">✏️</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Таблица (для десктопов) -->
+        <div class="table-responsive mobile-table mt-3">
+            <table class="table table-sm table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Название (рус)</th>
+                        <th>Название (кит)</th>
+                        <th>Кол-во</th>
+                        <th>Ед.</th>
+                        <th>Обновлено</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.name_chinese if item.name_chinese else '-' }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.unit }}</td>
+                        <td>{{ item.last_updated.split(' ')[0] }}</td>
+                        <td class="text-end">
+                            <a href="/inventory/edit/{{ item.id }}" class="btn btn-sm btn-outline-warning">✏️</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    <script>
+        // Подтверждение удаления
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                if(!confirm('Точно удалить этот товар?')) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

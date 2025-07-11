@@ -1,0 +1,251 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #111 !important;
+    background-size: cover;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.main-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.container {
+    max-width: 600px;
+}
+
+h1 {
+    font-size: 3em;
+    margin-bottom: 10px;
+    color: #00c3ff;
+}
+
+p {
+    font-size: 1.2em;
+    margin-bottom: 30px;
+    color: #ccc;
+}
+
+.btn {
+    padding: 15px 30px;
+    font-size: 1.2em;
+    background-color: #00c3ff;
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    background-color: #00a2d6;
+    color: white;
+}
+
+/* Стили кассы */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 1rem;
+}
+
+th, td {
+    border: 1px solid #444;
+    padding: 10px;
+    text-align: center;
+    color: #fff;
+}
+
+button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #444;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #666;
+}
+
+/* Основной фон и базовая стилизация */
+
+
+/* Контейнер с анимацией */
+.container {
+    text-align: center;
+    padding: 30px;
+    animation: fadeIn 1.5s ease-in-out;
+}
+
+/* Анимация появления */
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Заголовок с подсветкой */
+h1.glow-text {
+    font-size: 3.5em;
+    color: #00c3ff;
+    text-shadow: 0 0 10px #00c3ff, 0 0 20px #00c3ff;
+    margin-bottom: 10px;
+}
+
+/* Подзаголовок */
+.subtext {
+    font-size: 1.3em;
+    color: #aaa;
+    margin-bottom: 40px;
+}
+
+/* Красивая кнопка */
+.btn {
+    padding: 15px 40px;
+    font-size: 1.2em;
+    background: linear-gradient(to right, #00c3ff, #00ffa2);
+    color: #000;
+    border: none;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px #00c3ff;
+}
+
+.btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px #00ffa2;
+    background: linear-gradient(to right, #00ffa2, #00c3ff);
+}
+
+/* Для мобильных */
+@media screen and (max-width: 600px) {
+    h1.glow-text {
+        font-size: 2.5em;
+    }
+    .btn {
+        width: 80%;
+    }
+}
+
+
+.nav-grid {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 10px auto 20px;
+    padding: 10px;
+    max-width: 100%;
+}
+
+
+.nav-card {
+    background: rgba(0, 195, 255, 0.07);
+    border: 1px solid #00c3ff33;
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: #00eaff;
+    font-size: 0.9em;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 5px transparent;
+    backdrop-filter: blur(5px);
+}
+
+.nav-card:hover {
+    transform: translateY(-2px);
+    background: rgba(0, 255, 200, 0.12);
+    box-shadow: 0 0 10px #00c3ff66;
+}
+
+
+.nav-card:hover {
+    transform: translateY(-5px);
+    background: rgba(0, 255, 200, 0.15);
+    box-shadow: 0 0 15px #00c3ff66;
+}
+
+.product-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 1rem;
+    background: rgba(255,255,255,0.03);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.product-table th, .product-table td {
+    border: 1px solid #444;
+    padding: 12px;
+    text-align: center;
+    color: #fff;
+}
+
+.product-table th {
+    background-color: #00c3ff11;
+    color: #00eaff;
+}
+
+.small-btn {
+    padding: 5px 10px;
+    font-size: 0.9em;
+    background-color: #00c3ff33;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    margin: 0 2px;
+    cursor: pointer;
+}
+
+.small-btn.red {
+    background-color: #ff444433;
+}
+
+.small-btn:hover {
+    background-color: #00c3ff77;
+}
+
+.small-btn.red:hover {
+    background-color: #ff4444aa;
+}
+
+.product-form {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.product-form input {
+    padding: 10px;
+    font-size: 1em;
+    border-radius: 8px;
+    border: 1px solid #555;
+    background: #111;
+    color: #fff;
+}
+
+
+

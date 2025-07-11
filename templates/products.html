@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Товары</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #1a1a1a;
+      color: white;
+      margin: 0;
+      padding: 0 10px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .glow-text {
+      text-align: center;
+      color: #00ffcc;
+      margin-bottom: 20px;
+    }
+    .nav-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      background: #2a2a2a;
+      padding: 10px;
+      margin-bottom: 20px;
+    }
+    .nav-card {
+      padding: 10px 15px;
+      background: #3a3a3a;
+      color: white;
+      text-decoration: none;
+      margin: 5px;
+      border-radius: 5px;
+      text-align: center;
+      flex: 1 1 40%;
+      transition: background 0.2s ease;
+    }
+    .nav-card:hover {
+      background: #444;
+    }
+
+    /* Стили для дерева категорий */
+    .category-tree {
+      list-style: none;
+      padding-left: 0;
+    }
+    .category-item {
+      margin-bottom: 10px;
+    }
+    .category-header {
+      background: #333;
+      padding: 12px 15px;
+      border-radius: 5px;
+      font-size: 1.3em;
+      font-weight: bold;
+      color: #00ffcc;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s;
+    }
+    .category-header:hover {
+      background: #3a3a3a;
+      transform: translateX(5px);
+    }
+    .category-header::after {
+      content: "▼";
+      font-size: 0.9em;
+      transition: transform 0.3s;
+    }
+    .category-header.collapsed::after {
+      content: "▶";
+    }
+    .products-container {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease;
+      padding-left: 15px;
+    }
+    .products-container.show {
+      max-height: 5000px;
+    }
+    .products-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      background: #2a2a2a;
+    }
+    .products-table th, .products-table td {
+      border: 1px solid #444;
+      padding: 10px;
+      text-align: left;
+    }
+    .products-table th {
+      background-color: #333;
+      color: #00ffcc;
+    }
+    .products-table tr:nth-child(even) {
+      background-color: #2a2a2a;
+    }
+    .products-table tr:hover {
+      background-color: #3a3a3a;
+    }
+
+    /* Формы */
+    .product-form, .excel-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 20px;
+      background: #2a2a2a;
+      padding: 15px;
+      border-radius: 8px;
+    }
+    .product-form input, .product-form button, .excel-form input, .excel-form button {
+      padding: 10px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+    }
+    .btn {
+      background: #00cc66;
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn:hover {
+      background: #00aa55;
+    }
+    .btn-edit {
+      background: #ffaa00;
+    }
+    .btn-edit:hover {
+      background: #dd8800;
+    }
+    .btn-delete {
+      background: #ff3333;
+    }
+    .btn-delete:hover {
+      background: #cc0000;
+    }
+    .action-btns {
+      display: flex;
+      gap: 5px;
+    }
+
+    /* Модальное окно */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: #2a2a2a;
+      padding: 20px;
+      border-radius: 5px;
+      width: 90%;
+      max-width: 500px;
+    }
+    .close-btn {
+      float: right;
+      cursor: pointer;
+      font-size: 1.5em;
+    }
+
+    /* Для мобильных устройств */
+    @media (max-width: 600px) {
+      .nav-card {
+        flex: 1 1 100%;
+      }
+      .products-table {
+        font-size: 0.9em;
+      }
+      .action-btns {
+        flex-direction: column;
+      }
+      .category-header {
+        font-size: 1.1em;
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav-grid">
+    <a href="/" class="nav-card">🏠 Главная</a>
+    <a href="/products" class="nav-card">📦 Товары</a>
+    <a href="/kassa" class="nav-card">💵 Касса</a>
+    <a href="/stats" class="nav-card">📊 Отчёты</a>
+  </nav>
+
+  <div class="container">
+    <h1 class="glow-text">Список товаров</h1>
+
+    <!-- Дерево категорий -->
+    <ul class="category-tree" id="categoryTree">
+      {% for category, products in products_by_category.items() %}
+      <li class="category-item">
+        <div class="category-header" onclick="toggleCategory(this)">
+          {{ category }}
+          <span class="product-count">({{ products|length }})</span>
+        </div>
+        <div class="products-container">
+          <table class="products-table">
+            <thead>
+              <tr>
+                <th>Название</th>
+                <th>Розн. цена</th>
+                <th>Мелк. опт</th>
+                <th>Опт</th>
+                <th>Действия</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for product in products %}
+              <tr>
+                <td>{{ product.name }}</td>
+                <td>{{ product.price }} ₸</td>
+                <td>{{ product.price_wholesale or '-' }} ₸</td>
+                <td>{{ product.price_bulk or '-' }} ₸</td>
+                <td class="action-btns">
+                  <button class="btn btn-edit" onclick="openEditModal({{ product.id }}, '{{ product.name }}', '{{ product.price }}', '{{ product.price_wholesale }}', '{{ product.price_bulk }}', '{{ product.category }}')">✏️</button>
+                  <form action="/delete_product" method="POST" style="display:inline;">
+                    <input type="hidden" name="id" value="{{ product.id }}">
+                    <button type="submit" class="btn btn-delete" onclick="return confirm('Удалить этот товар?')">🗑️</button>
+                  </form>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+
+    <h2>Добавить товар вручную</h2>
+    <form method="POST" action="/add_product" class="product-form">
+      <input type="text" name="name" placeholder="Название товара" required>
+      <input type="number" step="0.01" name="price" placeholder="Розничная цена" required>
+      <input type="number" step="0.01" name="price_wholesale" placeholder="Мелкооптовая цена">
+      <input type="number" step="0.01" name="price_bulk" placeholder="Оптовая цена">
+      <input type="text" name="category" placeholder="Категория">
+      <button type="submit" class="btn">Добавить</button>
+    </form>
+
+    <h2>Импорт из Excel</h2>
+    <form method="POST" action="/upload_excel" enctype="multipart/form-data" class="excel-form">
+      <input type="file" name="excel_file" accept=".xls,.xlsx" required>
+      <button type="submit" class="btn">Загрузить Excel</button>
+    </form>
+  </div>
+
+  <!-- Модальное окно редактирования -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeEditModal()">&times;</span>
+      <h2>Редактировать товар</h2>
+      <form method="POST" action="/update_product" class="product-form">
+        <input type="hidden" id="editProductId" name="id">
+        <input type="text" id="editName" name="name" placeholder="Название товара" required>
+        <input type="number" step="0.01" id="editPrice" name="price" placeholder="Розничная цена" required>
+        <input type="number" step="0.01" id="editPriceWholesale" name="price_wholesale" placeholder="Мелкооптовая цена">
+        <input type="number" step="0.01" id="editPriceBulk" name="price_bulk" placeholder="Оптовая цена">
+        <input type="text" id="editCategory" name="category" placeholder="Категория">
+        <button type="submit" class="btn btn-edit">Сохранить</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Функция для переключения категорий
+    function toggleCategory(header) {
+      const container = header.nextElementSibling;
+      header.classList.toggle('collapsed');
+      container.classList.toggle('show');
+
+      // Закрываем все другие категории
+      if (container.classList.contains('show')) {
+        const allContainers = document.querySelectorAll('.products-container');
+        allContainers.forEach(c => {
+          if (c !== container && c.classList.contains('show')) {
+            c.classList.remove('show');
+            c.previousElementSibling.classList.add('collapsed');
+          }
+        });
+      }
+    }
+
+    // Инициализация - сворачиваем все категории
+    document.addEventListener('DOMContentLoaded', function() {
+      const headers = document.querySelectorAll('.category-header');
+      headers.forEach(header => {
+        header.classList.add('collapsed');
+      });
+    });
+
+    function openEditModal(id, name, price, priceWholesale, priceBulk, category) {
+      document.getElementById('editProductId').value = id;
+      document.getElementById('editName').value = name;
+      document.getElementById('editPrice').value = price;
+      document.getElementById('editPriceWholesale').value = priceWholesale || '';
+      document.getElementById('editPriceBulk').value = priceBulk || '';
+      document.getElementById('editCategory').value = category || '';
+      document.getElementById('editModal').style.display = 'flex';
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById('editModal');
+      if (event.target === modal) {
+        closeEditModal();
+      }
+    }
+  </script>
+</body>
+</html>

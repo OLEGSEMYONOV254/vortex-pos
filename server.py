@@ -1,0 +1,817 @@
+from flask import Flask, render_template, send_from_directory, request, redirect, url_for, jsonify
+from flask_socketio import SocketIO, emit
+from flask_cors import CORS
+import sqlite3
+from datetime import datetime
+import os
+import json
+import pandas as pd
+from pathlib import Path
+import shutil
+import atexit
+from vortex_ai import ask_vortex
+
+
+# Инициализация приложения
+app = Flask(__name__, template_folder='templates')
+CORS(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
+
+# Настройка путей
+DATA_DIR = Path("data")
+DATA_DIR.mkdir(exist_ok=True)
+
+PRODUCTS_FILE = DATA_DIR / "products.json"
+UPLOAD_FOLDER = DATA_DIR / 'uploads'
+UPLOAD_FOLDER.mkdir(exist_ok=True)
+app.config['UPLOAD_FOLDER'] = str(UPLOAD_FOLDER)
+DB_PATH = DATA_DIR / "database.db"
+
+
+# Функции работы с базой данных
+def get_db():
+    """Подключение к базе данных"""
+    conn = sqlite3.connect(str(DB_PATH))
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+def init_db():
+    """Инициализация базы данных"""
+    if not DB_PATH.exists():
+        with get_db() as db:
+            # Создаем все таблицы
+            db.execute("""
+                CREATE TABLE receipts (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    date TEXT NOT NULL,
+                    total REAL NOT NULL,
+                    payment_method TEXT NOT NULL,
+                    organization TEXT,
+                    counterparty_id INTEGER
+                )
+            """)
+
+            db.execute("""
+                CREATE TABLE sales (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    receipt_id INTEGER NOT NULL,
+                    name TEXT NOT NULL,
+                    price REAL NOT NULL,
+                    quantity REAL NOT NULL,
+                    total REAL NOT NULL,
+                    date TEXT NOT NULL,
+                    currency TEXT DEFAULT '₸',
+                    FOREIGN KEY(receipt_id) REFERENCES receipts(id)
+                )
+            """)
+
+            db.execute("""
+                CREATE TABLE counterparties (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL,
+                    bin TEXT,
+                    type TEXT NOT NULL,
+                    address TEXT,
+                    phone TEXT,
+                    email TEXT,
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
+                )
+            """)
+
+            db.execute("""
+                CREATE TABLE IF NOT EXISTS inventory (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    product_id REAL NOT NULL,
+                    name TEXT NOT NULL,
+                    name_chinese TEXT,
+                    quantity REAL NOT NULL,
+                    unit TEXT NOT NULL,
+                    last_updated TEXT NOT NULL
+                )
+            """)
+
+            db.commit()
+        print(f"[ИНИЦИАЛИЗАЦИЯ] Создана новая база: {DB_PATH}")
+    else:
+        print(f"[ИНИЦИАЛИЗАЦИЯ] Используется существующая база: {DB_PATH}")
+        # Добавляем недостающие колонки
+        add_organization_column()
+        add_counterparty_column()
+        add_counterparties_table()
+
+
+def create_backup():
+    """Создание резервной копии базы данных"""
+    if DB_PATH.exists():
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        backup_path = DATA_DIR / f"database_backup_{timestamp}.db"
+        shutil.copy(DB_PATH, backup_path)
+        print(f"[БЭКАП] Создана резервная копия: {backup_path}")
+
+
+# Создаем бэкап при старте и при завершении
+create_backup()
+atexit.register(create_backup)
+
+
+# Функции работы с товарами
+def load_products():
+    """Загрузка списка товаров"""
+    if not PRODUCTS_FILE.exists():
+        with open(PRODUCTS_FILE, 'w', encoding='utf-8') as f:
+            json.dump([], f)
+        return []
+
+    with open(PRODUCTS_FILE, "r", encoding="utf-8") as f:
+        products = json.load(f)
+
+        # Убедимся, что у всех товаров есть ID
+        for product in products:
+            if 'id' not in product:
+                product['id'] = int(datetime.now().timestamp())
+
+        return products
+
+
+def save_products(products):
+    """Сохранение списка товаров"""
+    with open(PRODUCTS_FILE, "w", encoding="utf-8") as f:
+        json.dump(products, f, ensure_ascii=False, indent=2)
+
+def add_counterparties_table():
+    """Добавляем таблицу контрагентов, если её нет"""
+    with get_db() as db:
+        try:
+            db.execute("""
+                CREATE TABLE counterparties (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL,
+                    bin TEXT,
+                    type TEXT NOT NULL,
+                    address TEXT,
+                    phone TEXT,
+                    email TEXT,
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
+                )
+            """)
+            db.commit()
+            print("[БАЗА] Создана таблица counterparties")
+        except sqlite3.OperationalError as e:
+            if "already exists" not in str(e):
+                print(f"[БАЗА] Ошибка при создании таблицы counterparties: {e}")
+
+def add_counterparty_column():
+    """Добавляем колонку counterparty_id в таблицу receipts"""
+    with get_db() as db:
+        try:
+            db.execute("ALTER TABLE receipts ADD COLUMN counterparty_id INTEGER")
+            db.commit()
+            print("[БАЗА] Добавлена колонка counterparty_id")
+        except sqlite3.OperationalError:
+            pass  # Колонка уже есть
+
+@app.route("/ai", methods=["GET", "POST"])
+def vortex_ai():
+    if request.method == "GET":
+        return render_template("ai.html")
+    elif request.method == "POST":
+        data = request.get_json()
+        prompt = data.get("prompt", "")
+        reply = ask_vortex(prompt)
+        return jsonify({"response": reply})
+
+
+# Маршруты приложения
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+@app.route("/test")
+def test():
+    return render_template("test.html")
+
+
+@app.route("/products")
+def products():
+    products = load_products()
+    products_by_category = {}
+    for product in products:
+        category = product.get("category", "Без категории")
+        if category not in products_by_category:
+            products_by_category[category] = []
+        products_by_category[category].append(product)
+    return render_template("products.html",
+                           products_by_category=products_by_category,
+                           products=products)
+
+
+
+
+
+
+@app.route("/add_product", methods=["POST"])
+def add_product():
+    try:
+        product_data = {
+            "id": datetime.now().timestamp(),
+            "name": request.form.get("name"),
+            "price": float(request.form.get("price")),
+            "price_wholesale": float(request.form.get("price_wholesale", 0)),
+            "price_bulk": float(request.form.get("price_bulk", 0)),
+            "category": request.form.get("category", "")
+        }
+        products = load_products()
+        products.append(product_data)
+        save_products(products)
+        return redirect(url_for("products"))
+    except Exception as e:
+        return f"Ошибка: {str(e)}", 400
+
+
+@app.route("/update_product", methods=["POST"])
+def update_product():
+    try:
+        product_id = float(request.form.get("id"))
+        products = load_products()
+        product_to_update = next((p for p in products if p["id"] == product_id), None)
+
+        if not product_to_update:
+            return "Товар не найден", 404
+
+        product_to_update.update({
+            "name": request.form["name"],
+            "price": float(request.form["price"]),
+            "price_wholesale": float(request.form.get("price_wholesale", 0)),
+            "price_bulk": float(request.form.get("price_bulk", 0)),
+            "category": request.form.get("category", "")
+        })
+
+        save_products(products)
+        return redirect(url_for("products"))
+    except Exception as e:
+        return f"Ошибка: {str(e)}", 400
+
+
+@app.route("/delete_product", methods=["POST"])
+def delete_product():
+    try:
+        product_id = float(request.form.get("id"))
+        products = load_products()
+        products = [p for p in products if p["id"] != product_id]
+        save_products(products)
+        return redirect(url_for("products"))
+    except Exception as e:
+        return f"Ошибка: {str(e)}", 400
+
+
+@app.route("/upload_excel", methods=["POST"])
+def upload_excel():
+    if 'excel_file' not in request.files:
+        return "Файл не загружен", 400
+
+    file = request.files['excel_file']
+    if not file.filename.lower().endswith(('.xls', '.xlsx')):
+        return "Неверный формат файла", 400
+
+    try:
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+        file.save(filepath)
+        df = pd.read_excel(filepath)
+        products = load_products()
+
+        for _, row in df.iterrows():
+            products.append({
+                "id": datetime.now().timestamp(),
+                "name": str(row.get("name", "")).strip(),
+                "price": float(row.get("price", 0)),
+                "price_wholesale": float(row.get("price_wholesale", 0)),
+                "price_bulk": float(row.get("price_bulk", 0)),
+                "category": str(row.get("category", "")).strip()
+            })
+
+        save_products(products)
+        return redirect(url_for("products"))
+    except Exception as e:
+        return f"Ошибка при импорте: {str(e)}", 500
+    finally:
+        if os.path.exists(filepath):
+            os.remove(filepath)
+
+
+@app.route("/promo")
+def promo():
+    return render_template("promo.html")
+
+
+@app.route("/1Cweb")
+def Cwebs():
+    """1С-подобный интерфейс"""
+    return render_template("1Cweb.html")
+
+
+@app.route("/api/1c/add_product", methods=["POST"])
+def add_1c_product():
+    """Добавление товара через 1С интерфейс"""
+    try:
+        new_product = request.json
+        products = load_products()
+
+        # Генерируем ID как максимальный существующий + 1
+        new_id = max(p['id'] for p in products) + 1 if products else 1
+        new_product['id'] = new_id
+
+        products.append(new_product)
+        save_products(products)
+
+        return jsonify({"status": "success", "id": new_id})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 400
+
+
+@app.route("/api/1c/update_product", methods=["POST"])
+def update_1c_product():
+    """Обновление товара через 1С интерфейс"""
+    try:
+        updated_product = request.json
+        products = load_products()
+
+        for i, p in enumerate(products):
+            if p['id'] == updated_product['id']:
+                products[i] = updated_product
+                break
+
+        save_products(products)
+        return jsonify({"status": "success"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 400
+
+
+@app.route("/api/1c/delete_product", methods=["POST"])
+def delete_1c_product():
+    """Удаление товара через 1С интерфейс"""
+    try:
+        product_id = request.json.get('id')
+        products = load_products()
+        products = [p for p in products if p['id'] != product_id]
+        save_products(products)
+        return jsonify({"status": "success"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 400
+
+
+
+
+@app.route("/kassa")
+def kassa():
+    products = load_products()
+    return render_template("kassa.html", products=products)
+
+
+@app.route("/stats")
+def stats():
+    date_from = request.args.get('date_from', '')
+    date_to = request.args.get('date_to', '')
+
+    with get_db() as db:
+        query = """
+            SELECT r.id, r.date, r.total, r.payment_method, r.organization, 
+                   c.name as counterparty_name,
+                   COUNT(s.id) as items_count
+            FROM receipts r
+            LEFT JOIN sales s ON r.id = s.receipt_id
+            LEFT JOIN counterparties c ON r.counterparty_id = c.id
+            WHERE 1=1
+        """
+        params = []
+
+        if date_from:
+            query += " AND r.date >= ?"
+            params.append(date_from)
+        if date_to:
+            query += " AND r.date <= ?"
+            params.append(date_to + " 23:59:59")
+
+        query += " GROUP BY r.id ORDER BY r.date DESC"
+        receipts = db.execute(query, params).fetchall()
+
+    return render_template("stats.html", receipts=receipts, date_from=date_from, date_to=date_to)
+
+
+@app.route("/api/1c/export_excel")
+def export_1c_excel():
+    """Экспорт товаров в Excel для 1С интерфейса"""
+    try:
+        products = load_products()
+        df = pd.DataFrame(products)
+
+        # Создаем временный файл
+        temp_path = DATA_DIR / "temp_export.xlsx"
+        df.to_excel(temp_path, index=False)
+
+        # Отправляем файл
+        return send_from_directory(
+            directory=DATA_DIR,
+            path="temp_export.xlsx",
+            as_attachment=True,
+            download_name="products_export.xlsx"
+        )
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        if temp_path.exists():
+            temp_path.unlink()
+
+
+@app.route("/api/1c/sync_database")
+def sync_1c_database():
+    """Синхронизация товаров с основной базой"""
+    try:
+        products = load_products()
+
+        with get_db() as db:
+            # Здесь можно добавить логику синхронизации
+            # Например, обновление остатков или цен
+
+            db.commit()
+
+        return jsonify({"status": "success", "synced_items": len(products)})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route("/report")
+def report():
+    with get_db() as db:
+        receipts = db.execute("""
+            SELECT r.id, r.date, r.total, r.payment_method, 
+                   COUNT(s.id) as items_count
+            FROM receipts r
+            LEFT JOIN sales s ON r.id = s.receipt_id
+            GROUP BY r.id
+            ORDER BY r.date DESC
+        """).fetchall()
+    return render_template("report.html", receipts=receipts)
+
+
+@app.route('/api/1c/products')
+def get_1c_products():
+    """API для 1С интерфейса с пагинацией"""
+    page = request.args.get('page', 1, type=int)
+    per_page = 20
+    products = load_products()
+
+    # Пагинация
+    start = (page - 1) * per_page
+    end = start + per_page
+    paginated_products = products[start:end]
+
+    return jsonify({
+        'products': paginated_products,
+        'total': len(products),
+        'page': page,
+        'per_page': per_page
+    })
+
+@app.route("/get_products")
+def get_products():
+    products = load_products()
+    return jsonify(products)
+
+
+@app.route("/process_sale", methods=["POST"])
+def process_sale():
+    try:
+        data = request.json
+        cart = data.get("cart", [])
+        payment_method = data.get("payment_method", "cash")
+        organization = data.get("organization", "")
+        counterparty_id = data.get("counterparty_id")
+        total = sum(float(item.get("total", 0)) for item in cart)
+        date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        with get_db() as db:
+            cursor = db.cursor()
+            cursor.execute(
+                """INSERT INTO receipts 
+                (date, total, payment_method, organization, counterparty_id) 
+                VALUES (?, ?, ?, ?, ?)""",
+                (date, total, payment_method, organization, counterparty_id)
+            )
+            receipt_id = cursor.lastrowid
+
+            for item in cart:
+                cursor.execute("""
+                    INSERT INTO sales 
+                    (receipt_id, name, price, quantity, total, date, currency) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                """, (
+                    receipt_id,
+                    item.get("name"),
+                    float(item.get("price", 0)),
+                    float(item.get("quantity", 1)),
+                    float(item.get("total", 0)),
+                    date,
+                    "₸"
+                ))
+
+            db.commit()
+
+        socketio.emit('receipt_processed', {'receipt_id': receipt_id})
+        socketio.emit('show_total', {
+            'total': total,
+            'payment_method': payment_method,
+            'receipt_id': receipt_id
+        })
+        return jsonify({"status": "success", "receipt_id": receipt_id})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route("/receipt_details/<int:receipt_id>")
+def receipt_details(receipt_id):
+    with get_db() as db:
+        receipt = db.execute("""
+            SELECT r.*, c.name as counterparty_name, c.bin as counterparty_bin
+            FROM receipts r
+            LEFT JOIN counterparties c ON r.counterparty_id = c.id
+            WHERE r.id = ?
+        """, (receipt_id,)).fetchone()
+
+        items = db.execute(
+            "SELECT * FROM sales WHERE receipt_id = ?",
+            (receipt_id,)
+        ).fetchall()
+
+    return render_template("receipt_details.html", receipt=receipt, items=items)
+
+
+@app.route('/send_to_screen', methods=["POST"])
+def send_to_screen():
+    try:
+        data = request.json
+        if not data:
+            return jsonify({"status": "error", "message": "No data provided"}), 400
+
+        socketio.emit("show_total", {
+            "total": data.get("total", "0"),
+            "payment_method": data.get("payment_method", "cash"),
+            "items": data.get("items", [])
+        })
+        return jsonify({"status": "success"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@app.route('/clear_screen', methods=["POST"])
+def clear_screen():
+    socketio.emit("clear_screen")
+    return jsonify({"status": "success"})
+
+
+@app.route('/static/<path:filename>')
+def static_files(filename):
+    return send_from_directory('static', filename)
+
+# --- Добавляем колонку organization, если её нет ---
+def add_organization_column():
+    with get_db() as db:
+        try:
+            db.execute("ALTER TABLE receipts ADD COLUMN organization TEXT")
+            db.commit()
+            print("[БАЗА] Добавлена колонка organization")
+        except sqlite3.OperationalError:
+            pass  # Колонка уже есть
+
+add_organization_column()
+
+
+# ================ ИНВЕНТАРИЗАЦИЯ ================
+@app.route("/inventory")
+def show_inventory():
+    """Страница учета товаров"""
+    try:
+        with get_db() as db:
+            # Проверяем существует ли таблица
+            try:
+                db.execute("SELECT name_chinese FROM inventory LIMIT 1")
+            except sqlite3.OperationalError:
+                # Если столбца нет - добавляем
+                db.execute("ALTER TABLE inventory ADD COLUMN name_chinese TEXT")
+                db.commit()
+
+            items = db.execute("""
+                SELECT id, name, name_chinese, quantity, unit, 
+                       strftime('%Y-%m-%d %H:%M', last_updated) as last_updated 
+                FROM inventory
+                ORDER BY last_updated DESC
+            """).fetchall()
+    except Exception as e:
+        print(f"Ошибка при работе с базой: {str(e)}")
+        items = []
+
+    return render_template("inventory.html", items=items)
+
+
+@app.route("/inventory/add", methods=["POST"])
+def add_inventory():
+    """Добавление товара"""
+    try:
+        name = request.form["name"]
+        name_chinese = request.form.get("name_chinese", "")  # Получаем китайское название
+        quantity = float(request.form["quantity"])
+        unit = request.form["unit"]
+
+        with get_db() as db:
+            db.execute(
+                """INSERT INTO inventory 
+                (product_id, name, name_chinese, quantity, unit, last_updated)
+                VALUES (?, ?, ?, ?, ?, ?)""",
+                (int(datetime.now().timestamp()), name, name_chinese, quantity, unit,
+                 datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+            )
+            db.commit()
+
+        return redirect(url_for("show_inventory"))
+    except Exception as e:
+        return f"Ошибка: {str(e)}", 400
+
+
+# ================ КОНЕЦ ИНВЕНТАРИЗАЦИИ ================
+
+# ================ ФУНКЦИИ РЕДАКТИРОВАНИЯ ================
+@app.route("/inventory/edit/<int:item_id>")
+def edit_inventory_item(item_id):
+    """Страница редактирования товара"""
+    with get_db() as db:
+        item = db.execute(
+            "SELECT * FROM inventory WHERE id = ?",
+            (item_id,)
+        ).fetchone()
+    return render_template("edit_inventory.html", item=item)
+
+
+@app.route("/inventory/update/<int:item_id>", methods=["POST"])
+def update_inventory_item(item_id):
+    """Обновление товара"""
+    try:
+        name = request.form["name"]
+        name_chinese = request.form.get("name_chinese", "")  # Получаем китайское название
+        quantity = float(request.form["quantity"])
+        unit = request.form["unit"]
+
+        with get_db() as db:
+            db.execute(
+                """UPDATE inventory SET
+                name = ?,
+                name_chinese = ?,
+                quantity = ?,
+                unit = ?,
+                last_updated = ?
+                WHERE id = ?""",
+                (name, name_chinese, quantity, unit,
+                 datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                 item_id)
+            )
+            db.commit()
+
+        return redirect(url_for("show_inventory"))
+    except Exception as e:
+        return f"Ошибка: {str(e)}", 400
+
+
+@app.route("/inventory/delete/<int:item_id>", methods=["POST"])
+def delete_inventory_item(item_id):
+    """Удаление товара"""
+    try:
+        with get_db() as db:
+            db.execute("DELETE FROM inventory WHERE id = ?", (item_id,))
+            db.commit()
+        return redirect(url_for("show_inventory"))
+    except Exception as e:
+        return f"Ошибка: {str(e)}", 400
+
+
+# ================ КОНЕЦ ФУНКЦИЙ РЕДАКТИРОВАНИЯ ================
+
+# ================ API для работы с контрагентами ================
+@app.route("/api/counterparties", methods=["GET"])
+def get_counterparties():
+    """Получение списка контрагентов"""
+    try:
+        with get_db() as db:
+            counterparties = db.execute("""
+                SELECT id, name, bin, type, address, phone, email,
+                       strftime('%Y-%m-%d %H:%M', created_at) as created_at,
+                       strftime('%Y-%m-%d %H:%M', updated_at) as updated_at
+                FROM counterparties
+                ORDER BY name
+            """).fetchall()
+            return jsonify([dict(row) for row in counterparties])
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@app.route("/api/counterparties", methods=["POST"])
+def add_counterparty():
+    """Добавление нового контрагента"""
+    try:
+        data = request.json
+        required_fields = ["name", "type"]
+        for field in required_fields:
+            if field not in data:
+                return jsonify({"status": "error", "message": f"Missing required field: {field}"}), 400
+
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        with get_db() as db:
+            cursor = db.cursor()
+            cursor.execute("""
+                INSERT INTO counterparties 
+                (name, bin, type, address, phone, email, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                data["name"],
+                data.get("bin"),
+                data["type"],
+                data.get("address"),
+                data.get("phone"),
+                data.get("email"),
+                now,
+                now
+            ))
+            counterparty_id = cursor.lastrowid
+            db.commit()
+
+        return jsonify({"status": "success", "id": counterparty_id})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@app.route("/api/counterparties/<int:counterparty_id>", methods=["PUT"])
+def update_counterparty(counterparty_id):
+    """Обновление данных контрагента"""
+    try:
+        data = request.json
+        if not data:
+            return jsonify({"status": "error", "message": "No data provided"}), 400
+
+        updates = []
+        params = []
+        fields = ["name", "bin", "type", "address", "phone", "email"]
+
+        for field in fields:
+            if field in data:
+                updates.append(f"{field} = ?")
+                params.append(data[field])
+
+        if not updates:
+            return jsonify({"status": "error", "message": "No fields to update"}), 400
+
+        params.append(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))  # updated_at
+        params.append(counterparty_id)
+
+        with get_db() as db:
+            db.execute(
+                f"UPDATE counterparties SET {', '.join(updates)}, updated_at = ? WHERE id = ?",
+                params
+            )
+            db.commit()
+
+        return jsonify({"status": "success"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@app.route("/api/counterparties/<int:counterparty_id>", methods=["DELETE"])
+def delete_counterparty(counterparty_id):
+    """Удаление контрагента"""
+    try:
+        with get_db() as db:
+            db.execute("DELETE FROM counterparties WHERE id = ?", (counterparty_id,))
+            db.commit()
+        return jsonify({"status": "success"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@app.route("/counterparties")
+def counterparties_page():
+    """Страница управления контрагентами"""
+    with get_db() as db:
+        counterparties = db.execute("""
+            SELECT id, name, bin, type, address, phone, email,
+                   strftime('%Y-%m-%d %H:%M', created_at) as created_at
+            FROM counterparties
+            ORDER BY name
+        """).fetchall()
+    return render_template("counterparties.html", counterparties=counterparties)
+
+
+# ================ КОНЕЦ API для контрагентов ================
+
+if __name__ == '__main__':
+    init_db()
+    print("[СЕРВЕР] Сервер запущен на http://localhost:8080")
+    print(f"[СЕРВЕР] База данных: {DB_PATH}")
+    print(f"[СЕРВЕР] Папка с данными: {DATA_DIR}")
+    socketio.run(app, host='0.0.0.0', port=8080, debug=True)

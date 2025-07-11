@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Отчеты по продажам</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #1a1a1a;
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
+        .nav-grid {
+            display: flex;
+            flex-wrap: wrap;
+            background: #2a2a2a;
+            padding: 10px;
+            margin-bottom: 20px;
+            gap: 5px;
+        }
+        .nav-card {
+            padding: 10px 15px;
+            background: #3a3a3a;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            flex: 1 1 auto;
+            text-align: center;
+            transition: background 0.2s;
+        }
+        .nav-card:hover {
+            background: #444;
+        }
+        .filter-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .filter-form input, .filter-form button {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: none;
+            font-size: 1em;
+        }
+        .filter-form input {
+            background: #2a2a2a;
+            color: white;
+            border: 1px solid #444;
+        }
+        .filter-form button {
+            background: #00cc66;
+            color: white;
+            cursor: pointer;
+        }
+        .filter-form button:hover {
+            background: #00aa55;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #2a2a2a;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 12px 15px;
+            border: 1px solid #444;
+            text-align: left;
+        }
+        th {
+            background: #333;
+            color: #00ffcc;
+        }
+        tr:nth-child(even) {
+            background-color: #2a2a2a;
+        }
+        tr:hover {
+            background-color: #3a3a3a;
+        }
+        .btn-reset {
+            padding: 8px 12px;
+            background: #ff3333;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+            font-size: 1em;
+            transition: background 0.2s;
+        }
+        .btn-reset:hover {
+            background: #cc0000;
+        }
+        .btn-details {
+            color: #00cc66;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .btn-details:hover {
+            color: #00ffcc;
+            text-decoration: underline;
+        }
+        .no-data {
+            text-align: center;
+            padding: 20px;
+            color: #aaa;
+        }
+
+        @media (max-width: 600px) {
+            .nav-card {
+                flex: 1 1 100%;
+            }
+            .filter-form input,
+            .filter-form button,
+            .btn-reset {
+                flex: 1 1 100%;
+            }
+            th, td {
+                padding: 8px 10px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav-grid">
+        <a href="/" class="nav-card">🏠 Главная</a>
+        <a href="/products" class="nav-card">📦 Товары</a>
+        <a href="/kassa" class="nav-card">💵 Касса</a>
+        <a href="/stats" class="nav-card">📊 Отчёты</a>
+    </nav>
+
+    <h1>Отчеты по продажам</h1>
+
+    <form class="filter-form" method="get" action="/stats">
+        <input type="date" name="date_from" value="{{ date_from or '' }}" required>
+        <input type="date" name="date_to" value="{{ date_to or '' }}" required>
+        <button type="submit">Фильтровать</button>
+        <a href="/stats" class="btn-reset">Сбросить</a>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>№ чека</th>
+                <th>Дата и время</th>
+                <th>Сумма</th>
+                <th>Товаров</th>
+                <th>Оплата</th>
+                <th>Организация</th>
+                <th>Контрагент</th>  <!-- Новая колонка -->
+                <th>Детали</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if receipts %}
+                {% for r in receipts %}
+                <tr>
+                    <td>{{ r.id }}</td>
+                    <td>{{ r.date }}</td>
+                    <td>{{ r.total }} ₸</td>
+                    <td>{{ r.items_count }}</td>
+                    <td>
+                        {% if r.payment_method == 'cash' %}
+                            Наличные
+                        {% elif r.payment_method == 'card' %}
+                            Карта
+                        {% elif r.payment_method == 'qr' %}
+                            QR
+                        {% elif r.payment_method == 'remote' %}
+                            Удалённо
+                        {% elif r.payment_method == 'bill' %}
+                            Счёт на оплату
+                        {% else %}
+                            Другой
+                        {% endif %}
+                    </td>
+                    <td>{{ r.organization or '—' }}</td>
+                    <td>{{ r.counterparty_name or '—' }}</td>  <!-- Новая ячейка -->
+                    <td>
+                        <a href="/receipt_details/{{ r.id }}" class="btn-details">Подробнее →</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="8" class="no-data">Нет данных за выбранный период</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</body>
+</html>
