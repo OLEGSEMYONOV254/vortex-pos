@@ -194,13 +194,16 @@ def add_counterparties_table():
 
 def add_counterparty_column():
     """Добавляем колонку counterparty_id в таблицу receipts"""
-    with get_db() as db:
+    with get_db() as conn:
+        cur = conn.cursor()
         try:
-            db.execute("ALTER TABLE receipts ADD COLUMN counterparty_id INTEGER")
-            db.commit()
-            print("[БАЗА] Добавлена колонка counterparty_id")
-        except sqlite3.OperationalError:
-            pass  # Колонка уже есть
+            cur.execute("ALTER TABLE receipts ADD COLUMN IF NOT EXISTS counterparty_id INTEGER")
+            conn.commit()
+            print("[БАЗА] Колонка counterparty_id добавлена или уже существует")
+        except Exception as e:
+            print(f"[БАЗА] Ошибка при добавлении колонки counterparty_id: {e}")
+        finally:
+            cur.close()  # Колонка уже есть
 
 @app.route("/ai", methods=["GET", "POST"])
 def vortex_ai():
@@ -604,15 +607,19 @@ def static_files(filename):
 
 # --- Добавляем колонку organization, если её нет ---
 def add_organization_column():
-    with get_db() as db:
+    """Добавляем колонку organization в таблицу receipts"""
+    with get_db() as conn:
+        cur = conn.cursor()
         try:
-            db.execute("ALTER TABLE receipts ADD COLUMN organization TEXT")
-            db.commit()
-            print("[БАЗА] Добавлена колонка organization")
-        except sqlite3.OperationalError:
-            pass  # Колонка уже есть
+            cur.execute("ALTER TABLE receipts ADD COLUMN IF NOT EXISTS organization TEXT")
+            conn.commit()
+            print("[БАЗА] Колонка organization добавлена или уже существует")
+        except Exception as e:
+            print(f"[БАЗА] Ошибка при добавлении колонки organization: {e}")
+        finally:
+            cur.close()  # Колонка уже есть
 
-add_organization_column()
+# add_organization_column()
 
 
 # ================ ИНВЕНТАРИЗАЦИЯ ================
