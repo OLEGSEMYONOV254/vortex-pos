@@ -1,7 +1,8 @@
 from flask import Flask, render_template, send_from_directory, request, redirect, url_for, jsonify
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
-import sqlite3
+import psycopg2
+from psycopg2.extras import DictCursor
 from datetime import datetime
 import os
 import json
@@ -10,6 +11,8 @@ from pathlib import Path
 import shutil
 import atexit
 from vortex_ai import ask_vortex
+import psycopg2.extras
+
 
 
 # Инициализация приложения
@@ -30,10 +33,23 @@ DB_PATH = DATA_DIR / "database.db"
 
 # Функции работы с базой данных
 def get_db():
-    """Подключение к базе данных"""
-    conn = sqlite3.connect(str(DB_PATH))
-    conn.row_factory = sqlite3.Row
-    return conn
+    """Безопасное подключение через переменные окружения"""
+    try:
+        conn = psycopg2.connect(
+            dbname=os.getenv("DB_NAME"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            host=os.getenv("DB_HOST"),
+            port=os.getenv("DB_PORT"),
+            sslmode="require",
+            cursor_factory=DictCursor
+        )
+        conn.autocommit = True
+        return conn
+    except Exception as e:
+        print(f"⚠️ Ошибка подключения к БД: {e}")
+        raise
+
 
 
 def init_db():
