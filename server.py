@@ -227,7 +227,7 @@ def vortex_ai():
 @app.route('/trigger_import')
 def trigger_import():
     try:
-        from .import import import_data
+        from .import_utils import import_data
         if import_data():
             return "Импорт данных выполнен успешно!"
         else:
