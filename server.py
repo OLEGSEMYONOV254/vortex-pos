@@ -285,7 +285,41 @@ def products():
                            products=products)
 
 
+@app.route('/export_old_data')
+def export_old_data():
+    try:
+        # Подключение к SQLite
+        import sqlite3
+        old_db = sqlite3.connect('old_database.db')
+        old_cur = old_db.cursor()
 
+        # Получаем данные
+        old_cur.execute("SELECT * FROM receipts")
+        receipts = old_cur.fetchall()
+
+        old_cur.execute("SELECT * FROM sales")
+        sales = old_cur.fetchall()
+
+        # Подключение к PostgreSQL
+        new_cur = get_db().cursor()
+        
+        # Переносим данные
+        for receipt in receipts:
+            new_cur.execute("""
+                INSERT INTO receipts (id, date, total, payment_method, organization)
+                VALUES (%s, %s, %s, %s, %s)
+            """, receipt)
+
+        for sale in sales:
+            new_cur.execute("""
+                INSERT INTO sales (id, receipt_id, name, price, quantity, total, date)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """, sale)
+
+        return "Данные перенесены успешно!"
+    
+    except Exception as e:
+        return f"Ошибка: {str(e)}"
 
 
 
