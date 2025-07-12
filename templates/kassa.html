@@ -874,57 +874,82 @@
 
     async function confirmPayment() {
   // Получаем выбранного контрагента
-  const counterpartySelect = document.getElementById('counterpartySelect');
-  const counterpartyId = counterpartySelect.value; // будет "" если не выбрано
+    const counterpartySelect = document.getElementById('counterpartySelect');
+    const counterpartyId = counterpartySelect.value; // будет "" если не выбрано
   
   // Отправляем данные на сервер
-  const response = await fetch('/process_sale', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      cart: cart,
-      payment_method: document.getElementById('paymentMethod').value,
-      organization: document.getElementById('organizationSelect').value,
-      counterparty_id: counterpartyId || null // отправляем null если не выбран
-    })
-  });
+    const response = await fetch('/process_sale', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        cart: cart,
+        payment_method: document.getElementById('paymentMethod').value,
+        organization: document.getElementById('organizationSelect').value,
+        counterparty_id: counterpartyId || null // отправляем null если не выбран
+      })
+    });
   
   // Обработка ответа
-  if (response.ok) {
-    alert('Продажа оформлена!');
-    cart = [];
-    updateCartDisplay();
-    closePaymentModal();
-  } else {
-    alert('Ошибка при оформлении');
+    if (response.ok) {
+      alert('Продажа оформлена!');
+      cart = [];
+      updateCartDisplay();
+      closePaymentModal();
+    } else {
+      alert('Ошибка при оформлении');
+    }
   }
-}
 
     // Функция для загрузки контрагентов
-async function loadCounterpartiesSimple() {
-  try {
-    const response = await fetch('/api/counterparties');
-    const data = await response.json();
+  async function loadCounterpartiesSimple() {
+    try {
+      const response = await fetch('/api/counterparties');
+      const data = await response.json();
     
     // Находим выпадающий список в модальном окне оплаты
-    const select = document.getElementById('counterpartySelect');
+      const select = document.getElementById('counterpartySelect');
     
     // Очищаем и добавляем варианты
-    select.innerHTML = '<option value="">Не выбрано</option>';
+      select.innerHTML = '<option value="">Не выбрано</option>';
     
-    data.forEach(item => {
-      const option = document.createElement('option');
-      option.value = item.id;
-      option.textContent = item.name;
-      select.appendChild(option);
-    });
-  } catch (error) {
-    console.log('Не удалось загрузить контрагентов', error);
+      data.forEach(item => {
+        const option = document.createElement('option');
+        option.value = item.id;
+        option.textContent = item.name;
+        select.appendChild(option);
+      });
+    } catch (error) {
+      console.log('Не удалось загрузить контрагентов', error);
+    }
   }
-}
 
 // Вызываем при загрузке страницы
-document.addEventListener('DOMContentLoaded', loadCounterpartiesSimple);
+  document.addEventListener('DOMContentLoaded', loadCounterpartiesSimple);
+
+    // В самом конце файла, перед добавьте:
+  async function loadSimpleCounterparties() {
+    try {
+      const response = await fetch('/api/counterparties');
+      const data = await response.json();
+    
+      const select = document.getElementById('counterpartySelect');
+      select.innerHTML = '<option value="">Не выбрано</option>';
+    
+    // Простой перебор данных
+      for (const item of data) {
+        const option = document.createElement('option');
+        option.value = item.id;
+        option.textContent = item.name;
+        select.appendChild(option);
+      }
+    } catch (error) {
+      console.log('Ошибка загрузки:', error);
+      alert('Не удалось загрузить контрагентов');
+    }
+  }
+
+// Вызов при загрузке страницы
+  document.addEventListener('DOMContentLoaded', loadSimpleCounterparties);
   </script>
 </body>
 </html>
