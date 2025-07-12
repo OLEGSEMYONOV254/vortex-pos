@@ -2,7 +2,6 @@ import json
 import psycopg2
 from pathlib import Path
 
-# Настройки PostgreSQL (замените на ваши)
 DB_CONFIG = {
     "host": "dpg-d1odjg49c44c73fg14h0-a",
     "database": "vortex_db_nyxr",
@@ -11,45 +10,43 @@ DB_CONFIG = {
     "port": "5432"
 }
 
-BACKUP_FILE = Path("data/backup.json")
-
 def import_data():
     try:
-        # Читаем резервную копию
-        with open(BACKUP_FILE) as f:
+        with open('data/backup.json') as f:
             data = json.load(f)
         
-        # Подключение к PostgreSQL
         conn = psycopg2.connect(**DB_CONFIG)
-        cursor = conn.cursor()
+        cur = conn.cursor()
         
-        # Импорт данных
-        for table, records in data.items():
-            if not records:
-                continue
-                
-            print(f"Импортируем {len(records)} записей в {table}...")
-            
-            # Получаем названия столбцов
-            cursor.execute(f"SELECT column_name FROM information_schema.columns WHERE table_name = '{table}'")
-            columns = [row[0] for row in cursor.fetchall()]
-            cols_str = ', '.join(columns)
-            vals_str = ', '.join(['%s'] * len(columns))
-            
-            # Вставляем данные
-            for record in records:
-                cursor.execute(
-                    f"INSERT INTO {table} ({cols_str}) VALUES ({vals_str})",
-                    record
-                )
-            
+        # Импорт контрагентов
+        print("Импортируем контрагентов...")
+        for row in data['counterparties']:
+            cur.execute("""
+                INSERT INTO counterparties (id, name, bin, type, address, phone, email, created_at, updated_at)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, row)
+        
+        # Импорт чеков
+        print("Импортируем чеки...")
+        for row in data['receipts']:
+            cur.execute("""
+                INSERT INTO receipts (id, date, total, payment_method, organization, counterparty_id)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """, row)
+        
+        # Импорт продаж
+        print("Импортируем продажи...")
+        for row in data['sales']:
+            cur.execute("""
+                INSERT INTO sales (id, receipt_id, name, price, quantity, total, date, currency)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            """, row)
+        
         conn.commit()
         print("Импорт успешно завершен!")
-        return True
         
     except Exception as e:
-        print(f"Ошибка при импорте: {e}")
-        return False
+        print(f"Ошибка: {e}")
     finally:
         if 'conn' in locals():
             conn.close()
