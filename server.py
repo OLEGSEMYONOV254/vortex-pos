@@ -254,9 +254,20 @@ def check_counterparties():
 def get_counterparties_api():
     try:
         with get_db() as conn:
-            with conn.cursor() as cur:
+            # Используем DictCursor для работы со словарями
+            with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
                 cur.execute("SELECT id, name FROM counterparties ORDER BY name")
-                return jsonify([dict(row) for row in cur.fetchall()])
+                
+                # Преобразуем каждую строку в словарь вручную
+                result = []
+                for row in cur.fetchall():
+                    result.append({
+                        'id': row['id'],
+                        'name': row['name']
+                    })
+                
+                return jsonify(result)
+    
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
