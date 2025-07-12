@@ -224,6 +224,16 @@ def vortex_ai():
         reply = ask_vortex(prompt)
         return jsonify({"response": reply})
 
+@app.route('/trigger_import')
+def trigger_import():
+    try:
+        from import import import_data
+        if import_data():
+            return "Импорт данных выполнен успешно!"
+        else:
+            return "Произошла ошибка при импорте"
+    except Exception as e:
+        return f"Ошибка: {str(e)}"
 
 # Маршруты приложения
 @app.route("/")
