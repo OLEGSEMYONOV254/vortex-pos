@@ -250,7 +250,15 @@ def check_counterparties():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
+@app.route("/api/counterparties")
+def get_counterparties_api():
+    try:
+        with get_db() as conn:
+            with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+                cur.execute("SELECT id, name FROM counterparties ORDER BY name")
+                return jsonify(cur.fetchall())
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/products")
