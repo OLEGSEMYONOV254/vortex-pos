@@ -873,44 +873,58 @@
     }
 
     async function confirmPayment() {
-        const paymentMethod = document.getElementById('paymentMethod').value;
-        const organization = document.getElementById('organizationSelect').value;
-        const counterpartyId = document.getElementById('counterpartySelect').value;
-        const total = calculateTotal();
+  // Получаем выбранного контрагента
+  const counterpartySelect = document.getElementById('counterpartySelect');
+  const counterpartyId = counterpartySelect.value; // будет "" если не выбрано
+  
+  // Отправляем данные на сервер
+  const response = await fetch('/process_sale', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      cart: cart,
+      payment_method: document.getElementById('paymentMethod').value,
+      organization: document.getElementById('organizationSelect').value,
+      counterparty_id: counterpartyId || null // отправляем null если не выбран
+    })
+  });
+  
+  // Обработка ответа
+  if (response.ok) {
+    alert('Продажа оформлена!');
+    cart = [];
+    updateCartDisplay();
+    closePaymentModal();
+  } else {
+    alert('Ошибка при оформлении');
+  }
+}
 
-        try {
-            const response = await fetch('/process_sale', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    cart: cart,
-                    payment_method: paymentMethod,
-                    organization: organization,
-                    counterparty_id: counterpartyId || null // Отправляем ID или null
-                })
-            });
+    // Функция для загрузки контрагентов
+async function loadCounterpartiesSimple() {
+  try {
+    const response = await fetch('/api/counterparties');
+    const data = await response.json();
+    
+    // Находим выпадающий список в модальном окне оплаты
+    const select = document.getElementById('counterpartySelect');
+    
+    // Очищаем и добавляем варианты
+    select.innerHTML = '<option value="">Не выбрано</option>';
+    
+    data.forEach(item => {
+      const option = document.createElement('option');
+      option.value = item.id;
+      option.textContent = item.name;
+      select.appendChild(option);
+    });
+  } catch (error) {
+    console.log('Не удалось загрузить контрагентов', error);
+  }
+}
 
-            const result = await response.json();
-            if (result.status === 'success') {
-                cart = [];
-                updateCartDisplay();
-                closePaymentModal();
-
-                fetch('/send_to_screen', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        total: total,
-                        payment_method: paymentMethod,
-                        organization: organization,
-                        receipt_id: result.receipt_id
-                    })
-                });
-            }
-        } catch (error) {
-            console.error('Ошибка при оплате:', error);
-        }
-    }
+// Вызываем при загрузке страницы
+document.addEventListener('DOMContentLoaded', loadCounterpartiesSimple);
   </script>
 </body>
 </html>
