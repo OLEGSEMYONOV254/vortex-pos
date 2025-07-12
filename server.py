@@ -236,11 +236,19 @@ def test():
 
 @app.route("/check_counterparties")
 def check_counterparties():
-    with get_db() as conn:
-        with conn.cursor() as cur:
-            cur.execute("SELECT * FROM counterparties")
-            counterparties = cur.fetchall()
-            return jsonify([dict(row) for row in counterparties])
+    try:
+        with get_db() as conn:
+            # Указываем, что хотим работать со словарями
+            with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+                cur.execute("SELECT * FROM counterparties")
+                counterparties = cur.fetchall()
+                # Преобразуем каждый ряд в словарь явно
+                result = []
+                for row in counterparties:
+                    result.append(dict(row))
+                return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 
@@ -854,17 +862,25 @@ def delete_counterparty(counterparty_id):
 
 @app.route("/counterparties")
 def counterparties_page():
-    with get_db() as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                SELECT id, name, bin, type, address, phone, email,
-                       to_char(created_at, 'YYYY-MM-DD HH24:MI') as created_at
-                FROM counterparties
-                ORDER BY name
-            """)
-            counterparties = cur.fetchall()
+    try:
+        with get_db() as conn:
+            with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+                cur.execute("""
+                    SELECT id, name, bin, type, 
+                           COALESCE(address, '') as address,
+                           COALESCE(phone, '') as phone,
+                           COALESCE(email, '') as email,
+                           to_char(created_at, 'YYYY-MM-DD HH24:MI') as created_at
+                    FROM counterparties
+                    ORDER BY name
+                """)
+                counterparties = cur.fetchall()
+        
+        return render_template("counterparties.html", 
+                            counterparties=counterparties)
     
-    return render_template("counterparties.html", counterparties=counterparties)
+    except Exception as e:
+        return f"Ошибка при загрузке контрагентов: {str(e)}", 500
 
 
 # ================ КОНЕЦ API для контрагентов ================
