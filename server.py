@@ -456,9 +456,14 @@ def stats():
     with get_db() as conn:
         cur = conn.cursor()
         query = """
-            SELECT r.id, r.date, r.total, r.payment_method, r.organization, 
-                   c.name as counterparty_name,
-                   COUNT(s.id) as items_count
+            SELECT 
+                r.id, 
+                r.date, 
+                r.total, 
+                r.payment_method, 
+                r.organization,
+                c.name as counterparty_name,
+                COUNT(s.id) as items_count
             FROM receipts r
             LEFT JOIN sales s ON r.id = s.receipt_id
             LEFT JOIN counterparties c ON r.counterparty_id = c.id
@@ -473,7 +478,13 @@ def stats():
             query += " AND r.date <= %s"
             params.append(date_to + " 23:59:59")
 
-        query += " GROUP BY r.id ORDER BY r.date DESC"
+        query += """
+            GROUP BY 
+                r.id, r.date, r.total, r.payment_method, 
+                r.organization, c.name
+            ORDER BY r.date DESC
+        """
+        
         cur.execute(query, params)
         receipts = cur.fetchall()
 
