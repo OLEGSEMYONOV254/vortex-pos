@@ -26,6 +26,17 @@
         <p>Способ оплаты: {{ receipt.payment_method }}</p>
     </div>
 
+    <!-- Добавьте где-нибудь в шаблоне, например перед списком товаров -->
+    {% if receipt.counterparty_name %}
+    <div class="receipt-info">
+        <h3>Контрагент</h3>
+        <p><strong>Наименование:</strong> {{ receipt.counterparty_name }}</p>
+        {% if receipt.counterparty_bin %}
+        <p><strong>БИН:</strong> {{ receipt.counterparty_bin }}</p>
+        {% endif %}
+    </div>
+    {% endif %}
+
     <table>
         <thead>
             <tr>
@@ -44,16 +55,7 @@
                 <td>{{ item.total }} ₸</td>
             </tr>
             {% endfor %}
-            <!-- Добавьте где-нибудь в шаблоне, например перед списком товаров -->
-            {% if receipt.counterparty_name %}
-            <div class="receipt-info">
-                <h3>Контрагент</h3>
-                <p><strong>Наименование:</strong> {{ receipt.counterparty_name }}</p>
-                {% if receipt.counterparty_bin %}
-                <p><strong>БИН:</strong> {{ receipt.counterparty_bin }}</p>
-                {% endif %}
-            </div>
-            {% endif %}
+            
         </tbody>
     </table>
 
