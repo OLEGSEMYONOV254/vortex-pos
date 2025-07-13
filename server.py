@@ -176,10 +176,17 @@ def init_db():
 
 # Функции работы с товарами
 def load_products():
-    with get_db() as conn:
-        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cur.execute("SELECT * FROM products ORDER BY name")
-        return [dict(row) for row in cur.fetchall()]
+    """Загрузка товаров из PostgreSQL"""
+    try:
+        with get_db() as conn:
+            cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+            cur.execute("SELECT * FROM products ORDER BY id DESC")
+            rows = cur.fetchall()
+            return [dict(row) for row in rows]
+    except Exception as e:
+        print(f"[ОШИБКА] Не удалось загрузить товары: {e}")
+        return []
+
 
 
     with open(PRODUCTS_FILE, "r", encoding="utf-8") as f:
@@ -193,10 +200,28 @@ def load_products():
         return products
 
 
-#def save_products(products):
-    #"""Сохранение списка товаров"""
-    #with open(PRODUCTS_FILE, "w", encoding="utf-8") as f:
-        #json.dump(products, f, ensure_ascii=False, indent=2)
+def save_products(products):
+    """Сохранение всех товаров в PostgreSQL (перезаписывает всё)"""
+    try:
+        with get_db() as conn:
+            cur = conn.cursor()
+            cur.execute("DELETE FROM products")  # очистить таблицу
+            for p in products:
+                cur.execute("""
+                    INSERT INTO products (id, name, price, price_wholesale, price_bulk, category)
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                """, (
+                    p.get("id"),
+                    p.get("name"),
+                    p.get("price"),
+                    p.get("price_wholesale", 0),
+                    p.get("price_bulk", 0),
+                    p.get("category", "")
+                ))
+            conn.commit()
+    except Exception as e:
+        print(f"[ОШИБКА] Не удалось сохранить товары: {e}")
+
 
 def add_counterparties_table():
     """Добавляем таблицу контрагентов, если её нет"""
