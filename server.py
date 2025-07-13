@@ -334,42 +334,61 @@ def products():
 
 @app.route('/export_old_data')
 def export_old_data():
+    import sqlite3
     try:
-        # Подключение к SQLite
-        import sqlite3
+        # Подключение к старой SQLite-базе
         old_db = sqlite3.connect('old_database.db')
         old_cur = old_db.cursor()
 
-        # Получаем данные
-        old_cur.execute("SELECT * FROM receipts")
+        # Получаем данные из SQLite
+        old_cur.execute("SELECT date, total, payment_method FROM receipts")
         receipts = old_cur.fetchall()
 
-        old_cur.execute("SELECT * FROM sales")
+        old_cur.execute("SELECT receipt_id, name, price, quantity, total, date FROM sales")
         sales = old_cur.fetchall()
 
         # Подключение к PostgreSQL
-        new_cur = get_db().cursor()
-        
-        # Переносим данные
-        for receipt in receipts:
-            # receipt = (id, date, total, payment_method)
-            new_cur.execute("""
-                INSERT INTO receipts (id, date, total, payment_method, organization)
-                VALUES (%s, %s, %s, %s, %s)
-            """, (*receipt, None))  # добавляем None как 5-й элемент
+        with get_db() as conn:
+            cur = conn.cursor()
 
+            # Переносим чеки (без id — PostgreSQL сам создаст)
+            receipt_id_mapping = {}  # {old_id: new_id}
+            old_cur.execute("SELECT id, date, total, payment_method FROM receipts")
+            for old_id, date, total, payment_method in old_cur.fetchall():
+                cur.execute("""
+                    INSERT INTO receipts (date, total, payment_method, organization)
+                    VALUES (%s, %s, %s, %s)
+                    RETURNING id
+                """, (date, total, payment_method, None))
+                new_id = cur.fetchone()[0]
+                receipt_id_mapping[old_id] = new_id  # сохраняем соответствие id
 
-        new_cur.execute("""
-                INSERT INTO sales (id, receipt_id, name, price, quantity, total, date, currency)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-            """, sale)  # без добавления '₸'
+            # Переносим продажи (используем новые receipt_id)
+            old_cur.execute("SELECT receipt_id, name, price, quantity, total, date FROM sales")
+            for receipt_id, name, price, quantity, total, date in old_cur.fetchall():
+                new_receipt_id = receipt_id_mapping.get(receipt_id)
+                if new_receipt_id:
+                    cur.execute("""
+                        INSERT INTO sales 
+                        (receipt_id, name, price, quantity, total, date, currency)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s)
+                    """, (
+                        new_receipt_id,
+                        name,
+                        price,
+                        quantity,
+                        total,
+                        date,
+                        '₸'
+                    ))
 
+            conn.commit()
 
-
-        return "Данные перенесены успешно!"
+        return "✅ Данные успешно перенесены из SQLite в PostgreSQL!"
     
     except Exception as e:
-        return f"Ошибка: {str(e)}"
+        return f"❌ Ошибка при переносе: {str(e)}"
+
 
 
 
