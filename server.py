@@ -362,16 +362,19 @@ def export_old_data():
         
         # Переносим данные
         for receipt in receipts:
-            new_cur.execute("""
-                INSERT INTO receipts (id, date, total, payment_method, organization)
-                VALUES (%s, %s, %s, %s, %s)
-            """, receipt)
+        # receipt = (id, date, total, payment_method)
+        new_cur.execute("""
+            INSERT INTO receipts (id, date, total, payment_method, organization)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (*receipt, None))  # добавляем None как 5-й элемент
 
-        for sale in sales:
-            new_cur.execute("""
-                INSERT INTO sales (id, receipt_id, name, price, quantity, total, date)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
-            """, sale)
+
+       for sale in sales:
+        new_cur.execute("""
+            INSERT INTO sales (id, receipt_id, name, price, quantity, total, date, currency)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        """, (*sale, '₸'))
+
 
         return "Данные перенесены успешно!"
     
