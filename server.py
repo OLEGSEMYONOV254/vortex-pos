@@ -708,8 +708,7 @@ def process_sale():
 
         with get_db() as db:
             cursor = db.cursor()
-            
-            # Вставка чека и получение его ID
+
             cursor.execute(
                 """INSERT INTO receipts 
                 (date, total, payment_method, organization, counterparty_id) 
@@ -718,8 +717,7 @@ def process_sale():
                 (date, total, payment_method, organization, counterparty_id)
             )
             receipt_id = cursor.fetchone()[0]
-        
-            # Вставка товаров в продажу
+
             for item in cart:
                 cursor.execute("""
                     INSERT INTO sales 
@@ -734,9 +732,10 @@ def process_sale():
                     date,
                     "₸"
                 ))
-        
-            db.commit()
 
+        # ✅ Логируем
+        print(f"[✅] Чек №{receipt_id} успешно добавлен.")
+        print(f"[🛒] Товаров в чеке: {len(cart)}")
 
         socketio.emit('receipt_processed', {'receipt_id': receipt_id})
         socketio.emit('show_total', {
@@ -746,7 +745,9 @@ def process_sale():
         })
         return jsonify({"status": "success", "receipt_id": receipt_id})
     except Exception as e:
+        print(f"[❌] Ошибка при обработке продажи: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
+
 
 @app.route("/receipt_details/<int:receipt_id>")
 def receipt_details(receipt_id):
