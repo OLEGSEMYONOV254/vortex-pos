@@ -1071,38 +1071,52 @@ def counterparties_page():
 @app.route("/import_products_json")
 def import_products_json():
     try:
-        # Путь к файлу
         file_path = DATA_DIR / "products.json"
 
         # Читаем JSON
         with open(file_path, "r", encoding="utf-8") as f:
             products = json.load(f)
 
+        success_count = 0
+        error_count = 0
+
         with get_db() as conn:
             cur = conn.cursor()
 
-            # Вставляем по одному
             for product in products:
                 try:
+                    # Проверка на обязательные поля
+                    if not product.get("name") or product.get("price") is None:
+                        print(f"[⚠️] Пропущено: нет имени или цены: {product}")
+                        error_count += 1
+                        continue
+
+                    # Вставка
                     cur.execute("""
                         INSERT INTO products (id, name, price, price_wholesale, price_bulk, category)
                         VALUES (%s, %s, %s, %s, %s, %s)
                         ON CONFLICT (id) DO NOTHING
                     """, (
-                        product.get("id"),
-                        product.get("name"),
+                        int(product.get("id", datetime.now().timestamp())),
+                        str(product.get("name")),
                         float(product.get("price", 0)),
                         float(product.get("price_wholesale", 0)),
                         float(product.get("price_bulk", 0)),
-                        product.get("category", "")
+                        str(product.get("category", ""))
                     ))
+
+                    success_count += 1
+
                 except Exception as item_error:
-                    print(f"[❌] Ошибка при добавлении товара: {product.get('name')}: {item_error}")
+                    print(f"[❌] Ошибка при добавлении: {product.get('name')} — {item_error}")
+                    error_count += 1
 
             conn.commit()
-            return "✅ Импорт из products.json завершён успешно!"
+
+        return f"✅ Успешно добавлено: {success_count} товаров. Ошибок: {error_count}"
     except Exception as e:
-        return f"[ОШИБКА] Не удалось импортировать товары: {str(e)}", 500
+        return f"[ОШИБКА] Не удалось импортировать: {str(e)}", 500
+
 
 
 
