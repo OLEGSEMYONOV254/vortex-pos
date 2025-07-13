@@ -362,11 +362,11 @@ def export_old_data():
         
         # Переносим данные
         for receipt in receipts:
-        # receipt = (id, date, total, payment_method)
-        new_cur.execute("""
-            INSERT INTO receipts (id, date, total, payment_method, organization)
-            VALUES (%s, %s, %s, %s, %s)
-        """, (*receipt, None))  # добавляем None как 5-й элемент
+            # receipt = (id, date, total, payment_method)
+            new_cur.execute("""
+                INSERT INTO receipts (id, date, total, payment_method, organization)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (*receipt, None))  # добавляем None как 5-й элемент
 
 
        for sale in sales:
