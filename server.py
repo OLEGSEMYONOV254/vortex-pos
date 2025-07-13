@@ -134,17 +134,7 @@ def init_db():
                     category TEXT
                 )
             """)
-            # Таблица товаров (products)
-            cur.execute("""
-                CREATE TABLE IF NOT EXISTS products (
-                    id BIGINT PRIMARY KEY,
-                    name TEXT NOT NULL,
-                    price REAL NOT NULL,
-                    price_wholesale REAL DEFAULT 0,
-                    price_bulk REAL DEFAULT 0,
-                    category TEXT
-                )
-            """)
+            
 
             conn.commit()
             print("[ИНИЦИАЛИЗАЦИЯ] Таблицы созданы/проверены в PostgreSQL")
@@ -369,11 +359,11 @@ def export_old_data():
             """, (*receipt, None))  # добавляем None как 5-й элемент
 
 
-        for sale in sales:
-            new_cur.execute("""
+        new_cur.execute("""
                 INSERT INTO sales (id, receipt_id, name, price, quantity, total, date, currency)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-            """, (*sale, '₸'))
+            """, sale)  # без добавления '₸'
+
 
 
         return "Данные перенесены успешно!"
@@ -967,6 +957,7 @@ def add_counterparty():
                 INSERT INTO counterparties 
                 (name, bin, type, address, phone, email, created_at, updated_at)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                RETURNING id
             """, (
                 data["name"],
                 data.get("bin"),
@@ -977,12 +968,14 @@ def add_counterparty():
                 now,
                 now
             ))
-            counterparty_id = cursor.lastrowid
+
+            counterparty_id = cursor.fetchone()[0]  # ✅ правильно получаем ID
             db.commit()
 
         return jsonify({"status": "success", "id": counterparty_id})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
+
 
 
 @app.route("/api/counterparties/<int:counterparty_id>", methods=["PUT"])
