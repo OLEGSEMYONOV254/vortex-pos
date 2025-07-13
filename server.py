@@ -123,7 +123,29 @@ def init_db():
                     last_updated TEXT NOT NULL
                 )
             """)
-            
+             # Создаем таблицу products
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS products (
+                    id BIGINT PRIMARY KEY,
+                    name TEXT NOT NULL,
+                    price REAL NOT NULL,
+                    price_wholesale REAL DEFAULT 0,
+                    price_bulk REAL DEFAULT 0,
+                    category TEXT
+                )
+            """)
+            # Таблица товаров (products)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS products (
+                    id BIGINT PRIMARY KEY,
+                    name TEXT NOT NULL,
+                    price REAL NOT NULL,
+                    price_wholesale REAL DEFAULT 0,
+                    price_bulk REAL DEFAULT 0,
+                    category TEXT
+                )
+            """)
+
             conn.commit()
             print("[ИНИЦИАЛИЗАЦИЯ] Таблицы созданы/проверены в PostgreSQL")
             
@@ -154,11 +176,11 @@ def init_db():
 
 # Функции работы с товарами
 def load_products():
-    """Загрузка списка товаров"""
-    if not PRODUCTS_FILE.exists():
-        with open(PRODUCTS_FILE, 'w', encoding='utf-8') as f:
-            json.dump([], f)
-        return []
+    with get_db() as conn:
+        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cur.execute("SELECT * FROM products ORDER BY name")
+        return [dict(row) for row in cur.fetchall()]
+
 
     with open(PRODUCTS_FILE, "r", encoding="utf-8") as f:
         products = json.load(f)
@@ -171,10 +193,10 @@ def load_products():
         return products
 
 
-def save_products(products):
-    """Сохранение списка товаров"""
-    with open(PRODUCTS_FILE, "w", encoding="utf-8") as f:
-        json.dump(products, f, ensure_ascii=False, indent=2)
+#def save_products(products):
+    #"""Сохранение списка товаров"""
+    #with open(PRODUCTS_FILE, "w", encoding="utf-8") as f:
+        #json.dump(products, f, ensure_ascii=False, indent=2)
 
 def add_counterparties_table():
     """Добавляем таблицу контрагентов, если её нет"""
@@ -337,55 +359,80 @@ def export_old_data():
 def add_product():
     try:
         product_data = {
-            "id": datetime.now().timestamp(),
+            "id": int(datetime.now().timestamp()),
             "name": request.form.get("name"),
             "price": float(request.form.get("price")),
             "price_wholesale": float(request.form.get("price_wholesale", 0)),
             "price_bulk": float(request.form.get("price_bulk", 0)),
             "category": request.form.get("category", "")
         }
-        products = load_products()
-        products.append(product_data)
-        save_products(products)
+
+        with get_db() as conn:
+            cur = conn.cursor()
+            cur.execute("""
+                INSERT INTO products (id, name, price, price_wholesale, price_bulk, category)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """, (
+                product_data["id"],
+                product_data["name"],
+                product_data["price"],
+                product_data["price_wholesale"],
+                product_data["price_bulk"],
+                product_data["category"]
+            ))
+            conn.commit()
+
         return redirect(url_for("products"))
     except Exception as e:
         return f"Ошибка: {str(e)}", 400
+
 
 
 @app.route("/update_product", methods=["POST"])
 def update_product():
     try:
-        product_id = float(request.form.get("id"))
-        products = load_products()
-        product_to_update = next((p for p in products if p["id"] == product_id), None)
+        product_id = int(request.form.get("id"))
+        name = request.form.get("name")
+        price = float(request.form.get("price"))
+        price_wholesale = float(request.form.get("price_wholesale", 0))
+        price_bulk = float(request.form.get("price_bulk", 0))
+        category = request.form.get("category", "")
 
-        if not product_to_update:
-            return "Товар не найден", 404
+        with get_db() as conn:
+            cur = conn.cursor()
+            cur.execute("""
+                UPDATE products
+                SET name = %s,
+                    price = %s,
+                    price_wholesale = %s,
+                    price_bulk = %s,
+                    category = %s
+                WHERE id = %s
+            """, (
+                name, price, price_wholesale, price_bulk, category, product_id
+            ))
+            conn.commit()
 
-        product_to_update.update({
-            "name": request.form["name"],
-            "price": float(request.form["price"]),
-            "price_wholesale": float(request.form.get("price_wholesale", 0)),
-            "price_bulk": float(request.form.get("price_bulk", 0)),
-            "category": request.form.get("category", "")
-        })
-
-        save_products(products)
         return redirect(url_for("products"))
     except Exception as e:
         return f"Ошибка: {str(e)}", 400
+
 
 
 @app.route("/delete_product", methods=["POST"])
 def delete_product():
     try:
-        product_id = float(request.form.get("id"))
-        products = load_products()
-        products = [p for p in products if p["id"] != product_id]
-        save_products(products)
+        product_id = int(request.form.get("id"))
+
+        with get_db() as conn:
+            cur = conn.cursor()
+            cur.execute("DELETE FROM products WHERE id = %s", (product_id,))
+            conn.commit()
+
         return redirect(url_for("products"))
     except Exception as e:
         return f"Ошибка: {str(e)}", 400
+
 
 
 @app.route("/upload_excel", methods=["POST"])
@@ -397,29 +444,35 @@ def upload_excel():
     if not file.filename.lower().endswith(('.xls', '.xlsx')):
         return "Неверный формат файла", 400
 
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+    file.save(filepath)
+
     try:
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-        file.save(filepath)
         df = pd.read_excel(filepath)
-        products = load_products()
 
-        for _, row in df.iterrows():
-            products.append({
-                "id": datetime.now().timestamp(),
-                "name": str(row.get("name", "")).strip(),
-                "price": float(row.get("price", 0)),
-                "price_wholesale": float(row.get("price_wholesale", 0)),
-                "price_bulk": float(row.get("price_bulk", 0)),
-                "category": str(row.get("category", "")).strip()
-            })
+        with get_db() as conn:
+            cur = conn.cursor()
+            for _, row in df.iterrows():
+                cur.execute("""
+                    INSERT INTO products (id, name, price, price_wholesale, price_bulk, category)
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                """, (
+                    int(datetime.now().timestamp()),
+                    str(row.get("name", "")).strip(),
+                    float(row.get("price", 0)),
+                    float(row.get("price_wholesale", 0)),
+                    float(row.get("price_bulk", 0)),
+                    str(row.get("category", "")).strip()
+                ))
+            conn.commit()
 
-        save_products(products)
         return redirect(url_for("products"))
     except Exception as e:
         return f"Ошибка при импорте: {str(e)}", 500
     finally:
         if os.path.exists(filepath):
             os.remove(filepath)
+
 
 
 @app.route("/promo")
