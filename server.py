@@ -576,7 +576,7 @@ def stats():
     date_to = request.args.get('date_to', '')
 
     with get_db() as conn:
-        cur = conn.cursor()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         query = """
             SELECT 
                 r.id, 
