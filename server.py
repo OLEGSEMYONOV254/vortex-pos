@@ -734,6 +734,7 @@ def process_sale():
                 ))
 
         # ✅ Логируем
+        print(f"[DEBUG] Добавлен товар: {item.get('name')} x {item.get('quantity')}")
         print(f"[✅] Чек №{receipt_id} успешно добавлен.")
         print(f"[🛒] Товаров в чеке: {len(cart)}")
 
@@ -752,7 +753,8 @@ def process_sale():
 @app.route("/receipt_details/<int:receipt_id>")
 def receipt_details(receipt_id):
     with get_db() as conn:
-        cur = conn.cursor()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
         cur.execute("""
             SELECT r.*, c.name as counterparty_name, c.bin as counterparty_bin
             FROM receipts r
@@ -762,9 +764,10 @@ def receipt_details(receipt_id):
         receipt = cur.fetchone()
 
         cur.execute(
-            "SELECT * FROM sales WHERE receipt_id = %s",
+            "SELECT name, price, quantity, total FROM sales WHERE receipt_id = %s",
             (receipt_id,)
         )
+
         items = cur.fetchall()
         print(f"[DEBUG] Чек ID: {receipt_id}")
         print(f"[DEBUG] Найдено товаров: {len(items)}")
