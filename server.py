@@ -369,11 +369,11 @@ def export_old_data():
             """, (*receipt, None))  # добавляем None как 5-й элемент
 
 
-       for sale in sales:
-        new_cur.execute("""
-            INSERT INTO sales (id, receipt_id, name, price, quantity, total, date, currency)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-        """, (*sale, '₸'))
+        for sale in sales:
+            new_cur.execute("""
+                INSERT INTO sales (id, receipt_id, name, price, quantity, total, date, currency)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            """, (*sale, '₸'))
 
 
         return "Данные перенесены успешно!"
