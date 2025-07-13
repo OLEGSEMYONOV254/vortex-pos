@@ -578,15 +578,17 @@ def sync_1c_database():
 
 @app.route("/report")
 def report():
-    with get_db() as db:
-        receipts = db.execute("""
+    with get_db() as conn:
+        cur = conn.cursor()
+        cur.execute("""
             SELECT r.id, r.date, r.total, r.payment_method, 
                    COUNT(s.id) as items_count
             FROM receipts r
             LEFT JOIN sales s ON r.id = s.receipt_id
             GROUP BY r.id
             ORDER BY r.date DESC
-        """).fetchall()
+        """)
+        receipts = cur.fetchall()
     return render_template("report.html", receipts=receipts)
 
 
@@ -780,11 +782,13 @@ def add_inventory():
 @app.route("/inventory/edit/<int:item_id>")
 def edit_inventory_item(item_id):
     """Страница редактирования товара"""
-    with get_db() as db:
-        item = db.execute(
-            "SELECT * FROM inventory WHERE id = ?",
+    with get_db() as conn:
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT * FROM inventory WHERE id = %s",
             (item_id,)
-        ).fetchone()
+        )
+        item = cur.fetchone()
     return render_template("edit_inventory.html", item=item)
 
 
@@ -797,20 +801,21 @@ def update_inventory_item(item_id):
         quantity = float(request.form["quantity"])
         unit = request.form["unit"]
 
-        with get_db() as db:
-            db.execute(
+        with get_db() as conn:
+            cur = conn.cursor()
+            cur.execute(
                 """UPDATE inventory SET
-                name = ?,
-                name_chinese = ?,
-                quantity = ?,
-                unit = ?,
-                last_updated = ?
-                WHERE id = ?""",
+                name = %s,
+                name_chinese = %s,
+                quantity = %s,
+                unit = %s,
+                last_updated = %s
+                WHERE id = %s""",
                 (name, name_chinese, quantity, unit,
                  datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                  item_id)
             )
-            db.commit()
+            conn.commit()
 
         return redirect(url_for("show_inventory"))
     except Exception as e:
@@ -821,9 +826,10 @@ def update_inventory_item(item_id):
 def delete_inventory_item(item_id):
     """Удаление товара"""
     try:
-        with get_db() as db:
-            db.execute("DELETE FROM inventory WHERE id = ?", (item_id,))
-            db.commit()
+        with get_db() as conn:
+            cur = conn.cursor()
+            cur.execute("DELETE FROM inventory WHERE id = %s", (item_id,))
+            conn.commit()
         return redirect(url_for("show_inventory"))
     except Exception as e:
         return f"Ошибка: {str(e)}", 400
@@ -900,7 +906,7 @@ def update_counterparty(counterparty_id):
 
         for field in fields:
             if field in data:
-                updates.append(f"{field} = ?")
+                updates.append(f"{field} = %s")
                 params.append(data[field])
 
         if not updates:
@@ -909,12 +915,13 @@ def update_counterparty(counterparty_id):
         params.append(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))  # updated_at
         params.append(counterparty_id)
 
-        with get_db() as db:
-            db.execute(
-                f"UPDATE counterparties SET {', '.join(updates)}, updated_at = ? WHERE id = ?",
+        with get_db() as conn:
+            cur = conn.cursor()
+            cur.execute(
+                f"UPDATE counterparties SET {', '.join(updates)}, updated_at = %s WHERE id = %s",
                 params
             )
-            db.commit()
+            conn.commit()
 
         return jsonify({"status": "success"})
     except Exception as e:
@@ -925,9 +932,10 @@ def update_counterparty(counterparty_id):
 def delete_counterparty(counterparty_id):
     """Удаление контрагента"""
     try:
-        with get_db() as db:
-            db.execute("DELETE FROM counterparties WHERE id = ?", (counterparty_id,))
-            db.commit()
+        with get_db() as conn:
+            cur = conn.cursor()
+            cur.execute("DELETE FROM counterparties WHERE id = %s", (counterparty_id,))
+            conn.commit()
         return jsonify({"status": "success"})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
