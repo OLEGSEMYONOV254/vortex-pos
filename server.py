@@ -765,6 +765,9 @@ def receipt_details(receipt_id):
             (receipt_id,)
         )
         items = cur.fetchall()
+        print(f"[DEBUG] Чек ID: {receipt_id}")
+        print(f"[DEBUG] Найдено товаров: {len(items)}")
+
 
     return render_template("receipt_details.html", receipt=receipt, items=items)
 
