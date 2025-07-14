@@ -491,10 +491,9 @@ def upload_excel():
             cur = conn.cursor()
             for _, row in df.iterrows():
                 cur.execute("""
-                    INSERT INTO products (id, name, price, price_wholesale, price_bulk, category)
-                    VALUES (%s, %s, %s, %s, %s, %s)
+                    INSERT INTO products (name, price, price_wholesale, price_bulk, category)
+                    VALUES (%s, %s, %s, %s, %s)
                 """, (
-                    int(datetime.now().timestamp()),
                     str(row.get("name", "")).strip(),
                     float(row.get("price", 0)),
                     float(row.get("price_wholesale", 0)),
