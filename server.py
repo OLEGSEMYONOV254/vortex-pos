@@ -12,6 +12,7 @@ import shutil
 import atexit
 from vortex_ai import ask_vortex
 import psycopg2.extras
+import math  # добавь вверху, если ещё нет
 
 
 
@@ -166,28 +167,27 @@ def init_db():
 
 # Функции работы с товарами
 def load_products():
-    """Загрузка товаров из PostgreSQL"""
+    """Загрузка товаров из PostgreSQL с фильтрацией NaN"""
     try:
         with get_db() as conn:
             cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
             cur.execute("SELECT * FROM products ORDER BY id DESC")
             rows = cur.fetchall()
-            return [dict(row) for row in rows]
+            products = []
+
+            for row in rows:
+                product = dict(row)
+                # Заменяем NaN и None на 0 для числовых полей
+                for field in ['price', 'price_wholesale', 'price_bulk']:
+                    value = product.get(field)
+                    if value is None or (isinstance(value, float) and math.isnan(value)):
+                        product[field] = 0.0
+                products.append(product)
+
+            return products
     except Exception as e:
         print(f"[ОШИБКА] Не удалось загрузить товары: {e}")
-        return []
-
-
-
-    with open(PRODUCTS_FILE, "r", encoding="utf-8") as f:
-        products = json.load(f)
-
-        # Убедимся, что у всех товаров есть ID
-        for product in products:
-            if 'id' not in product:
-                product['id'] = int(datetime.now().timestamp())
-
-        return products
+        return [
 
 
 def save_products(products):
