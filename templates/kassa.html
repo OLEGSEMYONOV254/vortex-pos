@@ -7,12 +7,10 @@
   <style>
     body { font-family: sans-serif; background: #1a1a1a; color: white; margin: 0; padding: 0 10px; }
     .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 200px 1fr 1fr;
       gap: 20px;
+      max-width: 100%;
     }
     .glow-text { text-align: center; color: #00ffcc; grid-column: 1 / -1; }
     .nav-grid {
@@ -234,10 +232,10 @@
     /* Мобильная версия */
     @media (max-width: 768px) {
       .container {
-        display: flex;
-        flex-direction: column;
-        padding: 10px;
-        gap: 15px;
+        display: grid;
+        grid-template-columns: 200px 1fr 1fr;
+        gap: 20px;
+        max-width: 100%;
       }
 
       .product-grid {
@@ -400,6 +398,34 @@
       font-weight: bold;
     }
 
+    .category-list {
+      background: #2a2a2a;
+      padding: 10px;
+      border-radius: 5px;
+      max-height: 75vh;
+      overflow-y: auto;
+    }
+    
+    .category-list button {
+      display: block;
+      width: 100%;
+      background: #3a3a3a;
+      color: white;
+      border: none;
+      padding: 8px 10px;
+      margin-bottom: 5px;
+      text-align: left;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .category-list button:hover,
+    .category-list button.active {
+      background: #00cc66;
+    }
+
+
   </style>
 </head>
 <body>
@@ -415,6 +441,8 @@
   <div id="kassa" class="tab-content active">
     <div class="container">
       <h1 class="glow-text">Кассовый аппарат</h1>
+      <div class="category-list" id="categoryList"></div>
+
 
       <div class="search-box">
         <input type="text" id="searchInput" placeholder="Поиск товаров..." oninput="searchProducts()">
@@ -571,6 +599,7 @@
       await loadProducts();
       renderCategoryTabs(allProducts);
       await loadCounterparties();
+      renderCategoryMenu(allProducts);
       renderProducts(allProducts);
       renderCounterparties();
       updateCounterpartySelect();
@@ -643,6 +672,32 @@
         }
     }
 
+    function renderCategoryMenu(products) {
+      const categoryList = document.getElementById('categoryList');
+      const categories = ['Все', ...new Set(products.map(p => p.category || 'Без категории'))];
+    
+      categoryList.innerHTML = '';
+      categories.forEach(category => {
+        const btn = document.createElement('button');
+        btn.textContent = category;
+        btn.classList.add('category-btn');
+        if (category === 'Все') btn.classList.add('active');
+    
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.category-list button').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const filtered = category === 'Все'
+            ? allProducts
+            : allProducts.filter(p => (p.category || 'Без категории') === category);
+          renderProducts(filtered);
+        });
+    
+        categoryList.appendChild(btn);
+      });
+    }
+
+
+    
     function renderProducts(products) {
       const productGrid = document.getElementById('productGrid');
       productGrid.innerHTML = '';
