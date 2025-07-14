@@ -597,41 +597,62 @@
 
     document.addEventListener('DOMContentLoaded', async () => {
       await loadProducts();
-      renderCategoryTabs(allProducts);
       await loadCounterparties();
-      renderCategoryMenu(allProducts);
+      renderCategoryMenu(allProducts); // Только боковое меню категорий
       renderProducts(allProducts);
       renderCounterparties();
       updateCounterpartySelect();
       showTab(currentTab);
     });
 
-    function renderCategoryTabs(products) {
-      const categoryTabs = document.getElementById('categoryTabs');
-      const categories = ['Все', ...new Set(products.map(p => p.category || 'Без категории'))];
+    function renderCategoryMenu(products) {
+      const categoryList = document.getElementById('categoryList');
+      categoryList.innerHTML = '';
     
-      categoryTabs.innerHTML = '';
-      categories.forEach(category => {
-        const btn = document.createElement('button');
-        btn.textContent = category;
-        btn.classList.add('tab-button');
-        if (category === 'Все') btn.classList.add('active');
-        btn.addEventListener('click', () => {
-          // Убираем активность у всех
-          document.querySelectorAll('.category-tabs .tab-button').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
+      // Собираем категории с товарами
+      const categoriesMap = {};
+      products.forEach(product => {
+        const category = product.category || 'Без категории';
+        if (!categoriesMap[category]) categoriesMap[category] = [];
+        categoriesMap[category].push(product);
+      });
     
-          // Фильтруем товары
-          if (category === 'Все') {
-            renderProducts(allProducts);
-          } else {
-            const filtered = allProducts.filter(p => (p.category || 'Без категории') === category);
-            renderProducts(filtered);
-          }
+      // Строим HTML-дерево
+      Object.entries(categoriesMap).forEach(([category, items]) => {
+        const categoryItem = document.createElement('div');
+        categoryItem.style.marginBottom = '8px';
+    
+        const categoryButton = document.createElement('button');
+        categoryButton.textContent = '▶ ' + category;
+        categoryButton.style.width = '100%';
+        categoryButton.style.textAlign = 'left';
+        categoryButton.classList.add('category-btn');
+        categoryButton.onclick = () => {
+          subList.style.display = subList.style.display === 'none' ? 'block' : 'none';
+          categoryButton.textContent = (subList.style.display === 'none' ? '▶ ' : '▼ ') + category;
+        };
+    
+        const subList = document.createElement('div');
+        subList.style.display = 'none';
+        subList.style.paddingLeft = '10px';
+    
+        items.forEach(product => {
+          const itemBtn = document.createElement('button');
+          itemBtn.textContent = '• ' + product.name;
+          itemBtn.classList.add('category-btn');
+          itemBtn.style.background = '#444';
+          itemBtn.style.fontSize = '0.9em';
+          itemBtn.style.marginBottom = '3px';
+          itemBtn.onclick = () => showQuantityModal(product);
+          subList.appendChild(itemBtn);
         });
-        categoryTabs.appendChild(btn);
+    
+        categoryItem.appendChild(categoryButton);
+        categoryItem.appendChild(subList);
+        categoryList.appendChild(categoryItem);
       });
     }
+
 
     
     // Функции для работы с вкладками
