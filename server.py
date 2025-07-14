@@ -187,7 +187,7 @@ def load_products():
             return products
     except Exception as e:
         print(f"[ОШИБКА] Не удалось загрузить товары: {e}")
-        return [
+        return []
 
 
 def save_products(products):
