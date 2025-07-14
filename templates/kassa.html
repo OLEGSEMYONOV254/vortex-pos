@@ -377,6 +377,29 @@
         gap: 10px;
       }
     }
+
+    .category-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .category-tabs button {
+      padding: 8px 16px;
+      background: #3a3a3a;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .category-tabs button.active {
+      background: #00cc66;
+      font-weight: bold;
+    }
+
   </style>
 </head>
 <body>
@@ -395,6 +418,10 @@
 
       <div class="search-box">
         <input type="text" id="searchInput" placeholder="Поиск товаров..." oninput="searchProducts()">
+      </div>
+
+      <div class="category-tabs" id="categoryTabs">
+        <!-- Кнопки категорий появятся тут -->
       </div>
 
       <div class="cart">
@@ -542,6 +569,7 @@
 
     document.addEventListener('DOMContentLoaded', async () => {
       await loadProducts();
+      renderCategoryTabs(allProducts);
       await loadCounterparties();
       renderProducts(allProducts);
       renderCounterparties();
@@ -549,6 +577,34 @@
       showTab(currentTab);
     });
 
+    function renderCategoryTabs(products) {
+      const categoryTabs = document.getElementById('categoryTabs');
+      const categories = ['Все', ...new Set(products.map(p => p.category || 'Без категории'))];
+    
+      categoryTabs.innerHTML = '';
+      categories.forEach(category => {
+        const btn = document.createElement('button');
+        btn.textContent = category;
+        btn.classList.add('tab-button');
+        if (category === 'Все') btn.classList.add('active');
+        btn.addEventListener('click', () => {
+          // Убираем активность у всех
+          document.querySelectorAll('.category-tabs .tab-button').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+    
+          // Фильтруем товары
+          if (category === 'Все') {
+            renderProducts(allProducts);
+          } else {
+            const filtered = allProducts.filter(p => (p.category || 'Без категории') === category);
+            renderProducts(filtered);
+          }
+        });
+        categoryTabs.appendChild(btn);
+      });
+    }
+
+    
     // Функции для работы с вкладками
     function showTab(tabId) {
       currentTab = tabId;
