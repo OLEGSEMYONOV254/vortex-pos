@@ -2,130 +2,177 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Smart POS — Касса 2.0</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔥 PRO-КАССА V2</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
   <style>
-    body { margin: 0; font-family: sans-serif; background: #121212; color: #fff; }
-    header { padding: 15px; background: #1f1f1f; display: flex; justify-content: space-between; align-items: center; }
-    #product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; padding: 20px; }
-    .product { background: #2a2a2a; padding: 15px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
-    .product:hover { background: #00cc66; color: #000; }
-    #cart { position: fixed; top: 0; right: 0; width: 30%; height: 100%; background: #1a1a1a; padding: 20px; overflow-y: auto; border-left: 2px solid #333; }
-    .cart-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #333; }
-    .btn-pay { background: #ffaa00; color: #000; font-size: 1.2em; padding: 15px; width: 100%; border: none; margin-top: 20px; border-radius: 5px; cursor: pointer; }
-    .btn-pay:hover { background: #ffc107; }
+    body {
+      background-color: #121212;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .product-card {
+      background: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 12px;
+      margin: 5px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .product-card:hover {
+      transform: scale(1.03);
+      background-color: #292929;
+    }
+    .cart-panel {
+      background: #1c1c1c;
+      padding: 15px;
+      border-radius: 8px;
+    }
+    .category-tab {
+      background: #2b2b2b;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      margin-right: 5px;
+      color: white;
+    }
+    .category-tab.active {
+      background: #00cc66;
+    }
   </style>
 </head>
 <body>
+  <div class="container-fluid">
+    <div class="row my-3">
+      <div class="col-md-9">
+        <input type="text" id="search" class="form-control form-control-lg mb-3" placeholder="Поиск товара...">
+        <div id="categoryTabs" class="d-flex overflow-auto mb-3"></div>
+        <div id="productGrid" class="row"></div>
+      </div>
+      <div class="col-md-3">
+        <div class="cart-panel">
+          <h4>🛒 Корзина</h4>
+          <div id="cartItems"></div>
+          <hr>
+          <div class="d-flex justify-content-between">
+            <strong>Итого:</strong>
+            <span id="cartTotal">0 ₸</span>
+          </div>
+          <button class="btn btn-success w-100 mt-3" onclick="pay()">💰 Оплатить</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<header>
-  <h2>Smart POS — Касса 2.0</h2>
-  <span id="status">🟢 Онлайн</span>
-</header>
+  <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
+  <script>
+    const socket = io();
+    let allProducts = [];
+    let cart = [];
 
-<div id="product-grid"></div>
-
-<div id="cart">
-  <h3>🛒 Чек</h3>
-  <div id="cartItems"></div>
-  <div style="margin-top: 10px;">Итого: <strong id="total">0 ₸</strong></div>
-  <button class="btn-pay" onclick="processSale()">✅ Оплатить</button>
-</div>
-
-<script>
-  let cart = [];
-
-  async function loadProducts() {
-    try {
-      const response = await fetch("/get_products");
-      const products = await response.json();
-      renderProducts(products);
-    } catch (e) {
-      console.error("Ошибка загрузки товаров:", e);
+    async function fetchProducts() {
+      const res = await fetch("/get_products");
+      allProducts = await res.json();
+      renderCategories();
+      renderProducts(allProducts);
     }
-  }
 
-  function renderProducts(products) {
-    const grid = document.getElementById("product-grid");
-    grid.innerHTML = "";
-    products.forEach(p => {
-      const div = document.createElement("div");
-      div.className = "product";
-      div.innerHTML = `<strong>${p.name}</strong><br>${p.price} ₸`;
-      div.onclick = () => addToCart(p);
-      grid.appendChild(div);
-    });
-  }
-
-  function addToCart(product) {
-    const existing = cart.find(item => item.id === product.id);
-    if (existing) {
-      existing.quantity += 1;
-      existing.total = (existing.quantity * existing.price).toFixed(2);
-    } else {
-      cart.push({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        quantity: 1,
-        total: product.price.toFixed(2)
+    function renderCategories() {
+      const categories = ["Все", ...new Set(allProducts.map(p => p.category || "Без категории"))];
+      const tabContainer = document.getElementById("categoryTabs");
+      tabContainer.innerHTML = "";
+      categories.forEach(cat => {
+        const btn = document.createElement("button");
+        btn.className = "category-tab";
+        btn.innerText = cat;
+        btn.onclick = () => filterByCategory(cat);
+        tabContainer.appendChild(btn);
       });
     }
-    updateCart();
-  }
 
-  function updateCart() {
-    const list = document.getElementById("cartItems");
-    const total = document.getElementById("total");
-    list.innerHTML = "";
-    let totalSum = 0;
+    function filterByCategory(cat) {
+      document.querySelectorAll(".category-tab").forEach(b => b.classList.remove("active"));
+      [...document.querySelectorAll(".category-tab")].find(b => b.innerText === cat)?.classList.add("active");
+      const filtered = cat === "Все" ? allProducts : allProducts.filter(p => (p.category || "Без категории") === cat);
+      renderProducts(filtered);
+    }
 
-    cart.forEach(item => {
-      totalSum += parseFloat(item.total);
-      const div = document.createElement("div");
-      div.className = "cart-item";
-      div.innerHTML = `
-        <span>${item.name} x${item.quantity}</span>
-        <span>${item.total} ₸</span>
-      `;
-      list.appendChild(div);
-    });
-
-    total.textContent = `${totalSum.toFixed(2)} ₸`;
-  }
-
-  async function processSale() {
-    if (cart.length === 0) return alert("Корзина пуста!");
-
-    const total = cart.reduce((s, i) => s + parseFloat(i.total), 0).toFixed(2);
-
-    try {
-      const res = await fetch("/process_sale", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-          cart: cart,
-          payment_method: "cash",
-          organization: "Жетес"
-        })
+    function renderProducts(products) {
+      const grid = document.getElementById("productGrid");
+      grid.innerHTML = "";
+      products.forEach(p => {
+        const col = document.createElement("div");
+        col.className = "col-md-3";
+        col.innerHTML = `
+          <div class="product-card" onclick="addToCart(${p.id})">
+            <strong>${p.name}</strong><br>
+            <span>${p.price} ₸</span>
+          </div>
+        `;
+        grid.appendChild(col);
       });
+    }
 
-      const result = await res.json();
-      if (result.status === "success") {
-        alert(`✅ Продажа оформлена. Чек №${result.receipt_id}`);
-        cart = [];
-        updateCart();
+    function addToCart(id) {
+      const product = allProducts.find(p => p.id === id);
+      if (!product) return;
+      const existing = cart.find(c => c.id === id);
+      if (existing) {
+        existing.quantity += 1;
+        existing.total = (existing.quantity * existing.price).toFixed(2);
       } else {
-        alert("❌ Ошибка: " + result.message);
+        cart.push({
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          quantity: 1,
+          total: product.price.toFixed(2)
+        });
       }
-    } catch (e) {
-      console.error("Ошибка оплаты:", e);
+      updateCart();
     }
-  }
 
-  loadProducts();
-</script>
+    function updateCart() {
+      const container = document.getElementById("cartItems");
+      const totalEl = document.getElementById("cartTotal");
+      container.innerHTML = "";
+      let total = 0;
+      cart.forEach(item => {
+        total += parseFloat(item.total);
+        container.innerHTML += `
+          <div class="d-flex justify-content-between mb-2">
+            <div>${item.name} × ${item.quantity}</div>
+            <div>${item.total} ₸</div>
+          </div>
+        `;
+      });
+      totalEl.innerText = total.toFixed(2) + " ₸";
+    }
 
+    function pay() {
+      if (cart.length === 0) return alert("Корзина пуста!");
+      const payload = {
+        cart,
+        payment_method: "cash",
+        organization: "Жетес"
+      };
+      fetch("/process_sale", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      }).then(res => {
+        if (res.ok) {
+          alert("Оплата прошла!");
+          cart = [];
+          updateCart();
+        } else {
+          alert("Ошибка оплаты");
+        }
+      });
+    }
+
+    fetchProducts();
+  </script>
 </body>
 </html>
-
