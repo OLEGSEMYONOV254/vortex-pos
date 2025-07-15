@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Новая Касса</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { background: #111; color: #fff; font-family: sans-serif; }
+    /* твои стили */
+  </style>
+</head>
+<body>
+  <h1>🧾 Альтернативная касса</h1>
+  <div id="productList"></div>
+
+  <script>
+    const products = {{ products|tojson }};
+    console.log("Загруженные товары:", products);
+    // твой JS-код
+  </script>
+</body>
+</html>
