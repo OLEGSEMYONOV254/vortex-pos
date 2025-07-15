@@ -712,40 +712,27 @@
 
     async function loadProducts() {
       try {
-        // В реальном приложении здесь будет запрос к серверу
-        // const response = await fetch('/get_products');
-        // allProducts = await response.json();
-        
-        // Тестовые данные
-        allProducts = [
-          { id: 1, name: 'Кола 0.5л', price: 300, category: 'Напитки' },
-          { id: 2, name: 'Фанта 0.5л', price: 300, category: 'Напитки' },
-          { id: 3, name: 'Сникерс', price: 250, category: 'Шоколад' },
-          { id: 4, name: 'Баунти', price: 250, category: 'Шоколад' },
-          { id: 5, name: 'Лэйс', price: 350, category: 'Чипсы' },
-          { id: 6, name: 'Пепси 1л', price: 450, category: 'Напитки' },
-          { id: 7, name: 'Вода 0.5л', price: 150, category: 'Напитки' },
-          { id: 8, name: 'Жвачка Orbit', price: 100, category: 'Конфеты' }
-        ];
+        const response = await fetch('/api/products'); // Ваш эндпоинт
+        allProducts = await response.json();
+        renderProducts(allProducts);
       } catch (error) {
         console.error('Ошибка загрузки товаров:', error);
+        // Можно оставить тестовые данные как запасной вариант
+        allProducts = [
+          { id: 1, name: "Пример товара", price: 100, category: "Категория" },
+          // ... другие товары
+        ];
       }
     }
 
     async function loadCounterparties() {
       try {
-        // В реальном приложении здесь будет запрос к серверу
-        // const response = await fetch('/api/counterparties');
-        // counterparties = await response.json();
-        
-        // Тестовые данные
-        counterparties = [
-          { id: 1, name: 'ТОО "Ромашка"', bin: '123456789012', type: 'supplier' },
-          { id: 2, name: 'ИП Иванов И.И.', bin: '987654321098', type: 'buyer' }
-        ];
+        const response = await fetch('/api/counterparties'); // Ваш эндпоинт
+        counterparties = await response.json();
         updateCounterpartySelect();
       } catch (error) {
         console.error('Ошибка загрузки контрагентов:', error);
+        counterparties = []; // Пустой массив, если нет данных
       }
     }
 
