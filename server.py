@@ -284,19 +284,20 @@ def test():
 @app.route("/api/receipts")
 def get_receipts():
     limit = int(request.args.get("limit", 10))
+
     try:
         with get_db() as conn:
             cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-            cur.execute("""
-                SELECT id, date, total, payment_method 
-                FROM receipts 
-                ORDER BY date DESC 
-                LIMIT %s
-            """, (limit,))
-            receipts = cur.fetchall()
-            return jsonify([dict(row) for row in receipts])
+            cur.execute(
+                "SELECT id, date, total, payment_method FROM receipts ORDER BY date DESC LIMIT %s",
+                (limit,)
+            )
+            rows = cur.fetchall()
+            result = [dict(row) for row in rows]
+            return jsonify(result)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 
 @app.route("/check_counterparties")
