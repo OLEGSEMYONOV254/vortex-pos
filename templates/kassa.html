@@ -5,14 +5,24 @@
   <title>Касса</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body { font-family: sans-serif; background: #1a1a1a; color: white; margin: 0; padding: 0 10px; }
+    body { 
+      font-family: sans-serif; 
+      background: #1a1a1a; 
+      color: white; 
+      margin: 0; 
+      padding: 0 10px; 
+    }
     .container {
       display: grid;
       grid-template-columns: 200px 1fr 1fr;
       gap: 20px;
       max-width: 100%;
     }
-    .glow-text { text-align: center; color: #00ffcc; grid-column: 1 / -1; }
+    .glow-text { 
+      text-align: center; 
+      color: #00ffcc; 
+      grid-column: 1 / -1; 
+    }
     .nav-grid {
       display: flex;
       flex-wrap: wrap;
@@ -33,7 +43,9 @@
       flex: 1 1 40%;
       transition: background 0.2s ease;
     }
-    .nav-card:hover { background: #444; }
+    .nav-card:hover { 
+      background: #444; 
+    }
     .product-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -47,7 +59,9 @@
       cursor: pointer;
       transition: transform 0.2s;
     }
-    .product-card:hover { transform: scale(1.05); }
+    .product-card:hover { 
+      transform: scale(1.05); 
+    }
     .cart {
       background: #2a2a2a;
       padding: 15px;
@@ -77,15 +91,23 @@
       border-radius: 5px;
       font-size: 1em;
     }
-    .btn:hover { background: #00aa55; }
-    .btn-danger { background: #ff3333; }
-    .btn-danger:hover { background: #cc0000; }
+    .btn:hover { 
+      background: #00aa55; 
+    }
+    .btn-danger { 
+      background: #ff3333; 
+    }
+    .btn-danger:hover { 
+      background: #cc0000; 
+    }
     .btn-pay {
       background: #ffaa00;
       width: 100%;
       margin-top: 10px;
     }
-    .btn-pay:hover { background: #dd8800; }
+    .btn-pay:hover { 
+      background: #dd8800; 
+    }
     .quantity-controls {
       display: flex;
       align-items: center;
@@ -101,6 +123,8 @@
       font-size: 1em;
       border-radius: 5px;
       border: none;
+      background: #333;
+      color: white;
     }
     .modal {
       display: none;
@@ -168,89 +192,94 @@
       border: 1px solid #444;
       border-radius: 5px;
     }
-    .counterparties-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 15px;
-      margin-top: 20px;
+    .category-list {
+      background: #2a2a2a;
+      padding: 10px;
+      border-radius: 5px;
+      max-height: 75vh;
+      overflow-y: auto;
     }
-    .counterparty-card {
+    .category-list button {
+      display: block;
+      width: 100%;
+      background: #3a3a3a;
+      color: white;
+      border: none;
+      padding: 8px 10px;
+      margin-bottom: 5px;
+      text-align: left;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .category-list button:hover,
+    .category-list button.active {
+      background: #00cc66;
+    }
+    #topCategoryTabs {
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      gap: 10px;
+      margin: 10px 0;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #444;
+    }
+    #topCategoryTabs button {
+      white-space: nowrap;
+      background: #2a2a2a;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    #topCategoryTabs button.active {
+      background: #00cc66;
+      font-weight: bold;
+    }
+    .receipt-history {
       background: #2a2a2a;
       padding: 15px;
       border-radius: 5px;
-      transition: transform 0.2s;
+      grid-column: 3;
+      grid-row: 3;
+      max-height: 60vh;
+      overflow-y: auto;
     }
-    .counterparty-card:hover {
-      transform: scale(1.02);
-      box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
-    }
-    .counterparty-form {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      margin-top: 20px;
-    }
-    .counterparty-form input,
-    .counterparty-form select {
+    .receipt-item {
       padding: 10px;
-      background: #333;
-      color: white;
-      border: 1px solid #444;
+      margin-bottom: 10px;
+      background: #3a3a3a;
       border-radius: 5px;
-      font-size: 1em;
+      cursor: pointer;
     }
-    .counterparty-form button {
-      align-self: flex-start;
+    .receipt-item:hover {
+      background: #444;
     }
-    .tab-content {
-      display: none;
+    .hotkey-hint {
+      font-size: 0.8em;
+      color: #aaa;
+      margin-left: 10px;
     }
-    .tab-content.active {
-      display: block;
+    .quick-add-buttons {
+      display: flex;
+      gap: 5px;
+      margin-top: 5px;
     }
-    @media (max-width: 768px) {
-      .container {
-        display: grid;
-        grid-template-columns: 200px 1fr 1fr;
-        gap: 20px;
-        max-width: 100%;
-      }
-      .product-grid {
-        order: 4;
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      }
-      .cart {
-        order: 2;
-        margin-bottom: 15px;
-      }
-      .search-box {
-        order: 1;
-      }
-      .nav-grid {
-        order: 0;
-        margin-bottom: 10px;
-      }
-      .quantity-controls {
-        flex-wrap: wrap;
-        justify-content: flex-end;
-      }
-      .quantity-controls button {
-        padding: 5px 8px;
-        font-size: 0.8em;
-      }
-      .product-card {
-        padding: 10px;
-      }
-      .cart-item {
-        flex-direction: column;
-      }
-      .modal-content {
-        width: 90%;
-        max-width: 350px;
-      }
-      .counterparties-grid {
-        grid-template-columns: 1fr;
-      }
+    .quick-add-btn {
+      background: #3a3a3a;
+      color: white;
+      border: none;
+      padding: 3px 8px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 0.8em;
+    }
+    .quick-add-btn:hover {
+      background: #00cc66;
     }
     .payment-modal-content {
       background: linear-gradient(145deg, #2a2a2a, #1f1f1f);
@@ -306,141 +335,19 @@
       padding: 12px;
       font-size: 1em;
     }
-    @keyframes modalFadeIn {
-      from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .modal[style*="display: flex"] .payment-modal-content {
-      animation: modalFadeIn 0.3s ease-out;
-    }
-    .payment-method-icon {
-      margin-right: 8px;
-      vertical-align: middle;
-    }
-    @media (max-width: 480px) {
-      .payment-modal-content {
-        width: 90%;
-        padding: 20px 15px;
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
       }
-      .payment-actions {
-        flex-direction: column;
-        gap: 10px;
+      .product-grid {
+        order: 2;
       }
-    }
-    .category-tabs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 15px;
-    }
-    .category-tabs button {
-      padding: 8px 16px;
-      background: #3a3a3a;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .category-tabs button.active {
-      background: #00cc66;
-      font-weight: bold;
-    }
-    .category-list {
-      background: #2a2a2a;
-      padding: 10px;
-      border-radius: 5px;
-      max-height: 75vh;
-      overflow-y: auto;
-    }
-    .category-list button {
-      display: block;
-      width: 100%;
-      background: #3a3a3a;
-      color: white;
-      border: none;
-      padding: 8px 10px;
-      margin-bottom: 5px;
-      text-align: left;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .category-list button:hover,
-    .category-list button.active {
-      background: #00cc66;
-    }
-    #topCategoryTabs {
-      display: flex;
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      gap: 10px;
-      margin: 10px 0;
-      padding-bottom: 5px;
-      border-bottom: 1px solid #444;
-    }
-    #topCategoryTabs button {
-      white-space: nowrap;
-      background: #2a2a2a;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background 0.2s;
-      flex-shrink: 0;
-    }
-    #topCategoryTabs button.active {
-      background: #00cc66;
-      font-weight: bold;
-    }
-    
-    /* Новые стили для улучшений */
-    .receipt-history {
-      background: #2a2a2a;
-      padding: 15px;
-      border-radius: 5px;
-      grid-column: 3;
-      grid-row: 3;
-      max-height: 60vh;
-      overflow-y: auto;
-    }
-    .receipt-item {
-      padding: 10px;
-      margin-bottom: 10px;
-      background: #3a3a3a;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .receipt-item:hover {
-      background: #444;
-    }
-    .hotkey-hint {
-      font-size: 0.8em;
-      color: #aaa;
-      margin-left: 10px;
-    }
-    .quick-add-buttons {
-      display: flex;
-      gap: 5px;
-      margin-top: 5px;
-    }
-    .quick-add-btn {
-      background: #3a3a3a;
-      color: white;
-      border: none;
-      padding: 3px 8px;
-      border-radius: 3px;
-      cursor: pointer;
-      font-size: 0.8em;
-    }
-    .quick-add-btn:hover {
-      background: #00cc66;
-    }
-    #searchInput {
-      background: #333;
-      color: white;
-      border: 1px solid #444;
+      .cart {
+        order: 1;
+      }
+      .receipt-history {
+        order: 3;
+      }
     }
   </style>
 </head>
@@ -457,15 +364,16 @@
   <div id="kassa" class="tab-content active">
     <div class="container">
       <h1 class="glow-text">Кассовый аппарат</h1>
-      <div class="category-list" id="categoryList"></div>
-
+      
       <div class="search-box">
         <input type="text" id="searchInput" placeholder="Поиск товаров... (F1)" oninput="searchProducts()">
       </div>
 
-      <div class="category-tabs" id="categoryTabs">
-        <!-- Кнопки категорий появятся тут -->
-      </div>
+      <div class="category-list" id="categoryList"></div>
+
+      <div class="top-category-tabs" id="topCategoryTabs"></div>
+
+      <div class="product-grid" id="productGrid"></div>
 
       <div class="cart">
         <h2>Текущий чек <span class="hotkey-hint">(F2 - оплата, F3 - очистка)</span></h2>
@@ -473,18 +381,15 @@
         <div class="cart-total">Итого: <span id="totalAmount">0</span> ₸</div>
         <div class="cart-actions">
           <button class="btn" onclick="showTotal()">💵 Показать сумму</button>
-          <button class="btn btn-danger" onclick="clearTotal()">🧹 Очистить экран</button>
+          <button class="btn btn-danger" onclick="clearCart()">🧹 Очистить</button>
           <button class="btn btn-pay" onclick="processPayment()">💰 Оплатить (F2)</button>
         </div>
       </div>
-      
+
       <div class="receipt-history" id="receiptHistory">
         <h3>История операций <span class="hotkey-hint">(F4)</span></h3>
         <div id="receiptHistoryList"></div>
       </div>
-      
-      <div class="category-tabs" id="topCategoryTabs"></div>
-      <div class="product-grid" id="productGrid"></div>
     </div>
 
     <!-- Модальное окно ввода количества -->
@@ -515,11 +420,10 @@
       </div>
     </div>
 
-    <!-- Модальное окно выбора оплаты и организации -->
+    <!-- Модальное окно оплаты -->
     <div id="paymentModal" class="modal">
       <div class="payment-modal-content">
         <h3>Оформление оплаты</h3>
-
         <div class="payment-input-group">
           <label>Способ оплаты</label>
           <select id="paymentMethod">
@@ -530,7 +434,6 @@
             <option value="bill">📄 Счёт на оплату</option>
           </select>
         </div>
-
         <div class="payment-input-group">
           <label>Организация</label>
           <select id="organizationSelect">
@@ -538,50 +441,16 @@
             <option value="AS Qadir">🏭 AS Qadir</option>
           </select>
         </div>
-
         <div class="payment-input-group">
           <label>Контрагент</label>
           <select id="counterpartySelect">
             <option value="">Не выбрано</option>
-            <!-- Список контрагентов будет заполняться динамически -->
           </select>
         </div>
-
         <div class="payment-actions">
-          <button class="btn btn-pay" onclick="confirmPayment()">
-            <span class="payment-method-icon">✅</span> Подтвердить
-          </button>
-          <button class="btn btn-danger" onclick="closePaymentModal()">
-            <span class="payment-method-icon">❌</span> Отмена (Esc)
-          </button>
+          <button class="btn btn-pay" onclick="confirmPayment()">✅ Подтвердить</button>
+          <button class="btn btn-danger" onclick="closePaymentModal()">❌ Отмена (Esc)</button>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Вкладка Контрагенты -->
-  <div id="counterparties" class="tab-content">
-    <div class="container">
-      <h1 class="glow-text">Управление контрагентами</h1>
-
-      <div class="counterparty-form">
-        <h3>Добавить нового контрагента</h3>
-        <input type="text" id="counterpartyName" placeholder="Наименование" required>
-        <input type="text" id="counterpartyBin" placeholder="БИН/ИИН">
-        <input type="text" id="counterpartyAddress" placeholder="Адрес">
-        <input type="text" id="counterpartyPhone" placeholder="Телефон">
-        <input type="email" id="counterpartyEmail" placeholder="Email">
-        <select id="counterpartyType">
-          <option value="supplier">Поставщик</option>
-          <option value="buyer">Покупатель</option>
-          <option value="partner">Партнер</option>
-          <option value="other">Другое</option>
-        </select>
-        <button class="btn" onclick="addCounterparty()">Добавить контрагента</button>
-      </div>
-
-      <div class="counterparties-grid" id="counterpartiesGrid">
-        <!-- Список контрагентов будет заполняться динамически -->
       </div>
     </div>
   </div>
@@ -590,8 +459,7 @@
   <div id="home" class="tab-content">
     <div class="container">
       <h1 class="glow-text">Главная страница</h1>
-      <p>Добро пожаловать в систему управления кассой и контрагентами.</p>
-      <div style="margin-top: 20px; background: #2a2a2a; padding: 15px; border-radius: 5px;">
+      <div style="background: #2a2a2a; padding: 20px; border-radius: 5px;">
         <h3>Горячие клавиши:</h3>
         <ul>
           <li><strong>F1</strong> - фокус на поиск товаров</li>
@@ -600,7 +468,6 @@
           <li><strong>F4</strong> - показать/скрыть историю операций</li>
           <li><strong>Enter</strong> - подтверждение в модальных окнах</li>
           <li><strong>Esc</strong> - отмена действий</li>
-          <li><strong>Двойной клик</strong> по товару - быстрое добавление</li>
         </ul>
       </div>
     </div>
@@ -609,370 +476,161 @@
   <div id="products" class="tab-content">
     <div class="container">
       <h1 class="glow-text">Управление товарами</h1>
-      <p>Здесь будет управление товарами.</p>
+      <p>Перейдите в раздел администрирования для управления товарами</p>
+    </div>
+  </div>
+
+  <div id="counterparties" class="tab-content">
+    <div class="container">
+      <h1 class="glow-text">Управление контрагентами</h1>
+      <p>Перейдите в раздел администрирования для управления контрагентами</p>
     </div>
   </div>
 
   <div id="stats" class="tab-content">
     <div class="container">
       <h1 class="glow-text">Отчёты и статистика</h1>
-      <p>Здесь будут отчёты и статистика.</p>
+      <p>Перейдите в раздел администрирования для просмотра отчётов</p>
     </div>
   </div>
 
-  <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
   <script>
+    // Глобальные переменные
     let cart = [];
     let allProducts = [];
     let currentProduct = null;
     let counterparties = [];
-    let currentTab = 'kassa';
     let receiptHistory = [];
     let isQuickAddMode = false;
+    const socket = io();
 
+    // Инициализация при загрузке
     document.addEventListener('DOMContentLoaded', async () => {
       await loadProducts();
       await loadCounterparties();
+      await loadReceiptHistory();
       renderCategoryMenu(allProducts);
-      renderTopCategoryTabs(allProducts);
       renderProducts(allProducts);
-      renderCounterparties();
-      updateCounterpartySelect();
-      showTab(currentTab);
-      loadReceiptHistory();
-      
-      // Автофокус на поиск при загрузке
       document.getElementById('searchInput').focus();
       
-      // Добавляем обработчики горячих клавиш
+      // Обработчики горячих клавиш
       document.addEventListener('keydown', handleHotkeys);
+      
+      // Сокет-события
+      socket.on('receipt_processed', (data) => {
+        console.log('Чек обработан:', data);
+        loadReceiptHistory();
+      });
+      
+      socket.on('show_total', (data) => {
+        console.log('Сумма на экране:', data);
+      });
     });
 
-    function handleHotkeys(e) {
-      // F1 - фокус на поиск
-      if (e.key === 'F1') {
-        e.preventDefault();
-        document.getElementById('searchInput').focus();
-      }
-      // F2 - оплата
-      else if (e.key === 'F2') {
-        e.preventDefault();
-        processPayment();
-      }
-      // F3 - очистка
-      else if (e.key === 'F3') {
-        e.preventDefault();
-        clearTotal();
-      }
-      // F4 - история
-      else if (e.key === 'F4') {
-        e.preventDefault();
-        document.getElementById('receiptHistory').style.display = 
-          document.getElementById('receiptHistory').style.display === 'none' ? 'block' : 'none';
-      }
-      // Enter - быстрое добавление
-      else if (e.key === 'Enter' && isQuickAddMode) {
-        e.preventDefault();
-        addToCartWithQuantity();
-      }
-      // Escape - отмена
-      else if (e.key === 'Escape') {
-        if (document.getElementById('quantityModal').style.display === 'flex') {
-          closeQuantityModal();
-        }
-        if (document.getElementById('paymentModal').style.display === 'flex') {
-          closePaymentModal();
-        }
-      }
-    }
-
-    function renderCategoryMenu(products) {
-      const categoryList = document.getElementById('categoryList');
-      const categories = ['Все', ...new Set(products.map(p => p.category || 'Без категории'))];
-    
-      categoryList.innerHTML = '';
-      categories.forEach(category => {
-        const btn = document.createElement('button');
-        btn.textContent = category;
-        btn.classList.add('category-btn');
-        if (category === 'Все') btn.classList.add('active');
-    
-        btn.addEventListener('click', () => {
-          document.querySelectorAll('.category-list button').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          const filtered = category === 'Все'
-            ? allProducts
-            : allProducts.filter(p => (p.category || 'Без категории') === category);
-          renderProducts(filtered);
-        });
-    
-        categoryList.appendChild(btn);
-      });
-    }
-
+    // Функции работы с товарами
     async function loadProducts() {
       try {
-        const response = await fetch('/api/products'); // Ваш эндпоинт
+        const response = await fetch('/get_products');
         allProducts = await response.json();
         renderProducts(allProducts);
       } catch (error) {
         console.error('Ошибка загрузки товаров:', error);
-        // Можно оставить тестовые данные как запасной вариант
-        allProducts = [
-          { id: 1, name: "Пример товара", price: 100, category: "Категория" },
-          // ... другие товары
-        ];
+        allProducts = [];
       }
     }
 
     async function loadCounterparties() {
       try {
-        const response = await fetch('/api/counterparties'); // Ваш эндпоинт
+        const response = await fetch('/api/counterparties');
         counterparties = await response.json();
         updateCounterpartySelect();
       } catch (error) {
         console.error('Ошибка загрузки контрагентов:', error);
-        counterparties = []; // Пустой массив, если нет данных
+        counterparties = [];
       }
     }
 
-    function renderProducts(products) {
-      const productGrid = document.getElementById('productGrid');
-      productGrid.innerHTML = '';
-      products.forEach(product => {
-        const productCard = document.createElement('div');
-        productCard.className = 'product-card';
-        productCard.innerHTML = `
-          <div><strong>${product.name}</strong></div>
-          <div>${product.price} ₸</div>
-          ${product.category ? `<div>${product.category}</div>` : ''}
-          <div class="quick-add-buttons">
-            <button class="quick-add-btn" onclick="event.stopPropagation(); addToCart({...${JSON.stringify(product)}, quantity: 1, total: ${product.price}})">+1</button>
-            <button class="quick-add-btn" onclick="event.stopPropagation(); addToCart({...${JSON.stringify(product)}, quantity: 0.5, total: ${product.price*0.5}})">+0.5</button>
-          </div>
-        `;
-        productCard.onclick = () => showQuantityModal(product);
-        productCard.ondblclick = () => showQuantityModal(product, true);
-        productGrid.appendChild(productCard);
-      });
-    }
-
-    function renderCounterparties() {
-      const grid = document.getElementById('counterpartiesGrid');
-      grid.innerHTML = '';
-
-      counterparties.forEach(counterparty => {
-        const card = document.createElement('div');
-        card.className = 'counterparty-card';
-        card.innerHTML = `
-          <h3>${counterparty.name}</h3>
-          <p>БИН/ИИН: ${counterparty.bin || 'не указан'}</p>
-          <p>Тип: ${getCounterpartyTypeName(counterparty.type)}</p>
-          <p>Телефон: ${counterparty.phone || 'не указан'}</p>
-          <p>Email: ${counterparty.email || 'не указан'}</p>
-          <p>Адрес: ${counterparty.address || 'не указан'}</p>
-          <button class="btn" onclick="editCounterparty(${counterparty.id})">✏️ Редактировать</button>
-          <button class="btn btn-danger" onclick="deleteCounterparty(${counterparty.id})">🗑️ Удалить</button>
-        `;
-        grid.appendChild(card);
-      });
-    }
-
-    function renderTopCategoryTabs(products) {
-      const topTabs = document.getElementById('topCategoryTabs');
-      const categories = ['Все', ...new Set(products.map(p => p.category || 'Без категории'))];
-    
-      topTabs.innerHTML = '';
-    
-      categories.forEach(category => {
-        const btn = document.createElement('button');
-        btn.textContent = category;
-        if (category === 'Все') btn.classList.add('active');
-    
-        btn.addEventListener('click', () => {
-          topTabs.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-    
-          const filtered = category === 'Все'
-            ? allProducts
-            : allProducts.filter(p => (p.category || 'Без категории') === category);
-    
-          renderProducts(filtered);
-        });
-    
-        topTabs.appendChild(btn);
-      });
-    }
-
-    function getCounterpartyTypeName(type) {
-      const types = {
-        'supplier': 'Поставщик',
-        'buyer': 'Покупатель',
-        'partner': 'Партнер',
-        'other': 'Другое'
-      };
-      return types[type] || type;
+    async function loadReceiptHistory() {
+      try {
+        const response = await fetch('/api/receipts?limit=10');
+        receiptHistory = await response.json();
+        renderReceiptHistory();
+      } catch (error) {
+        console.error('Ошибка загрузки истории:', error);
+        receiptHistory = [];
+      }
     }
 
     function updateCounterpartySelect() {
       const select = document.getElementById('counterpartySelect');
       select.innerHTML = '<option value="">Не выбрано</option>';
-
-      counterparties.forEach(counterparty => {
+      counterparties.forEach(c => {
         const option = document.createElement('option');
-        option.value = counterparty.id;
-        option.textContent = counterparty.name;
+        option.value = c.id;
+        option.textContent = c.name;
         select.appendChild(option);
       });
     }
 
-    function addCounterparty() {
-      const name = document.getElementById('counterpartyName').value.trim();
-      if (!name) {
-        alert('Введите наименование контрагента');
-        return;
-      }
-
-      const newCounterparty = {
-        id: Date.now(),
-        name: name,
-        bin: document.getElementById('counterpartyBin').value.trim(),
-        address: document.getElementById('counterpartyAddress').value.trim(),
-        phone: document.getElementById('counterpartyPhone').value.trim(),
-        email: document.getElementById('counterpartyEmail').value.trim(),
-        type: document.getElementById('counterpartyType').value
-      };
-
-      counterparties.push(newCounterparty);
-      renderCounterparties();
-      updateCounterpartySelect();
-
-      // Очищаем форму
-      document.getElementById('counterpartyName').value = '';
-      document.getElementById('counterpartyBin').value = '';
-      document.getElementById('counterpartyAddress').value = '';
-      document.getElementById('counterpartyPhone').value = '';
-      document.getElementById('counterpartyEmail').value = '';
-
-      alert('Контрагент успешно добавлен');
-    }
-
-    function editCounterparty(id) {
-      const counterparty = counterparties.find(c => c.id === id);
-      if (!counterparty) return;
-
-      document.getElementById('counterpartyName').value = counterparty.name;
-      document.getElementById('counterpartyBin').value = counterparty.bin || '';
-      document.getElementById('counterpartyAddress').value = counterparty.address || '';
-      document.getElementById('counterpartyPhone').value = counterparty.phone || '';
-      document.getElementById('counterpartyEmail').value = counterparty.email || '';
-      document.getElementById('counterpartyType').value = counterparty.type;
-
-      deleteCounterparty(id, false);
-      document.getElementById('counterpartyName').focus();
-    }
-
-    function deleteCounterparty(id, confirm = true) {
-      if (confirm && !confirm('Вы уверены, что хотите удалить этого контрагента?')) {
-        return;
-      }
-
-      counterparties = counterparties.filter(c => c.id !== id);
-      renderCounterparties();
-      updateCounterpartySelect();
-    }
-
-    function searchProducts() {
-      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-      const filteredProducts = allProducts.filter(product =>
-        product.name.toLowerCase().includes(searchTerm) ||
-        (product.category && product.category.toLowerCase().includes(searchTerm))
-      );
-      renderProducts(filteredProducts);
-    }
-
-    function showQuantityModal(product, quickAdd = false) {
-      currentProduct = product;
-      document.getElementById('modalProductName').textContent = product.name;
-      document.getElementById('quantityInput').value = quickAdd ? '1.00' : (localStorage.getItem('lastQuantity') || '1.00');
-      document.getElementById('quantityModal').style.display = 'flex';
-      isQuickAddMode = quickAdd;
+    // Функции отображения
+    function renderCategoryMenu(products) {
+      const categoryList = document.getElementById('categoryList');
+      const categories = ['Все', ...new Set(products.map(p => p.category || 'Без категории'))];
       
-      setTimeout(() => {
-        document.getElementById('quantityInput').focus();
-        document.getElementById('quantityInput').select();
-      }, 100);
+      categoryList.innerHTML = '';
+      categories.forEach(category => {
+        const btn = document.createElement('button');
+        btn.textContent = category;
+        btn.onclick = () => filterByCategory(category);
+        if (category === 'Все') btn.classList.add('active');
+        categoryList.appendChild(btn);
+      });
     }
 
-    function closeQuantityModal() {
-      document.getElementById('quantityModal').style.display = 'none';
+    function renderProducts(products) {
+      const productGrid = document.getElementById('productGrid');
+      productGrid.innerHTML = '';
+      
+      products.forEach(product => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+          <div><strong>${product.name}</strong></div>
+          <div>${product.price} ₸</div>
+          ${product.category ? `<div>${product.category}</div>` : ''}
+          <div class="quick-add-buttons">
+            <button class="quick-add-btn" onclick="addToCart(${JSON.stringify(product)}, 1)">+1</button>
+            <button class="quick-add-btn" onclick="addToCart(${JSON.stringify(product)}, 0.5)">+0.5</button>
+          </div>
+        `;
+        card.onclick = () => showQuantityModal(product);
+        card.ondblclick = () => showQuantityModal(product, true);
+        productGrid.appendChild(card);
+      });
     }
 
-    function appendToQuantity(value) {
-      const input = document.getElementById('quantityInput');
-      let currentValue = input.value;
-
-      if (currentValue === '0' && value !== '.') {
-        currentValue = value;
-      }
-      else if (value === '.' && currentValue.includes('.')) {
-        return;
-      }
-      else {
-        currentValue += value;
-      }
-
-      if (currentValue.startsWith('.')) {
-        currentValue = '0' + currentValue;
-      }
-
-      input.value = currentValue;
-    }
-
-    function clearQuantity() {
-      document.getElementById('quantityInput').value = '0';
-    }
-
-    function addToCartWithQuantity() {
-      const quantity = parseFloat(document.getElementById('quantityInput').value) || 0;
-      if (quantity > 0) {
-        localStorage.setItem('lastQuantity', quantity.toString());
-        
-        addToCart({
-          ...currentProduct,
-          quantity: quantity,
-          total: (currentProduct.price * quantity).toFixed(2)
-        });
-        
-        if (isQuickAddMode) {
-          document.getElementById('searchInput').focus();
-        }
-        
-        closeQuantityModal();
-      }
-    }
-
-    function addToCart(product) {
-      const existingItem = cart.find(item => item.id === product.id);
-      if (existingItem) {
-        existingItem.quantity += product.quantity;
-        existingItem.total = (existingItem.price * existingItem.quantity).toFixed(2);
-      } else {
-        cart.push({
-          id: product.id,
-          name: product.name,
-          price: product.price,
-          quantity: product.quantity,
-          total: product.total
-        });
-      }
-      updateCartDisplay();
+    function renderReceiptHistory() {
+      const list = document.getElementById('receiptHistoryList');
+      list.innerHTML = '';
+      
+      receiptHistory.forEach(receipt => {
+        const item = document.createElement('div');
+        item.className = 'receipt-item';
+        item.innerHTML = `
+          <div><strong>Чек #${receipt.id}</strong></div>
+          <div>${new Date(receipt.date).toLocaleString()}</div>
+          <div>${receipt.total} ₸ (${receipt.payment_method})</div>
+        `;
+        item.onclick = () => viewReceiptDetails(receipt.id);
+        list.appendChild(item);
+      });
     }
 
     function updateCartDisplay() {
       const cartItems = document.getElementById('cartItems');
       const totalAmount = document.getElementById('totalAmount');
       cartItems.innerHTML = '';
+      
       let total = 0;
       cart.forEach(item => {
         total += parseFloat(item.total);
@@ -993,7 +651,29 @@
         `;
         cartItems.appendChild(cartItem);
       });
+      
       totalAmount.textContent = total.toFixed(2);
+    }
+
+    // Функции работы с корзиной
+    function addToCart(product, quantity = 1) {
+      const existingItem = cart.find(item => item.id === product.id);
+      const total = (product.price * quantity).toFixed(2);
+      
+      if (existingItem) {
+        existingItem.quantity += quantity;
+        existingItem.total = (existingItem.price * existingItem.quantity).toFixed(2);
+      } else {
+        cart.push({
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          quantity: quantity,
+          total: total
+        });
+      }
+      
+      updateCartDisplay();
     }
 
     function changeQuantity(productId, delta) {
@@ -1001,7 +681,7 @@
       if (item) {
         item.quantity = parseFloat((item.quantity + delta).toFixed(2));
         if (item.quantity <= 0) {
-          cart = cart.filter(item => item.id !== productId);
+          cart = cart.filter(i => i.id !== productId);
         } else {
           item.total = (item.price * item.quantity).toFixed(2);
         }
@@ -1014,34 +694,67 @@
       updateCartDisplay();
     }
 
-    function calculateTotal() {
-      return cart.reduce((sum, item) => sum + parseFloat(item.total), 0).toFixed(2);
+    function clearCart() {
+      cart = [];
+      updateCartDisplay();
     }
 
-    function showTotal() {
-      const total = calculateTotal();
-      // В реальном приложении здесь будет запрос к серверу
-      console.log('Отправка суммы на экран:', total);
+    // Модальные окна
+    function showQuantityModal(product, quickAdd = false) {
+      currentProduct = product;
+      document.getElementById('modalProductName').textContent = product.name;
+      document.getElementById('quantityInput').value = quickAdd ? '1.00' : '1.00';
+      document.getElementById('quantityModal').style.display = 'flex';
+      isQuickAddMode = quickAdd;
+      
+      setTimeout(() => {
+        document.getElementById('quantityInput').focus();
+        document.getElementById('quantityInput').select();
+      }, 100);
     }
 
-    function clearTotal() {
-      // В реальном приложении здесь будет запрос к серверу
-      console.log('Очистка экрана');
+    function closeQuantityModal() {
+      document.getElementById('quantityModal').style.display = 'none';
     }
 
-    async function processPayment() {
+    function appendToQuantity(value) {
+      const input = document.getElementById('quantityInput');
+      let current = input.value;
+      
+      if (current === '0' && value !== '.') {
+        current = value;
+      } else if (value === '.' && current.includes('.')) {
+        return;
+      } else {
+        current += value;
+      }
+      
+      if (current.startsWith('.')) current = '0' + current;
+      input.value = current;
+    }
+
+    function clearQuantity() {
+      document.getElementById('quantityInput').value = '0';
+    }
+
+    function addToCartWithQuantity() {
+      const quantity = parseFloat(document.getElementById('quantityInput').value) || 0;
+      if (quantity > 0) {
+        addToCart(currentProduct, quantity);
+        closeQuantityModal();
+      }
+    }
+
+    function processPayment() {
       if (cart.length === 0) {
         alert('Добавьте товары в чек перед оплатой');
         return;
       }
-
-      await loadCounterparties();
-      const total = calculateTotal();
-      const paymentModal = document.getElementById('paymentModal');
-      const title = paymentModal.querySelector('h3');
-      title.innerHTML = `Оформление оплаты <small style="display: block; font-size: 0.7em; margin-top: 5px; color: #00ffcc;">Сумма: ${total} ₸</small>`;
-
-      paymentModal.style.display = 'flex';
+      
+      const total = cart.reduce((sum, item) => sum + parseFloat(item.total), 0).toFixed(2);
+      const modal = document.getElementById('paymentModal');
+      modal.querySelector('h3').innerHTML = `Оформление оплаты <small style="display: block; font-size: 0.7em; margin-top: 5px; color: #00ffcc;">Сумма: ${total} ₸</small>`;
+      modal.style.display = 'flex';
     }
 
     function closePaymentModal() {
@@ -1049,93 +762,126 @@
     }
 
     async function confirmPayment() {
-      const counterpartySelect = document.getElementById('counterpartySelect');
-      const counterpartyId = counterpartySelect.value;
+      const paymentMethod = document.getElementById('paymentMethod').value;
+      const organization = document.getElementById('organizationSelect').value;
+      const counterpartyId = document.getElementById('counterpartySelect').value || null;
       
-      // В реальном приложении здесь будет запрос к серверу
-      console.log('Оформление оплаты:', {
-        cart: cart,
-        payment_method: document.getElementById('paymentMethod').value,
-        organization: document.getElementById('organizationSelect').value,
-        counterparty_id: counterpartyId || null
-      });
-      
-      // Добавляем чек в историю
-      receiptHistory.unshift({
-        id: Date.now(),
-        date: new Date(),
-        total: calculateTotal(),
-        payment_method: document.getElementById('paymentMethod').value
-      });
-      if (receiptHistory.length > 10) receiptHistory.pop();
-      renderReceiptHistory();
-      
-      alert('Продажа оформлена!');
-      cart = [];
-      updateCartDisplay();
-      closePaymentModal();
-    }
-
-    async function loadReceiptHistory() {
       try {
-        // В реальном приложении здесь будет запрос к серверу
-        // const response = await fetch('/api/receipts?limit=10');
-        // receiptHistory = await response.json();
+        const response = await fetch('/process_sale', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            cart: cart,
+            payment_method: paymentMethod,
+            organization: organization,
+            counterparty_id: counterpartyId
+          })
+        });
         
-        // Тестовые данные
-        receiptHistory = [
-          { id: 1, date: new Date(Date.now() - 3600000), total: '1250.00', payment_method: 'cash' },
-          { id: 2, date: new Date(Date.now() - 7200000), total: '850.50', payment_method: 'card' },
-          { id: 3, date: new Date(Date.now() - 10800000), total: '1500.00', payment_method: 'cash' }
-        ];
-        renderReceiptHistory();
+        if (response.ok) {
+          alert('Продажа оформлена!');
+          cart = [];
+          updateCartDisplay();
+          closePaymentModal();
+          loadReceiptHistory();
+        } else {
+          throw new Error('Ошибка сервера');
+        }
       } catch (error) {
-        console.error('Ошибка загрузки истории чеков:', error);
+        console.error('Ошибка оплаты:', error);
+        alert('Ошибка при оформлении оплаты');
       }
     }
 
-    function renderReceiptHistory() {
-      const list = document.getElementById('receiptHistoryList');
-      list.innerHTML = '';
+    // Вспомогательные функции
+    function filterByCategory(category) {
+      const filtered = category === 'Все' 
+        ? allProducts 
+        : allProducts.filter(p => (p.category || 'Без категории') === category);
+      renderProducts(filtered);
       
-      receiptHistory.forEach(receipt => {
-        const item = document.createElement('div');
-        item.className = 'receipt-item';
-        item.innerHTML = `
-          <div><strong>Чек #${receipt.id}</strong></div>
-          <div>${new Date(receipt.date).toLocaleString()}</div>
-          <div>${receipt.total} ₸ (${receipt.payment_method})</div>
-        `;
-        item.onclick = () => viewReceiptDetails(receipt.id);
-        list.appendChild(item);
+      // Обновляем активную кнопку категории
+      document.querySelectorAll('#categoryList button').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent === category);
       });
+    }
+
+    function searchProducts() {
+      const term = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = allProducts.filter(p => 
+        p.name.toLowerCase().includes(term) || 
+        (p.category && p.category.toLowerCase().includes(term))
+      );
+      renderProducts(filtered);
     }
 
     function viewReceiptDetails(receiptId) {
-      const receipt = receiptHistory.find(r => r.id === receiptId);
-      if (receipt) {
-        alert(`Чек #${receipt.id}\nДата: ${new Date(receipt.date).toLocaleString()}\nСумма: ${receipt.total} ₸\nСпособ оплаты: ${receipt.payment_method}`);
-      }
+      window.open(`/receipt_details/${receiptId}`, '_blank');
+    }
+
+    function showTotal() {
+      const total = cart.reduce((sum, item) => sum + parseFloat(item.total), 0).toFixed(2);
+      fetch('/send_to_screen', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          total: total,
+          payment_method: 'cash',
+          items: cart
+        })
+      });
     }
 
     function showTab(tabId) {
-      currentTab = tabId;
       document.querySelectorAll('.tab-content').forEach(tab => {
         tab.classList.remove('active');
       });
       document.getElementById(tabId).classList.add('active');
-
-      document.querySelectorAll('.nav-card').forEach(link => {
-        link.style.background = link.getAttribute('onclick')?.includes(tabId) ? '#444' : '#3a3a3a';
-      });
       
-      // При переключении на кассу фокус на поиск
+      // Фокус на поиск при открытии кассы
       if (tabId === 'kassa') {
         setTimeout(() => {
           document.getElementById('searchInput').focus();
         }, 100);
       }
     }
+
+    function handleHotkeys(e) {
+      switch(e.key) {
+        case 'F1': 
+          e.preventDefault();
+          document.getElementById('searchInput').focus();
+          break;
+        case 'F2': 
+          e.preventDefault();
+          processPayment();
+          break;
+        case 'F3': 
+          e.preventDefault();
+          clearCart();
+          break;
+        case 'F4': 
+          e.preventDefault();
+          const history = document.getElementById('receiptHistory');
+          history.style.display = history.style.display === 'none' ? 'block' : 'none';
+          break;
+        case 'Enter':
+          if (isQuickAddMode) {
+            e.preventDefault();
+            addToCartWithQuantity();
+          }
+          break;
+        case 'Escape':
+          if (document.getElementById('quantityModal').style.display === 'flex') {
+            closeQuantityModal();
+          }
+          if (document.getElementById('paymentModal').style.display === 'flex') {
+            closePaymentModal();
+          }
+          break;
+      }
+    }
   </script>
+  <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
 </body>
 </html>
