@@ -298,6 +298,10 @@ def get_receipts():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route("/kassa2")
+def kassa2():
+    products = load_products()
+    return render_template("kassa2.html", products=products)
 
 
 @app.route("/check_counterparties")
