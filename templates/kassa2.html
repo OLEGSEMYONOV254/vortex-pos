@@ -2,21 +2,130 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Новая Касса</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Smart POS — Касса 2.0</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { background: #111; color: #fff; font-family: sans-serif; }
-    /* твои стили */
+    body { margin: 0; font-family: sans-serif; background: #121212; color: #fff; }
+    header { padding: 15px; background: #1f1f1f; display: flex; justify-content: space-between; align-items: center; }
+    #product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; padding: 20px; }
+    .product { background: #2a2a2a; padding: 15px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+    .product:hover { background: #00cc66; color: #000; }
+    #cart { position: fixed; top: 0; right: 0; width: 30%; height: 100%; background: #1a1a1a; padding: 20px; overflow-y: auto; border-left: 2px solid #333; }
+    .cart-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #333; }
+    .btn-pay { background: #ffaa00; color: #000; font-size: 1.2em; padding: 15px; width: 100%; border: none; margin-top: 20px; border-radius: 5px; cursor: pointer; }
+    .btn-pay:hover { background: #ffc107; }
   </style>
 </head>
 <body>
-  <h1>🧾 Альтернативная касса</h1>
-  <div id="productList"></div>
 
-  <script>
-    const products = {{ products|tojson }};
-    console.log("Загруженные товары:", products);
-    // твой JS-код
-  </script>
+<header>
+  <h2>Smart POS — Касса 2.0</h2>
+  <span id="status">🟢 Онлайн</span>
+</header>
+
+<div id="product-grid"></div>
+
+<div id="cart">
+  <h3>🛒 Чек</h3>
+  <div id="cartItems"></div>
+  <div style="margin-top: 10px;">Итого: <strong id="total">0 ₸</strong></div>
+  <button class="btn-pay" onclick="processSale()">✅ Оплатить</button>
+</div>
+
+<script>
+  let cart = [];
+
+  async function loadProducts() {
+    try {
+      const response = await fetch("/get_products");
+      const products = await response.json();
+      renderProducts(products);
+    } catch (e) {
+      console.error("Ошибка загрузки товаров:", e);
+    }
+  }
+
+  function renderProducts(products) {
+    const grid = document.getElementById("product-grid");
+    grid.innerHTML = "";
+    products.forEach(p => {
+      const div = document.createElement("div");
+      div.className = "product";
+      div.innerHTML = `<strong>${p.name}</strong><br>${p.price} ₸`;
+      div.onclick = () => addToCart(p);
+      grid.appendChild(div);
+    });
+  }
+
+  function addToCart(product) {
+    const existing = cart.find(item => item.id === product.id);
+    if (existing) {
+      existing.quantity += 1;
+      existing.total = (existing.quantity * existing.price).toFixed(2);
+    } else {
+      cart.push({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        quantity: 1,
+        total: product.price.toFixed(2)
+      });
+    }
+    updateCart();
+  }
+
+  function updateCart() {
+    const list = document.getElementById("cartItems");
+    const total = document.getElementById("total");
+    list.innerHTML = "";
+    let totalSum = 0;
+
+    cart.forEach(item => {
+      totalSum += parseFloat(item.total);
+      const div = document.createElement("div");
+      div.className = "cart-item";
+      div.innerHTML = `
+        <span>${item.name} x${item.quantity}</span>
+        <span>${item.total} ₸</span>
+      `;
+      list.appendChild(div);
+    });
+
+    total.textContent = `${totalSum.toFixed(2)} ₸`;
+  }
+
+  async function processSale() {
+    if (cart.length === 0) return alert("Корзина пуста!");
+
+    const total = cart.reduce((s, i) => s + parseFloat(i.total), 0).toFixed(2);
+
+    try {
+      const res = await fetch("/process_sale", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          cart: cart,
+          payment_method: "cash",
+          organization: "Жетес"
+        })
+      });
+
+      const result = await res.json();
+      if (result.status === "success") {
+        alert(`✅ Продажа оформлена. Чек №${result.receipt_id}`);
+        cart = [];
+        updateCart();
+      } else {
+        alert("❌ Ошибка: " + result.message);
+      }
+    } catch (e) {
+      console.error("Ошибка оплаты:", e);
+    }
+  }
+
+  loadProducts();
+</script>
+
 </body>
 </html>
+
