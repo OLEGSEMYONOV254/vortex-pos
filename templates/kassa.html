@@ -425,6 +425,34 @@
       background: #00cc66;
     }
 
+    #topCategoryTabs {
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      gap: 10px;
+      margin: 10px 0;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #444;
+    }
+    
+    #topCategoryTabs button {
+      white-space: nowrap;
+      background: #2a2a2a;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    
+    #topCategoryTabs button.active {
+      background: #00cc66;
+      font-weight: bold;
+    }
+
+
 
   </style>
 </head>
@@ -462,7 +490,7 @@
           <button class="btn btn-pay" onclick="processPayment()">💰 Оплатить</button>
         </div>
       </div>
-
+      <div class="category-tabs" id="topCategoryTabs"></div>
       <div class="product-grid" id="productGrid"></div>
     </div>
 
@@ -599,6 +627,7 @@
       await loadProducts();
       await loadCounterparties();
       renderCategoryMenu(allProducts); // Только боковое меню категорий
+      renderTopCategoryTabs(allProducts);
       renderProducts(allProducts);
       renderCounterparties();
       updateCounterpartySelect();
@@ -756,6 +785,34 @@
       });
     }
 
+    function renderTopCategoryTabs(products) {
+      const topTabs = document.getElementById('topCategoryTabs');
+      const categories = ['Все', ...new Set(products.map(p => p.category || 'Без категории'))];
+    
+      topTabs.innerHTML = '';
+    
+      categories.forEach(category => {
+        const btn = document.createElement('button');
+        btn.textContent = category;
+        if (category === 'Все') btn.classList.add('active');
+    
+        btn.addEventListener('click', () => {
+          // Снимаем активность со всех
+          topTabs.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+    
+          const filtered = category === 'Все'
+            ? allProducts
+            : allProducts.filter(p => (p.category || 'Без категории') === category);
+    
+          renderProducts(filtered);
+        });
+    
+        topTabs.appendChild(btn);
+      });
+    }
+
+    
     function getCounterpartyTypeName(type) {
       const types = {
         'supplier': 'Поставщик',
