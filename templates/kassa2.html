@@ -59,11 +59,47 @@
             <strong>Итого:</strong>
             <span id="cartTotal">0 ₸</span>
           </div>
-          <button class="btn btn-success w-100 mt-3" onclick="pay()">💰 Оплатить</button>
+          <button class="btn btn-success w-100 mt-3" onclick="openPaymentModal()">💰 Оплатить</button>
         </div>
       </div>
     </div>
   </div>
+
+  <div class="modal fade" id="paymentModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content bg-dark text-white">
+        <div class="modal-header">
+          <h5 class="modal-title">Выберите параметры оплаты</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <label>Способ оплаты:</label>
+          <select id="paymentMethod" class="form-select mb-3">
+            <option value="cash">💵 Наличные</option>
+            <option value="card">💳 Карта</option>
+            <option value="qr">📱 QR</option>
+            <option value="bill">📄 Счёт</option>
+          </select>
+  
+          <label>Организация:</label>
+          <select id="organizationSelect" class="form-select mb-3">
+            <option value="Жетес">Жетес</option>
+            <option value="AS Qadir">AS Qadir</option>
+          </select>
+  
+          <label>Контрагент:</label>
+          <select id="counterpartySelect" class="form-select">
+            <option value="">Не выбрано</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-success" onclick="confirmPayment()">✅ Подтвердить</button>
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
   <script>
@@ -171,6 +207,57 @@
         }
       });
     }
+    async function loadCounterparties() {
+      const res = await fetch('/api/counterparties');
+      const data = await res.json();
+      const select = document.getElementById("counterpartySelect");
+      select.innerHTML = '<option value="">Не выбрано</option>';
+      data.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c.id;
+        opt.textContent = c.name;
+        select.appendChild(opt);
+      });
+    }
+    document.addEventListener('DOMContentLoaded', async () => {
+      await fetchProducts();
+      await loadCounterparties();
+    });
+
+    function openPaymentModal() {
+      if (cart.length === 0) return alert("Корзина пуста");
+      const modal = new bootstrap.Modal(document.getElementById('paymentModal'));
+      modal.show();
+    }
+    
+    async function confirmPayment() {
+      const payment_method = document.getElementById('paymentMethod').value;
+      const organization = document.getElementById('organizationSelect').value;
+      const counterparty_id = document.getElementById('counterpartySelect').value || null;
+    
+      const payload = {
+        cart,
+        payment_method,
+        organization,
+        counterparty_id
+      };
+    
+      const res = await fetch("/process_sale", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+    
+      if (res.ok) {
+        alert("✅ Продажа завершена");
+        cart = [];
+        updateCart();
+        bootstrap.Modal.getInstance(document.getElementById('paymentModal')).hide();
+      } else {
+        alert("❌ Ошибка при продаже");
+      }
+    }
+
 
     fetchProducts();
   </script>
