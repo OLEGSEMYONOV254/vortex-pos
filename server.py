@@ -732,7 +732,8 @@ def get_products():
 
 from flask import request, jsonify
 from datetime import datetime
-from your_project import get_db, socketio  # замените на свои импорты
+from db import get_db
+from socketio_server import socketio
 import pytz
 
 tz = pytz.timezone("Asia/Almaty")  # или нужная тебе временная зона
