@@ -5,6 +5,7 @@ import psycopg2
 from psycopg2.extras import DictCursor
 from datetime import datetime
 import pytz
+from pytz import timezone
 import os
 import json
 import pandas as pd
@@ -14,6 +15,11 @@ import atexit
 from vortex_ai import ask_vortex
 import psycopg2.extras
 import math  # добавь вверху, если ещё нет
+from db import get_db
+#from socketio_server import socketio
+from app import socketio
+
+tz = pytz.timezone("Asia/Almaty")  # или нужная тебе временная зона
 
 
 
@@ -730,13 +736,7 @@ def get_products():
     return jsonify(products)
 
 
-from flask import request, jsonify
-from datetime import datetime
-from db import get_db
-#from socketio_server import socketio
-import pytz
 
-tz = pytz.timezone("Asia/Almaty")  # или нужная тебе временная зона
 
 @app.route("/process_sale", methods=["POST"])
 def process_sale():
@@ -745,30 +745,26 @@ def process_sale():
         cart = data.get("cart", [])
         payment_method = data.get("payment_method", "cash")
         organization = data.get("organization", "")
-        counterparty_id = data.get("counterparty_id")
+        counterparty_id = data.get("counterparty_id", None)
 
-        if not cart:
-            return jsonify({"status": "error", "message": "Корзина пуста"}), 400
-
-        sale_time = datetime.now(tz)  # используем таймзону
-        formatted_time = sale_time.strftime("%Y-%m-%d %H:%M:%S")
+        # Суммируем общую стоимость
         total = sum(float(item.get("total", 0)) for item in cart)
+
+        # Получаем дату и время в нужной зоне
+        date = datetime.now(tz).strftime("%Y-%m-%d %H:%M:%S")
 
         with get_db() as db:
             cursor = db.cursor()
 
-            # Добавляем чек
+            # Чек
             cursor.execute(
-                """
-                INSERT INTO receipts (date, total, payment_method, organization, counterparty_id) 
-                VALUES (%s, %s, %s, %s, %s)
-                RETURNING id
-                """,
-                (formatted_time, total, payment_method, organization, counterparty_id)
+                """INSERT INTO receipts (date, total, payment_method, organization, counterparty_id)
+                   VALUES (%s, %s, %s, %s, %s) RETURNING id""",
+                (date, total, payment_method, organization, counterparty_id)
             )
             receipt_id = cursor.fetchone()[0]
 
-            # Добавляем позиции из корзины
+            # Продажи
             for item in cart:
                 cursor.execute("""
                     INSERT INTO sales 
@@ -780,24 +776,24 @@ def process_sale():
                     float(item.get("price", 0)),
                     float(item.get("quantity", 1)),
                     float(item.get("total", 0)),
-                    formatted_time,
+                    date,
                     "₸"
                 ))
-
                 print(f"[DEBUG] Добавлен товар: {item.get('name')} x {item.get('quantity')}")
+
+            # Отправляем информацию клиенту
+            socketio.emit('receipt_processed', {'receipt_id': receipt_id})
+            socketio.emit('show_total', {
+                'total': total,
+                'payment_method': payment_method,
+                'receipt_id': receipt_id
+            })
 
         print(f"[✅] Чек №{receipt_id} успешно добавлен.")
         print(f"[🛒] Товаров в чеке: {len(cart)}")
 
-        socketio.emit('receipt_processed', {'receipt_id': receipt_id})
-        socketio.emit('show_total', {
-            'total': total,
-            'payment_method': payment_method,
-            'receipt_id': receipt_id
-        })
-
         return jsonify({"status": "success", "receipt_id": receipt_id})
-
+    
     except Exception as e:
         print(f"[❌] Ошибка при обработке продажи: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
