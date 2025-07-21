@@ -155,7 +155,7 @@ def init_db():
 #def create_backup():
  #   """Создание резервной копии базы данных"""
   #  if DB_PATH.exists():
-   #     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+   #     timestamp = datetime.now(tz).strftime("%Y%m%d_%H%M%S")
     #    backup_path = DATA_DIR / f"database_backup_{timestamp}.db"
      #   shutil.copy(DB_PATH, backup_path)
       #  print(f"[БЭКАП] Создана резервная копия: {backup_path}")
@@ -420,7 +420,7 @@ def export_old_data():
 def add_product():
     try:
         product_data = {
-            "id": int(datetime.now().timestamp()),
+            "id": int(datetime.now(tz).timestamp()),
             "name": request.form.get("name"),
             "price": float(request.form.get("price")),
             "price_wholesale": float(request.form.get("price_wholesale", 0)),
@@ -739,7 +739,7 @@ def process_sale():
         organization = data.get("organization", "")
         counterparty_id = data.get("counterparty_id")
         total = sum(float(item.get("total", 0)) for item in cart)
-        date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        date = datetime.now(tz).strftime("%Y-%m-%d %H:%M:%S")
 
         with get_db() as db:
             cursor = db.cursor()
@@ -891,8 +891,8 @@ def add_inventory():
                 """INSERT INTO inventory 
                 (product_id, name, name_chinese, quantity, unit, last_updated)
                 VALUES (%s, %s, %s, %s, %s, %s)""",
-                (int(datetime.now().timestamp()), name, name_chinese, quantity, unit,
-                 datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+                (int(datetime.now(tz).timestamp()), name, name_chinese, quantity, unit,
+                 datetime.now(tz).strftime("%Y-%m-%d %H:%M:%S"))
             )
             conn.commit()
 
@@ -937,7 +937,7 @@ def update_inventory_item(item_id):
                 last_updated = %s
                 WHERE id = %s""",
                 (name, name_chinese, quantity, unit,
-                 datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                 datetime.now(tz).strftime("%Y-%m-%d %H:%M:%S"),
                  item_id)
             )
             conn.commit()
@@ -1041,7 +1041,7 @@ def update_counterparty(counterparty_id):
         if not updates:
             return jsonify({"status": "error", "message": "No fields to update"}), 400
 
-        params.append(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))  # updated_at
+        params.append(datetime.now(tz).strftime("%Y-%m-%d %H:%M:%S"))  # updated_at
         params.append(counterparty_id)
 
         with get_db() as conn:
@@ -1121,7 +1121,7 @@ def import_products_json():
                         VALUES (%s, %s, %s, %s, %s, %s)
                         ON CONFLICT (id) DO NOTHING
                     """, (
-                        int(product.get("id", datetime.now().timestamp())),
+                        int(product.get("id", datetime.now(tz).timestamp())),
                         str(product.get("name")),
                         float(product.get("price", 0)),
                         float(product.get("price_wholesale", 0)),
