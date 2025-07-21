@@ -17,7 +17,6 @@ import psycopg2.extras
 import math  # добавь вверху, если ещё нет
 from db import get_db
 #from socketio_server import socketio
-from app import socketio
 
 tz = pytz.timezone("Asia/Almaty")  # или нужная тебе временная зона
 
