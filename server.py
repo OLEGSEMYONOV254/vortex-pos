@@ -4,6 +4,7 @@ from flask_cors import CORS
 import psycopg2
 from psycopg2.extras import DictCursor
 from datetime import datetime
+import pytz
 import os
 import json
 import pandas as pd
@@ -991,7 +992,8 @@ def add_counterparty():
             if field not in data:
                 return jsonify({"status": "error", "message": f"Missing required field: {field}"}), 400
 
-        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        tz = pytz.timezone('Asia/Almaty')
+        now = datetime.now(tz).strftime("%Y-%m-%d %H:%M:%S")
         with get_db() as db:
             cursor = db.cursor()
             cursor.execute("""
