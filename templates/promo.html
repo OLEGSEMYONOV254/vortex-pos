@@ -218,8 +218,9 @@
         });
 
         socket.on("show_total", (data) => {
-            const totalText = `К оплате: ${data.total} ₸`;
-            display.innerHTML = `К оплате: <span style="color: white;">${data.total} ₸</span>`;
+            const totalRounded = Math.round(data.total);
+            const totalText = `К оплате: ${totalRounded} ₸`;
+            display.innerHTML = `К оплате: <span style="color: white;">${totalRounded} ₸</span>`;
             paymentMethod.textContent = data.payment_method === 'cash' ?
                 "Оплата наличными" : "Оплата по QR-коду";
             showQR();
