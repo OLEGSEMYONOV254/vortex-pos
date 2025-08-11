@@ -13,7 +13,7 @@
       padding: 0 10px;
     }
     .container {
-      max-width: 900px;
+      max-width: 1200px;
       margin: 0 auto;
       padding: 20px;
     }
@@ -39,68 +39,98 @@
       border-radius: 5px;
       text-align: center;
       flex: 1 1 40%;
-      transition: background 0.2s ease;
+      transition: all 0.2s ease;
     }
     .nav-card:hover {
       background: #444;
+      transform: translateY(-2px);
     }
 
-    /* Стили для дерева категорий */
-    .category-tree {
-      list-style: none;
-      padding-left: 0;
+    /* Стили для плиток категорий */
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
     }
-    .category-item {
-      margin-bottom: 10px;
-    }
-    .category-header {
-      background: #333;
-      padding: 12px 15px;
-      border-radius: 5px;
-      font-size: 1.3em;
-      font-weight: bold;
-      color: #00ffcc;
+    .category-card {
+      background: #2a2a2a;
+      border-radius: 8px;
+      padding: 15px;
       cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: all 0.3s;
+      transition: all 0.3s ease;
+      border-left: 4px solid #00cc66;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
-    .category-header:hover {
-      background: #3a3a3a;
-      transform: translateX(5px);
+    .category-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      background: #333;
     }
-    .category-header::after {
-      content: "▼";
+    .category-name {
+      font-size: 1.2em;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #00ffcc;
+    }
+    .category-count {
+      color: #aaa;
       font-size: 0.9em;
-      transition: transform 0.3s;
     }
-    .category-header.collapsed::after {
-      content: "▶";
+
+    /* Модальное окно с товарами категории */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.9);
+      z-index: 1000;
+      overflow-y: auto;
+      padding: 20px 0;
     }
-    .products-container {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.5s ease;
-      padding-left: 15px;
+    .modal-content {
+      background: #2a2a2a;
+      padding: 25px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 900px;
+      margin: 20px auto;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     }
-    .products-container.show {
-      max-height: 5000px;
+    .close-btn {
+      float: right;
+      cursor: pointer;
+      font-size: 1.5em;
+      color: #ff3333;
+      background: none;
+      border: none;
     }
+    .modal-title {
+      color: #00ffcc;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #444;
+    }
+
+    /* Таблица товаров в модальном окне */
     .products-table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 15px;
-      background: #2a2a2a;
     }
     .products-table th, .products-table td {
       border: 1px solid #444;
-      padding: 10px;
+      padding: 12px;
       text-align: left;
     }
     .products-table th {
       background-color: #333;
       color: #00ffcc;
+      position: sticky;
+      top: 0;
     }
     .products-table tr:nth-child(even) {
       background-color: #2a2a2a;
@@ -113,23 +143,31 @@
     .product-form, .excel-form {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      margin-top: 20px;
+      gap: 12px;
+      margin: 25px 0;
       background: #2a2a2a;
-      padding: 15px;
+      padding: 20px;
       border-radius: 8px;
+      border: 1px solid #444;
     }
-    .product-form input, .product-form button, .excel-form input, .excel-form button {
-      padding: 10px;
+    .product-form input, .product-form button, 
+    .excel-form input, .excel-form button {
+      padding: 12px;
       font-size: 1em;
       border: none;
       border-radius: 5px;
+    }
+    .product-form input {
+      background: #333;
+      color: white;
+      border: 1px solid #444;
     }
     .btn {
       background: #00cc66;
       color: white;
       cursor: pointer;
       transition: background 0.2s;
+      font-weight: bold;
     }
     .btn:hover {
       background: #00aa55;
@@ -148,49 +186,40 @@
     }
     .action-btns {
       display: flex;
-      gap: 5px;
+      gap: 8px;
     }
 
-    /* Модальное окно */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
+    /* Поисковая строка */
+    .search-container {
+      margin: 20px 0;
+    }
+    .search-input {
       width: 100%;
-      height: 100%;
-      background-color: rgba(0,0,0,0.7);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-    }
-    .modal-content {
-      background: #2a2a2a;
-      padding: 20px;
+      padding: 12px;
       border-radius: 5px;
-      width: 90%;
-      max-width: 500px;
-    }
-    .close-btn {
-      float: right;
-      cursor: pointer;
-      font-size: 1.5em;
+      border: none;
+      background: #333;
+      color: white;
+      font-size: 1em;
+      border: 1px solid #444;
     }
 
     /* Для мобильных устройств */
-    @media (max-width: 600px) {
+    @media (max-width: 768px) {
+      .categories-grid {
+        grid-template-columns: 1fr;
+      }
       .nav-card {
         flex: 1 1 100%;
       }
       .products-table {
         font-size: 0.9em;
       }
+      .products-table th, .products-table td {
+        padding: 8px;
+      }
       .action-btns {
         flex-direction: column;
-      }
-      .category-header {
-        font-size: 1.1em;
-        padding: 10px;
       }
     }
   </style>
@@ -206,47 +235,20 @@
   <div class="container">
     <h1 class="glow-text">Список товаров</h1>
 
-    <!-- Дерево категорий -->
-    <ul class="category-tree" id="categoryTree">
+    <!-- Поиск товаров -->
+    <div class="search-container">
+      <input type="text" class="search-input" placeholder="Поиск товаров..." id="searchInput">
+    </div>
+
+    <!-- Плитки категорий -->
+    <div class="categories-grid" id="categoriesGrid">
       {% for category, products in products_by_category.items() %}
-      <li class="category-item">
-        <div class="category-header" onclick="toggleCategory(this)">
-          {{ category }}
-          <span class="product-count">({{ products|length }})</span>
-        </div>
-        <div class="products-container">
-          <table class="products-table">
-            <thead>
-              <tr>
-                <th>Название</th>
-                <th>Розн. цена</th>
-                <th>Мелк. опт</th>
-                <th>Опт</th>
-                <th>Действия</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for product in products %}
-              <tr>
-                <td>{{ product.name }}</td>
-                <td>{{ product.price }} ₸</td>
-                <td>{{ product.price_wholesale or '-' }} ₸</td>
-                <td>{{ product.price_bulk or '-' }} ₸</td>
-                <td class="action-btns">
-                  <button class="btn btn-edit" onclick="openEditModal({{ product.id }}, '{{ product.name }}', '{{ product.price }}', '{{ product.price_wholesale }}', '{{ product.price_bulk }}', '{{ product.category }}')">✏️</button>
-                  <form action="/delete_product" method="POST" style="display:inline;">
-                    <input type="hidden" name="id" value="{{ product.id }}">
-                    <button type="submit" class="btn btn-delete" onclick="return confirm('Удалить этот товар?')">🗑️</button>
-                  </form>
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </li>
+      <div class="category-card" onclick="openCategoryModal('{{ category }}', {{ products|tojson }})">
+        <div class="category-name">{{ category }}</div>
+        <div class="category-count">Товаров: {{ products|length }}</div>
+      </div>
       {% endfor %}
-    </ul>
+    </div>
 
     <h2>Добавить товар вручную</h2>
     <form method="POST" action="/add_product" class="product-form">
@@ -254,8 +256,13 @@
       <input type="number" step="0.01" name="price" placeholder="Розничная цена" required>
       <input type="number" step="0.01" name="price_wholesale" placeholder="Мелкооптовая цена">
       <input type="number" step="0.01" name="price_bulk" placeholder="Оптовая цена">
-      <input type="text" name="category" placeholder="Категория">
-      <button type="submit" class="btn">Добавить</button>
+      <select name="category" required>
+        <option value="">Выберите категорию</option>
+        {% for category in products_by_category.keys() %}
+        <option value="{{ category }}">{{ category }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn">Добавить товар</button>
     </form>
 
     <h2>Импорт из Excel</h2>
@@ -265,67 +272,148 @@
     </form>
   </div>
 
+  <!-- Модальное окно категории -->
+  <div id="categoryModal" class="modal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeCategoryModal()">&times;</button>
+      <h2 class="modal-title" id="modalCategoryTitle">Категория</h2>
+      
+      <div class="search-container">
+        <input type="text" class="search-input" placeholder="Поиск в категории..." id="categorySearchInput">
+      </div>
+      
+      <table class="products-table">
+        <thead>
+          <tr>
+            <th>Название</th>
+            <th>Розн. цена</th>
+            <th>Мелк. опт</th>
+            <th>Опт</th>
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody id="modalProductsTable">
+          <!-- Товары будут подгружаться здесь -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
   <!-- Модальное окно редактирования -->
   <div id="editModal" class="modal">
     <div class="modal-content">
-      <span class="close-btn" onclick="closeEditModal()">&times;</span>
-      <h2>Редактировать товар</h2>
+      <button class="close-btn" onclick="closeEditModal()">&times;</button>
+      <h2 class="modal-title">Редактировать товар</h2>
       <form method="POST" action="/update_product" class="product-form">
         <input type="hidden" id="editProductId" name="id">
         <input type="text" id="editName" name="name" placeholder="Название товара" required>
         <input type="number" step="0.01" id="editPrice" name="price" placeholder="Розничная цена" required>
         <input type="number" step="0.01" id="editPriceWholesale" name="price_wholesale" placeholder="Мелкооптовая цена">
         <input type="number" step="0.01" id="editPriceBulk" name="price_bulk" placeholder="Оптовая цена">
-        <input type="text" id="editCategory" name="category" placeholder="Категория">
-        <button type="submit" class="btn btn-edit">Сохранить</button>
+        <select id="editCategory" name="category" required>
+          <option value="">Выберите категорию</option>
+          {% for category in products_by_category.keys() %}
+          <option value="{{ category }}">{{ category }}</option>
+          {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-edit">Сохранить изменения</button>
       </form>
     </div>
   </div>
 
   <script>
-    // Функция для переключения категорий
-    function toggleCategory(header) {
-      const container = header.nextElementSibling;
-      header.classList.toggle('collapsed');
-      container.classList.toggle('show');
-
-      // Закрываем все другие категории
-      if (container.classList.contains('show')) {
-        const allContainers = document.querySelectorAll('.products-container');
-        allContainers.forEach(c => {
-          if (c !== container && c.classList.contains('show')) {
-            c.classList.remove('show');
-            c.previousElementSibling.classList.add('collapsed');
-          }
-        });
-      }
+    // Открытие модального окна категории
+    function openCategoryModal(categoryName, products) {
+      document.getElementById('modalCategoryTitle').textContent = categoryName;
+      const tableBody = document.getElementById('modalProductsTable');
+      tableBody.innerHTML = '';
+      
+      products.forEach(product => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${product.name}</td>
+          <td>${product.price} ₸</td>
+          <td>${product.price_wholesale || '-'} ₸</td>
+          <td>${product.price_bulk || '-'} ₸</td>
+          <td class="action-btns">
+            <button class="btn btn-edit" onclick="event.stopPropagation(); openEditModal(
+              ${product.id}, 
+              '${product.name.replace(/'/g, "\\'")}', 
+              ${product.price}, 
+              ${product.price_wholesale || 'null'}, 
+              ${product.price_bulk || 'null'}, 
+              '${product.category.replace(/'/g, "\\'")}'
+            )">✏️</button>
+            <form action="/delete_product" method="POST" style="display:inline;">
+              <input type="hidden" name="id" value="${product.id}">
+              <button type="submit" class="btn btn-delete" onclick="event.stopPropagation(); return confirm('Удалить этот товар?')">🗑️</button>
+            </form>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+      
+      document.getElementById('categoryModal').style.display = 'block';
+      document.body.style.overflow = 'hidden';
     }
 
-    // Инициализация - сворачиваем все категории
-    document.addEventListener('DOMContentLoaded', function() {
-      const headers = document.querySelectorAll('.category-header');
-      headers.forEach(header => {
-        header.classList.add('collapsed');
+    // Закрытие модального окна категории
+    function closeCategoryModal() {
+      document.getElementById('categoryModal').style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
+
+    // Поиск по всем товарам
+    document.getElementById('searchInput').addEventListener('input', function() {
+      const searchTerm = this.value.toLowerCase();
+      const categoryCards = document.querySelectorAll('.category-card');
+      
+      categoryCards.forEach(card => {
+        const categoryName = card.querySelector('.category-name').textContent.toLowerCase();
+        if (categoryName.includes(searchTerm)) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
       });
     });
 
+    // Поиск внутри категории
+    document.getElementById('categorySearchInput').addEventListener('input', function() {
+      const searchTerm = this.value.toLowerCase();
+      const rows = document.querySelectorAll('#modalProductsTable tr');
+      
+      rows.forEach(row => {
+        const productName = row.cells[0].textContent.toLowerCase();
+        if (productName.includes(searchTerm)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    });
+
+    // Функции для модального окна редактирования
     function openEditModal(id, name, price, priceWholesale, priceBulk, category) {
       document.getElementById('editProductId').value = id;
       document.getElementById('editName').value = name;
       document.getElementById('editPrice').value = price;
-      document.getElementById('editPriceWholesale').value = priceWholesale || '';
-      document.getElementById('editPriceBulk').value = priceBulk || '';
-      document.getElementById('editCategory').value = category || '';
-      document.getElementById('editModal').style.display = 'flex';
+      document.getElementById('editPriceWholesale').value = priceWholesale !== 'null' ? priceWholesale : '';
+      document.getElementById('editPriceBulk').value = priceBulk !== 'null' ? priceBulk : '';
+      document.getElementById('editCategory').value = category;
+      
+      closeCategoryModal();
+      document.getElementById('editModal').style.display = 'block';
     }
 
     function closeEditModal() {
       document.getElementById('editModal').style.display = 'none';
     }
 
+    // Закрытие модальных окон при клике вне их
     window.onclick = function(event) {
-      const modal = document.getElementById('editModal');
-      if (event.target === modal) {
+      if (event.target.classList.contains('modal')) {
+        closeCategoryModal();
         closeEditModal();
       }
     }
