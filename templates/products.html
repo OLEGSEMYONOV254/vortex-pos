@@ -322,6 +322,23 @@
   </div>
 
   <script>
+
+    // Функция для безопасной вставки HTML
+    function escapeHtml(unsafe) {
+      if (!unsafe) return '';
+      return unsafe.toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+    
+    // Функция для безопасной передачи в JS
+    function safeJsString(str) {
+      return JSON.stringify(str || '').slice(1, -1);
+    }
+    
     // Открытие модального окна категории
     function openCategoryModal(categoryName, products) {
       document.getElementById('modalCategoryTitle').textContent = categoryName;
@@ -338,11 +355,11 @@
           <td class="action-btns">
             <button class="btn btn-edit" onclick="event.stopPropagation(); openEditModal(
               ${product.id}, 
-              '${product.name.replace(/'/g, "\\'")}', 
+              ${JSON.stringify(product.name)}, 
               ${product.price}, 
-              ${product.price_wholesale || 'null'}, 
-              ${product.price_bulk || 'null'}, 
-              '${product.category.replace(/'/g, "\\'")}'
+              ${product.price_wholesale || null}, 
+              ${product.price_bulk || null}, 
+              ${JSON.stringify(product.category)}
             )">✏️</button>
             <form action="/delete_product" method="POST" style="display:inline;">
               <input type="hidden" name="id" value="${product.id}">
@@ -398,8 +415,10 @@
       document.getElementById('editProductId').value = id;
       document.getElementById('editName').value = name;
       document.getElementById('editPrice').value = price;
-      document.getElementById('editPriceWholesale').value = priceWholesale !== 'null' ? priceWholesale : '';
-      document.getElementById('editPriceBulk').value = priceBulk !== 'null' ? priceBulk : '';
+      document.getElementById('editPriceWholesale').value = 
+        priceWholesale !== null && priceWholesale !== 'null' ? priceWholesale : '';
+      document.getElementById('editPriceBulk').value = 
+        priceBulk !== null && priceBulk !== 'null' ? priceBulk : '';
       document.getElementById('editCategory').value = category;
       
       closeCategoryModal();
@@ -420,3 +439,4 @@
   </script>
 </body>
 </html>
+
