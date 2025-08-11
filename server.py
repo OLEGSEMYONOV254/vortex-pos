@@ -612,17 +612,22 @@ def kassa():
 
 from datetime import datetime
 
+from datetime import datetime
+
 @app.route("/stats")
 def stats():
     # Получаем текущую дату в формате YYYY-MM-DD
     today = datetime.now().strftime('%Y-%m-%d')
     
     # Получаем параметры из запроса
-    date_from = request.args.get('date_from', today)  # По умолчанию - сегодня
-    date_to = request.args.get('date_to', today)      # По умолчанию - сегодня
+    date_from = request.args.get('date_from', today)
+    date_to = request.args.get('date_to', today)
+    organization = request.args.get('organization', '')  # Новый параметр фильтра
 
     with get_db() as conn:
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        
+        # Основной запрос
         query = """
             SELECT 
                 r.id, 
@@ -636,19 +641,39 @@ def stats():
             LEFT JOIN sales s ON r.id = s.receipt_id
             LEFT JOIN counterparties c ON r.counterparty_id = c.id
             WHERE r.date >= %s AND r.date <= %s
+        """
+        
+        params = [date_from, date_to + " 23:59:59"] if date_from == date_to else [date_from, date_to]
+        
+        # Добавляем фильтр по организации, если указан
+        if organization:
+            query += " AND r.organization = %s"
+            params.append(organization)
+        
+        # Завершаем запрос
+        query += """
             GROUP BY 
                 r.id, r.date, r.total, r.payment_method, 
                 r.organization, c.name
             ORDER BY r.date DESC
         """
         
-        # Добавляем время к конечной дате, чтобы включить весь день
-        params = [date_from, date_to + " 23:59:59"] if date_from == date_to else [date_from, date_to]
+        # Дополнительный запрос для получения списка всех организаций для выпадающего списка
+        cur.execute("SELECT DISTINCT organization FROM receipts ORDER BY organization")
+        organizations = [org['organization'] for org in cur.fetchall()]
         
+        # Выполняем основной запрос
         cur.execute(query, params)
         receipts = cur.fetchall()
 
-    return render_template("stats.html", receipts=receipts, date_from=date_from, date_to=date_to)
+    return render_template(
+        "stats.html", 
+        receipts=receipts, 
+        date_from=date_from, 
+        date_to=date_to,
+        organization=organization,
+        organizations=organizations  # Передаем список организаций в шаблон
+    )
 
 
 @app.route("/api/1c/export_excel")
@@ -1166,4 +1191,5 @@ if __name__ == '__main__':
         socketio.run(app, host='0.0.0.0', port=8080, debug=True)
     except Exception as e:
         print(f"[ОШИБКА] При запуске сервера: {e}")
+
 
