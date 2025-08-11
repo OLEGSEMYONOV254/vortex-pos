@@ -610,10 +610,16 @@ def kassa():
 
 
 
+from datetime import datetime
+
 @app.route("/stats")
 def stats():
-    date_from = request.args.get('date_from', '')
-    date_to = request.args.get('date_to', '')
+    # Получаем текущую дату в формате YYYY-MM-DD
+    today = datetime.now().strftime('%Y-%m-%d')
+    
+    # Получаем параметры из запроса
+    date_from = request.args.get('date_from', today)  # По умолчанию - сегодня
+    date_to = request.args.get('date_to', today)      # По умолчанию - сегодня
 
     with get_db() as conn:
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -629,23 +635,15 @@ def stats():
             FROM receipts r
             LEFT JOIN sales s ON r.id = s.receipt_id
             LEFT JOIN counterparties c ON r.counterparty_id = c.id
-            WHERE 1=1
-        """
-        params = []
-
-        if date_from:
-            query += " AND r.date >= %s"
-            params.append(date_from)
-        if date_to:
-            query += " AND r.date <= %s"
-            params.append(date_to + " 23:59:59")
-
-        query += """
+            WHERE r.date >= %s AND r.date <= %s
             GROUP BY 
                 r.id, r.date, r.total, r.payment_method, 
                 r.organization, c.name
             ORDER BY r.date DESC
         """
+        
+        # Добавляем время к конечной дате, чтобы включить весь день
+        params = [date_from, date_to + " 23:59:59"] if date_from == date_to else [date_from, date_to]
         
         cur.execute(query, params)
         receipts = cur.fetchall()
@@ -1168,3 +1166,4 @@ if __name__ == '__main__':
         socketio.run(app, host='0.0.0.0', port=8080, debug=True)
     except Exception as e:
         print(f"[ОШИБКА] При запуске сервера: {e}")
+
