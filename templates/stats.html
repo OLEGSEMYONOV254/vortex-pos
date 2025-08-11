@@ -120,6 +120,22 @@
                 font-size: 0.9em;
             }
         }
+
+        .filter-form select {
+            padding: 8px 12px;
+            border-radius: 5px;
+            background: #2a2a2a;
+            color: white;
+            border: 1px solid #444;
+            font-size: 1em;
+            min-width: 150px;
+        }
+        
+        @media (max-width: 600px) {
+            .filter-form select {
+                flex: 1 1 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -135,6 +151,17 @@
     <form class="filter-form" method="get" action="/stats">
         <input type="date" name="date_from" value="{{ date_from or '' }}" required>
         <input type="date" name="date_to" value="{{ date_to or '' }}" required>
+
+        <!-- Добавляем выбор организации -->
+        <select name="organization" style="padding: 8px 12px; border-radius: 5px; background: #2a2a2a; color: white; border: 1px solid #444;">
+            <option value="">Все организации</option>
+            {% for org in organizations %}
+                <option value="{{ org }}" {% if org == organization %}selected{% endif %}>
+                    {{ org }}
+                </option>
+            {% endfor %}
+        </select>
+        
         <button type="submit">Фильтровать</button>
         <a href="/stats" class="btn-reset">Сбросить</a>
     </form>
@@ -190,4 +217,5 @@
         </tbody>
     </table>
 </body>
+
 </html>
