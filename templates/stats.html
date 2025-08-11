@@ -129,11 +129,12 @@
             border: 1px solid #444;
             font-size: 1em;
             min-width: 150px;
+            height: 38px;
         }
         
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
             .filter-form select {
-                flex: 1 1 100%;
+                min-width: 100%;
             }
         }
     </style>
@@ -158,6 +159,16 @@
             {% for org in organizations %}
                 <option value="{{ org }}" {% if org == organization %}selected{% endif %}>
                     {{ org }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <!-- Фильтр по контрагентам -->
+        <select name="counterparty_id">
+            <option value="">Все контрагенты</option>
+            {% for cp in counterparties %}
+                <option value="{{ cp.id }}" {% if cp.id|string == counterparty_id %}selected{% endif %}>
+                    {{ cp.name }}
                 </option>
             {% endfor %}
         </select>
@@ -219,3 +230,4 @@
 </body>
 
 </html>
+
