@@ -635,7 +635,7 @@ def stats():
                 r.payment_method, 
                 r.organization,
                 c.name as counterparty_name,
-                c.id as counterparty_id,  # Добавляем ID контрагента
+                c.id as counterparty_id,  -- Adding counterparty ID
                 COUNT(s.id) as items_count
             FROM receipts r
             LEFT JOIN sales s ON r.id = s.receipt_id
@@ -1197,6 +1197,7 @@ if __name__ == '__main__':
         socketio.run(app, host='0.0.0.0', port=8080, debug=True)
     except Exception as e:
         print(f"[ОШИБКА] При запуске сервера: {e}")
+
 
 
 
