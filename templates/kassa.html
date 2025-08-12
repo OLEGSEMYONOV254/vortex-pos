@@ -774,22 +774,10 @@
     });
 
     // Функции загрузки данных
-    async function loadProducts() {
+     async function loadProducts() {
       try {
-        // Тестовые данные - замените на реальный запрос к API
-        allProducts = [
-          { id: 1, name: "Кола 0.5л", price: 300, category: "Напитки", barcode: "5449000000996" },
-          { id: 2, name: "Фанта 0.5л", price: 300, category: "Напитки", barcode: "5449000000989" },
-          { id: 3, name: "Спрайт 0.5л", price: 300, category: "Напитки", barcode: "5449000000972" },
-          { id: 4, name: "Чипсы Lays", price: 450, category: "Снеки", barcode: "5449000000965" },
-          { id: 5, name: "Шоколад Alpen Gold", price: 350, category: "Сладости", barcode: "5449000000958" },
-          { id: 6, name: "Хлеб", price: 120, category: "Хлебобулочные", barcode: "5449000000941" },
-          { id: 7, name: "Молоко 1л", price: 400, category: "Молочные", barcode: "5449000000934" },
-          { id: 8, name: "Яйца 10шт", price: 500, category: "Молочные", barcode: "5449000000927" },
-          { id: 9, name: "Сыр Российский", price: 1200, category: "Молочные", barcode: "5449000000910" },
-          { id: 10, name: "Курица 1кг", price: 1500, category: "Мясо", barcode: "5449000000903" }
-        ];
-        
+        const response = await fetch('/get_products');
+        allProducts = await response.json();
         renderProducts(allProducts);
       } catch (error) {
         console.error('Ошибка загрузки товаров:', error);
@@ -799,13 +787,8 @@
 
     async function loadCounterparties() {
       try {
-        // Тестовые данные - замените на реальный запрос к API
-        counterparties = [
-          { id: 1, name: "ИП Петров" },
-          { id: 2, name: "ООО Ромашка" },
-          { id: 3, name: "ТОО Астана" }
-        ];
-        
+        const response = await fetch('/api/counterparties');
+        counterparties = await response.json();
         updateCounterpartySelect();
       } catch (error) {
         console.error('Ошибка загрузки контрагентов:', error);
@@ -813,15 +796,10 @@
       }
     }
 
-    async function loadReceiptHistory() {
+     async function loadReceiptHistory() {
       try {
-        // Тестовые данные - замените на реальный запрос к API
-        receiptHistory = [
-          { id: 1001, date: new Date(), total: 1200, payment_method: "cash" },
-          { id: 1002, date: new Date(Date.now() - 3600000), total: 850, payment_method: "card" },
-          { id: 1003, date: new Date(Date.now() - 7200000), total: 1500, payment_method: "qr" }
-        ];
-        
+        const response = await fetch('/api/receipts?limit=10');
+        receiptHistory = await response.json();
         renderReceiptHistory();
       } catch (error) {
         console.error('Ошибка загрузки истории:', error);
@@ -1230,3 +1208,4 @@
   </script>
 </body>
 </html>
+
