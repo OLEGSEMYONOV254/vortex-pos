@@ -334,6 +334,57 @@
         .replace(/'/g, '&#039;');
     }
 
+    // Функция для добавления новой категории в интерфейс
+    function addNewCategoryToUI(categoryName) {
+      // Добавляем в сетку категорий
+      const categoriesGrid = document.getElementById('categoriesGrid');
+      if (categoriesGrid) {
+        const categoryCard = document.createElement('div');
+        categoryCard.className = 'category-card';
+        categoryCard.setAttribute('data-category', categoryName);
+        categoryCard.setAttribute('data-products', '[]');
+        
+        categoryCard.innerHTML = `
+          <div class="category-name">${escapeHtml(categoryName)}</div>
+          <div class="category-count">Товаров: 0</div>
+        `;
+        
+        categoryCard.addEventListener('click', function() {
+          openCategoryModal(categoryName, []);
+        });
+        
+        categoriesGrid.appendChild(categoryCard);
+      }
+
+      // Добавляем в выпадающий список
+      const categorySelect = document.getElementById('categorySelect');
+      if (categorySelect) {
+        const option = document.createElement('option');
+        option.value = categoryName;
+        option.textContent = categoryName;
+        
+        // Вставляем перед вариантом создания новой категории
+        const newCategoryOption = categorySelect.querySelector('option[value="_NEW_CATEGORY_"]');
+        if (newCategoryOption) {
+          categorySelect.insertBefore(option, newCategoryOption);
+        } else {
+          categorySelect.appendChild(option);
+        }
+        
+        // Выбираем новую категорию
+        categorySelect.value = categoryName;
+      }
+
+      // Добавляем в выпадающий список в модальном окне редактирования
+      const editCategorySelect = document.getElementById('editCategory');
+      if (editCategorySelect) {
+        const option = document.createElement('option');
+        option.value = categoryName;
+        option.textContent = categoryName;
+        editCategorySelect.appendChild(option);
+      }
+    }
+
     // Открытие модального окна категории
     function openCategoryModal(categoryName, products) {
       document.getElementById('modalCategoryTitle').textContent = categoryName;
@@ -467,6 +518,7 @@
           if (this.value === '_NEW_CATEGORY_') {
             newCategoryContainer.style.display = 'block';
             newCategoryInput.required = true;
+            newCategoryInput.focus();
           } else {
             newCategoryContainer.style.display = 'none';
             newCategoryInput.required = false;
@@ -486,12 +538,19 @@
               return;
             }
             
+            // Добавляем новую категорию в интерфейс
+            addNewCategoryToUI(newCategoryName);
+            
             // Добавляем скрытое поле с новой категорией
             const hiddenInput = document.createElement('input');
             hiddenInput.type = 'hidden';
             hiddenInput.name = 'category';
             hiddenInput.value = newCategoryName;
             this.appendChild(hiddenInput);
+            
+            // Сбрасываем поле новой категории
+            newCategoryInput.value = '';
+            newCategoryContainer.style.display = 'none';
           }
         });
       }
