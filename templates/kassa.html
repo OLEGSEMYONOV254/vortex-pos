@@ -1,4 +1,4 @@
-DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
@@ -6,125 +6,127 @@ DOCTYPE html>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     /* Основные стили */
-    body {
-      font-family: 'Roboto', sans-serif;
-      background: #1a1a1a;
-      color: white;
+    * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
     
-    .container {
-      display: grid;
-      grid-template-columns: 280px 1fr 400px;
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #f0f2f5;
+      color: #333;
       height: 100vh;
-      gap: 15px;
-      padding: 15px;
-    }
-    
-    /* Навигация */
-    .nav-grid {
       display: flex;
-      background: #2a2a2a;
-      padding: 10px;
-      grid-column: 1 / -1;
-      border-radius: 8px;
+      flex-direction: column;
     }
     
-    .nav-card {
-      padding: 12px 15px;
-      background: #3a3a3a;
+    /* Шапка */
+    .header {
+      background: #2c3e50;
       color: white;
-      text-decoration: none;
-      margin: 0 5px;
-      border-radius: 6px;
-      text-align: center;
-      transition: all 0.2s;
-      cursor: pointer;
+      padding: 12px 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     
-    .nav-card:hover {
-      background: #444;
+    .header h1 {
+      font-size: 1.5em;
+    }
+    
+    /* Основной контейнер */
+    .main-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
     }
     
     /* Боковая панель с категориями */
     .sidebar {
-      background: #2a2a2a;
-      border-radius: 8px;
+      width: 250px;
+      background: #fff;
+      border-right: 1px solid #ddd;
       display: flex;
       flex-direction: column;
-      border: 1px solid #333;
+      overflow: hidden;
     }
     
     .category-header {
       padding: 15px;
-      border-bottom: 1px solid #333;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      border-bottom: 1px solid #eee;
+      background: #f8f9fa;
+    }
+    
+    .category-search {
+      padding: 10px 15px;
+    }
+    
+    .category-search input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
     }
     
     .category-list {
-      flex-grow: 1;
+      flex: 1;
       overflow-y: auto;
-      padding: 10px;
     }
     
     .category-item {
       padding: 12px 15px;
-      margin-bottom: 5px;
-      border-radius: 6px;
+      border-bottom: 1px solid #eee;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: background 0.2s;
       display: flex;
       justify-content: space-between;
-      align-items: center;
     }
     
     .category-item:hover {
-      background: #3a3a3a;
+      background: #f5f5f5;
     }
     
     .category-item.active {
-      background: #00cc66;
+      background: #e3f2fd;
       font-weight: bold;
     }
     
     .category-count {
-      background: #444;
+      background: #e0e0e0;
       padding: 2px 8px;
       border-radius: 10px;
       font-size: 0.8em;
     }
     
     /* Основная область с товарами */
-    .main-content {
+    .content-area {
+      flex: 1;
       display: flex;
       flex-direction: column;
-      background: #2a2a2a;
-      border-radius: 8px;
-      border: 1px solid #333;
+      overflow: hidden;
     }
     
     .search-box {
-      padding: 15px;
-      border-bottom: 1px solid #333;
+      padding: 12px 15px;
+      background: #fff;
+      border-bottom: 1px solid #ddd;
     }
     
     .search-box input {
       width: 100%;
-      padding: 12px 15px;
-      border-radius: 6px;
-      border: none;
-      background: #333;
-      color: white;
-      font-size: 1em;
+      padding: 10px 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
     }
     
     .product-grid-container {
-      flex-grow: 1;
+      flex: 1;
       overflow-y: auto;
       padding: 15px;
+      background: #f8f9fa;
     }
     
     .product-grid {
@@ -134,18 +136,19 @@ DOCTYPE html>
     }
     
     .product-card {
-      background: #3a3a3a;
-      border-radius: 8px;
+      background: #fff;
+      border-radius: 6px;
       padding: 15px;
       cursor: pointer;
       transition: all 0.2s;
-      border: 1px solid #444;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border: 1px solid #eee;
     }
     
     .product-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      border-color: #00cc66;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      border-color: #2196f3;
     }
     
     .product-name {
@@ -155,7 +158,7 @@ DOCTYPE html>
     }
     
     .product-price {
-      color: #00ffcc;
+      color: #2e7d32;
       font-weight: bold;
       font-size: 1.1em;
       margin-bottom: 5px;
@@ -163,56 +166,61 @@ DOCTYPE html>
     
     .product-barcode {
       font-size: 0.8em;
-      color: #aaa;
+      color: #666;
       margin-bottom: 10px;
     }
     
     .quick-actions {
       display: flex;
       gap: 5px;
+      margin-top: 10px;
     }
     
     .quick-btn {
       flex: 1;
-      background: #4a4a4a;
-      border: none;
-      color: white;
+      background: #e3f2fd;
+      border: 1px solid #bbdefb;
+      color: #1976d2;
       padding: 6px;
       border-radius: 4px;
       cursor: pointer;
       transition: background 0.2s;
+      font-size: 0.9em;
     }
     
     .quick-btn:hover {
-      background: #5a5a5a;
+      background: #bbdefb;
     }
     
-    /* Корзина */
-    .cart-container {
-      background: #2a2a2a;
-      border-radius: 8px;
+    /* Панель корзины */
+    .cart-panel {
+      width: 350px;
+      background: #fff;
+      border-left: 1px solid #ddd;
       display: flex;
       flex-direction: column;
-      border: 1px solid #333;
+      overflow: hidden;
     }
     
     .cart-header {
       padding: 15px;
-      border-bottom: 1px solid #333;
+      border-bottom: 1px solid #eee;
+      background: #f8f9fa;
     }
     
     .cart-items {
-      flex-grow: 1;
+      flex: 1;
       overflow-y: auto;
       padding: 15px;
     }
     
     .cart-item {
-      background: #3a3a3a;
+      background: #fff;
       border-radius: 6px;
       padding: 12px;
       margin-bottom: 10px;
-      border: 1px solid #444;
+      border: 1px solid #eee;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
     
     .cart-item-header {
@@ -226,7 +234,7 @@ DOCTYPE html>
     }
     
     .cart-item-price {
-      color: #aaa;
+      color: #666;
     }
     
     .cart-item-details {
@@ -245,33 +253,35 @@ DOCTYPE html>
     .qty-btn {
       width: 25px;
       height: 25px;
-      background: #4a4a4a;
-      border: none;
-      color: white;
+      background: #f5f5f5;
+      border: 1px solid #e0e0e0;
+      color: #333;
       border-radius: 4px;
       cursor: pointer;
     }
     
     .qty-btn:hover {
-      background: #5a5a5a;
+      background: #e0e0e0;
     }
     
     .remove-btn {
-      background: #ff3333;
-      color: white;
-      border: none;
+      background: #ffebee;
+      border: 1px solid #ffcdd2;
+      color: #c62828;
       padding: 5px 10px;
       border-radius: 4px;
       cursor: pointer;
+      font-size: 0.9em;
     }
     
     .remove-btn:hover {
-      background: #cc0000;
+      background: #ffcdd2;
     }
     
     .cart-footer {
       padding: 15px;
-      border-top: 1px solid #333;
+      border-top: 1px solid #eee;
+      background: #f8f9fa;
     }
     
     .cart-total {
@@ -294,24 +304,27 @@ DOCTYPE html>
       font-weight: bold;
       cursor: pointer;
       transition: all 0.2s;
+      font-size: 0.95em;
     }
     
     .btn-danger {
-      background: #ff3333;
-      color: white;
+      background: #ffebee;
+      color: #c62828;
+      border: 1px solid #ffcdd2;
     }
     
     .btn-danger:hover {
-      background: #cc0000;
+      background: #ffcdd2;
     }
     
     .btn-pay {
-      background: #ffaa00;
-      color: black;
+      background: #e8f5e9;
+      color: #2e7d32;
+      border: 1px solid #c8e6c9;
     }
     
     .btn-pay:hover {
-      background: #dd8800;
+      background: #c8e6c9;
     }
     
     /* Модальные окна */
@@ -322,105 +335,67 @@ DOCTYPE html>
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,0.7);
+      background: rgba(0,0,0,0.5);
       z-index: 1000;
       justify-content: center;
       align-items: center;
     }
     
     .modal-content {
-      background: #2a2a2a;
+      background: #fff;
       border-radius: 8px;
       padding: 20px;
       width: 350px;
       max-width: 90%;
-      border: 1px solid #444;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     }
     
     .modal-header {
       margin-bottom: 15px;
-      text-align: center;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
     }
     
-    .quantity-input-container {
+    .modal-body {
       margin-bottom: 15px;
     }
     
-    #quantityInput {
-      width: 100%;
-      padding: 12px;
-      font-size: 1.2em;
-      text-align: center;
-      background: #333;
-      color: white;
-      border: 1px solid #444;
-      border-radius: 6px;
-    }
-    
-    .numeric-keypad {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 15px;
-    }
-    
-    .keypad-btn {
-      padding: 15px;
-      font-size: 1.2em;
-      border: none;
-      background: #3a3a3a;
-      color: white;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    
-    .keypad-btn:hover {
-      background: #4a4a4a;
-    }
-    
-    .keypad-btn.zero {
-      grid-column: span 2;
-    }
-    
-    .keypad-btn.clear {
-      background: #ff3333;
-    }
-    
-    .keypad-btn.clear:hover {
-      background: #cc0000;
-    }
-    
-    .keypad-btn.enter {
-      background: #00cc66;
-    }
-    
-    .keypad-btn.enter:hover {
-      background: #00aa55;
-    }
-    
-    .modal-actions {
+    .modal-footer {
       display: flex;
+      justify-content: flex-end;
       gap: 10px;
     }
     
     /* Адаптация для мобильных */
     @media (max-width: 1200px) {
-      .container {
-        grid-template-columns: 1fr;
-        height: auto;
+      .sidebar {
+        width: 220px;
+      }
+      
+      .cart-panel {
+        width: 300px;
+      }
+    }
+    
+    @media (max-width: 992px) {
+      .main-container {
+        flex-direction: column;
       }
       
       .sidebar {
-        order: 1;
+        width: 100%;
+        height: auto;
+        max-height: 200px;
+        border-right: none;
+        border-bottom: 1px solid #ddd;
       }
       
-      .main-content {
-        order: 2;
-      }
-      
-      .cart-container {
-        order: 3;
+      .cart-panel {
+        width: 100%;
+        height: auto;
+        max-height: 300px;
+        border-left: none;
+        border-top: 1px solid #ddd;
       }
     }
     
@@ -429,17 +404,12 @@ DOCTYPE html>
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
       }
       
-      .nav-grid {
-        flex-wrap: wrap;
-      }
-      
-      .nav-card {
-        flex: 1 0 45%;
-        margin-bottom: 5px;
+      .header h1 {
+        font-size: 1.3em;
       }
     }
     
-    @media (max-width: 480px) {
+    @media (max-width: 576px) {
       .product-grid {
         grid-template-columns: 1fr 1fr;
       }
@@ -447,91 +417,55 @@ DOCTYPE html>
       .quick-actions {
         flex-direction: column;
       }
+      
+      .cart-actions {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Навигация -->
-    <nav class="nav-grid">
-      <a href="#" class="nav-card" onclick="showTab('home')">🏠 Главная</a>
-      <a href="#" class="nav-card" onclick="showTab('products')">📦 Товары</a>
-      <a href="#" class="nav-card" onclick="showTab('kassa')">💵 Касса</a>
-      <a href="#" class="nav-card" onclick="showTab('stats')">📊 Отчёты</a>
-      <a href="#" class="nav-card" onclick="showTab('counterparties')">🧾 Контрагенты</a>
-    </nav>
-    
-    <!-- Вкладка Касса -->
-    <div id="kassa" class="tab-content active">
-      <!-- Боковая панель с категориями -->
-      <div class="sidebar">
-        <div class="category-header">
-          <h3>Категории</h3>
-          <span class="category-count" id="categoryCount">0</span>
-        </div>
-        <div class="category-list" id="categoryList"></div>
+  <!-- Шапка -->
+  <div class="header">
+    <h1>Кассовый аппарат</h1>
+    <div style="color: #eee; font-size: 0.9em;" id="currentTime"></div>
+  </div>
+  
+  <!-- Основной контейнер -->
+  <div class="main-container">
+    <!-- Боковая панель с категориями -->
+    <div class="sidebar">
+      <div class="category-header">
+        <h3>Категории</h3>
       </div>
-      
+      <div class="category-search">
+        <input type="text" id="categorySearch" placeholder="Поиск категории...">
+      </div>
+      <div class="category-list" id="categoryList"></div>
+    </div>
+    
+    <!-- Основная область с товарами -->
+    <div class="content-area">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Поиск по названию или штрих-коду..." autocomplete="off">
+      </div>
+      <div class="product-grid-container">
+        <div class="product-grid" id="productGrid"></div>
+      </div>
+    </div>
+    
+    <!-- Панель корзины -->
+    <div class="cart-panel">
       <div class="cart-header">
-          <h2>Текущий чек</h2>
-        </div>
-        <div class="cart-items" id="cartItems"></div>
-        <div class="cart-footer">
-          <div class="cart-total">Итого: <span id="totalAmount">0</span> ₸</div>
-          <div class="cart-actions">
-            <button class="btn btn-danger" onclick="clearCart()">Очистить</button>
-            <button class="btn btn-pay" onclick="processPayment()">Оплатить</button>
-          </div>
-        </div>
-
-      
-
-      <!-- Основная область с товарами -->
-      <div class="main-content">
-        <div class="search-box">
-          <input type="text" id="searchInput" placeholder="Поиск по названию или штрих-коду..." autocomplete="off">
-        </div>
-        <div class="product-grid-container">
-          <div class="product-grid" id="productGrid"></div>
-        </div>
+        <h3>Текущий чек</h3>
       </div>
-      
-      
-    
-    <!-- Остальные вкладки -->
-    <div id="home" class="tab-content">
-      <div class="main-content">
-        <h1 style="padding: 20px;">Главная страница</h1>
-        <div style="padding: 0 20px 20px;">
-          <h3>Горячие клавиши:</h3>
-          <ul>
-            <li><strong>F1</strong> - фокус на поиск товаров</li>
-            <li><strong>F2</strong> - оплата текущего чека</li>
-            <li><strong>F3</strong> - очистка чека</li>
-            <li><strong>F4</strong> - показать/скрыть историю операций</li>
-          </ul>
+      <div class="cart-items" id="cartItems"></div>
+      <div class="cart-footer">
+        <div class="cart-total">Итого: <span id="totalAmount">0</span> ₸</div>
+        <div class="cart-actions">
+          <button class="btn btn-danger" onclick="clearCart()">Очистить</button>
+          <button class="btn btn-pay" onclick="processPayment()">Оплатить</button>
         </div>
-      </div>
-    </div>
-    
-    <div id="products" class="tab-content">
-      <div class="main-content">
-        <h1 style="padding: 20px;">Управление товарами</h1>
-        <p style="padding: 0 20px 20px;">Перейдите в раздел администрирования для управления товарами</p>
-      </div>
-    </div>
-    
-    <div id="counterparties" class="tab-content">
-      <div class="main-content">
-        <h1 style="padding: 20px;">Управление контрагентами</h1>
-        <p style="padding: 0 20px 20px;">Перейдите в раздел администрирования для управления контрагентами</p>
-      </div>
-    </div>
-    
-    <div id="stats" class="tab-content">
-      <div class="main-content">
-        <h1 style="padding: 20px;">Отчёты и статистика</h1>
-        <p style="padding: 0 20px 20px;">Перейдите в раздел администрирования для просмотра отчётов</p>
       </div>
     </div>
   </div>
@@ -542,26 +476,12 @@ DOCTYPE html>
       <div class="modal-header">
         <h3 id="modalProductName"></h3>
       </div>
-      <div class="quantity-input-container">
-        <input type="text" id="quantityInput" value="" placeholder="Введите количество" onkeydown="handleQuantityKeyDown(event)">
+      <div class="modal-body">
+        <input type="number" id="quantityInput" value="1" min="0.01" step="0.01" style="width: 100%; padding: 10px; font-size: 16px; text-align: center;">
       </div>
-      <div class="numeric-keypad">
-        <button class="keypad-btn" onclick="appendToQuantity('7')">7</button>
-        <button class="keypad-btn" onclick="appendToQuantity('8')">8</button>
-        <button class="keypad-btn" onclick="appendToQuantity('9')">9</button>
-        <button class="keypad-btn" onclick="appendToQuantity('4')">4</button>
-        <button class="keypad-btn" onclick="appendToQuantity('5')">5</button>
-        <button class="keypad-btn" onclick="appendToQuantity('6')">6</button>
-        <button class="keypad-btn" onclick="appendToQuantity('1')">1</button>
-        <button class="keypad-btn" onclick="appendToQuantity('2')">2</button>
-        <button class="keypad-btn" onclick="appendToQuantity('3')">3</button>
-        <button class="keypad-btn" onclick="appendToQuantity('0')">0</button>
-        <button class="keypad-btn" onclick="appendToQuantity('.')">.</button>
-        <button class="keypad-btn clear" onclick="clearQuantity()">C</button>
-      </div>
-      <div class="modal-actions">
-        <button class="btn btn-pay" onclick="addToCartWithQuantity()">Добавить (Enter)</button>
-        <button class="btn btn-danger" onclick="closeQuantityModal()">Отмена (Esc)</button>
+      <div class="modal-footer">
+        <button class="btn btn-danger" onclick="closeQuantityModal()">Отмена</button>
+        <button class="btn btn-pay" onclick="addToCartWithQuantity()">Добавить</button>
       </div>
     </div>
   </div>
@@ -572,32 +492,27 @@ DOCTYPE html>
       <div class="modal-header">
         <h3>Оформление оплаты</h3>
       </div>
-      <div class="payment-input-group">
-        <label>Способ оплаты</label>
-        <select id="paymentMethod">
-          <option value="cash">💰 Наличные</option>
-          <option value="card">💳 Карта</option>
-          <option value="qr">📱 QR-код</option>
-          <option value="remote">🌐 Удалённая оплата</option>
-          <option value="bill">📄 Счёт на оплату</option>
-        </select>
+      <div class="modal-body">
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; margin-bottom: 5px;">Сумма:</label>
+          <input type="text" id="paymentTotal" value="0 ₸" readonly style="width: 100%; padding: 10px; font-size: 16px; text-align: center; background: #f5f5f5; border: 1px solid #ddd;">
+        </div>
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; margin-bottom: 5px;">Способ оплаты:</label>
+          <select id="paymentMethod" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+            <option value="cash">Наличные</option>
+            <option value="card">Банковская карта</option>
+            <option value="transfer">Безналичный перевод</option>
+          </select>
+        </div>
+        <div id="cashInputContainer" style="margin-bottom: 15px;">
+          <label style="display: block; margin-bottom: 5px;">Внесённая сумма:</label>
+          <input type="number" id="cashAmount" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+        </div>
       </div>
-      <div class="payment-input-group">
-        <label>Организация</label>
-        <select id="organizationSelect">
-          <option value="Жетес">🏢 Жетес</option>
-          <option value="AS Qadir">🏭 AS Qadir</option>
-        </select>
-      </div>
-      <div class="payment-input-group">
-        <label>Контрагент</label>
-        <select id="counterpartySelect">
-          <option value="">Не выбрано</option>
-        </select>
-      </div>
-      <div class="modal-actions">
-        <button class="btn btn-pay" onclick="confirmPayment()">✅ Подтвердить</button>
-        <button class="btn btn-danger" onclick="closePaymentModal()">❌ Отмена (Esc)</button>
+      <div class="modal-footer">
+        <button class="btn btn-danger" onclick="closePaymentModal()">Отмена</button>
+        <button class="btn btn-pay" onclick="confirmPayment()">Подтвердить</button>
       </div>
     </div>
   </div>
@@ -617,15 +532,26 @@ DOCTYPE html>
       renderCategoryMenu();
       renderProducts(allProducts);
       loadCartFromStorage();
+      updateCurrentTime();
       
       document.getElementById('searchInput').focus();
       
       // Обработчики событий
       document.getElementById('searchInput').addEventListener('input', searchProducts);
+      document.getElementById('categorySearch').addEventListener('input', searchCategories);
+      document.getElementById('paymentMethod').addEventListener('change', toggleCashInput);
       
-      // Горячие клавиши
-      document.addEventListener('keydown', handleHotkeys);
+      // Обновляем время каждую минуту
+      setInterval(updateCurrentTime, 60000);
     });
+    
+    // Обновление текущего времени
+    function updateCurrentTime() {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+      const dateString = now.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      document.getElementById('currentTime').textContent = `${dateString} ${timeString}`;
+    }
     
     // Загрузка товаров
     async function loadProducts() {
@@ -637,8 +563,6 @@ DOCTYPE html>
         // Формируем список категорий
         const categories = new Set(allProducts.map(p => p.category || 'Без категории'));
         allCategories = ['Все', ...categories];
-        
-        document.getElementById('categoryCount').textContent = allCategories.length;
       } catch (error) {
         console.error('Ошибка загрузки товаров:', error);
         alert('Ошибка загрузки товаров');
@@ -664,6 +588,21 @@ DOCTYPE html>
           renderCategoryMenu();
         };
         categoryList.appendChild(item);
+      });
+    }
+    
+    // Поиск по категориям
+    function searchCategories() {
+      const searchTerm = document.getElementById('categorySearch').value.toLowerCase();
+      const items = document.querySelectorAll('.category-item');
+      
+      items.forEach(item => {
+        const categoryName = item.querySelector('span:first-child').textContent.toLowerCase();
+        if (categoryName.includes(searchTerm)) {
+          item.style.display = 'flex';
+        } else {
+          item.style.display = 'none';
+        }
       });
     }
     
@@ -697,7 +636,7 @@ DOCTYPE html>
       
       if (products.length === 0) {
         productGrid.innerHTML = `
-          <div style="grid-column: 1/-1; text-align: center; padding: 40px 20px; color: #aaa;">
+          <div style="grid-column: 1/-1; text-align: center; padding: 40px 20px; color: #666;">
             Товары не найдены. Попробуйте изменить критерии поиска.
           </div>
         `;
@@ -714,7 +653,7 @@ DOCTYPE html>
         card.className = 'product-card';
         card.innerHTML = `
           <div class="product-name">${product.name}</div>
-          <div class="product-price">${product.price} ₸</div>
+          <div class="product-price">${product.price.toFixed(2)} ₸</div>
           ${product.barcode ? `<div class="product-barcode">${product.barcode}</div>` : ''}
           <div class="quick-actions">
             <button class="quick-btn" onclick="event.stopPropagation(); addToCart(${JSON.stringify(product)}, 1)">+1</button>
@@ -734,13 +673,13 @@ DOCTYPE html>
       
       let total = 0;
       cart.forEach(item => {
-        total += parseFloat(item.total);
+        total += item.price * item.quantity;
         const cartItem = document.createElement('div');
         cartItem.className = 'cart-item';
         cartItem.innerHTML = `
           <div class="cart-item-header">
             <span class="cart-item-name">${item.name}</span>
-            <span class="cart-item-price">${item.price} ₸</span>
+            <span class="cart-item-price">${item.price.toFixed(2)} ₸</span>
           </div>
           <div class="cart-item-details">
             <div class="cart-item-qty">
@@ -748,13 +687,17 @@ DOCTYPE html>
               <span>${item.quantity}</span>
               <button class="qty-btn" onclick="changeQuantity(${item.id}, 1)">+</button>
             </div>
-            <span>${item.total} ₸</span>
+            <span>${(item.price * item.quantity).toFixed(2)} ₸</span>
+          </div>
+          <div style="text-align: right; margin-top: 5px;">
+            <button class="remove-btn" onclick="removeFromCart(${item.id})">Удалить</button>
           </div>
         `;
         cartItems.appendChild(cartItem);
       });
       
       totalAmount.textContent = total.toFixed(2);
+      document.getElementById('paymentTotal').value = total.toFixed(2) + ' ₸';
       saveCartToStorage();
     }
     
@@ -763,18 +706,22 @@ DOCTYPE html>
       
       if (existingItem) {
         existingItem.quantity += quantity;
-        existingItem.total = (existingItem.price * existingItem.quantity).toFixed(2);
       } else {
         cart.push({
           id: product.id,
           name: product.name,
           price: product.price,
-          quantity: quantity,
-          total: (product.price * quantity).toFixed(2)
+          quantity: quantity
         });
       }
       
       updateCartDisplay();
+      
+      // Прокручиваем к последнему добавленному товару
+      const cartItems = document.querySelector('.cart-items');
+      setTimeout(() => {
+        cartItems.scrollTop = cartItems.scrollHeight;
+      }, 100);
     }
     
     function changeQuantity(productId, delta) {
@@ -783,17 +730,24 @@ DOCTYPE html>
         item.quantity += delta;
         if (item.quantity <= 0) {
           cart = cart.filter(i => i.id !== productId);
-        } else {
-          item.total = (item.price * item.quantity).toFixed(2);
         }
         updateCartDisplay();
       }
     }
     
-    function clearCart() {
-      cart = [];
+    function removeFromCart(productId) {
+      cart = cart.filter(item => item.id !== productId);
       updateCartDisplay();
-      clearSavedCart();
+    }
+    
+    function clearCart() {
+      if (cart.length === 0) return;
+      
+      if (confirm('Вы действительно хотите очистить корзину?')) {
+        cart = [];
+        updateCartDisplay();
+        clearSavedCart();
+      }
     }
     
     // Сохранение корзины
@@ -817,7 +771,7 @@ DOCTYPE html>
     function showQuantityModal(product) {
       currentProduct = product;
       document.getElementById('modalProductName').textContent = product.name;
-      document.getElementById('quantityInput').value = '';
+      document.getElementById('quantityInput').value = '1';
       document.getElementById('quantityModal').style.display = 'flex';
       
       setTimeout(() => {
@@ -829,38 +783,8 @@ DOCTYPE html>
       document.getElementById('quantityModal').style.display = 'none';
     }
     
-    function appendToQuantity(value) {
-      const input = document.getElementById('quantityInput');
-      let current = input.value;
-      
-      if (value === '.' && current.includes('.')) {
-        return;
-      }
-      
-      input.value = current + value;
-    }
-    
-    function clearQuantity() {
-      document.getElementById('quantityInput').value = '';
-    }
-    
-    function handleQuantityKeyDown(event) {
-      // Разрешаем: цифры (0-9), точка, Backspace, Delete, Tab, Enter
-      if ((event.key >= '0' && event.key <= '9') || 
-          event.key === '.' || 
-          event.key === 'Backspace' || 
-          event.key === 'Delete' || 
-          event.key === 'Tab' || 
-          event.key === 'Enter') {
-        return;
-      }
-      
-      // Запрещаем все остальные символы
-      event.preventDefault();
-    }
-    
     function addToCartWithQuantity() {
-      const quantity = parseFloat(document.getElementById('quantityInput').value) || 0;
+      const quantity = parseFloat(document.getElementById('quantityInput').value);
       if (quantity > 0) {
         addToCart(currentProduct, quantity);
         closeQuantityModal();
@@ -875,98 +799,65 @@ DOCTYPE html>
         return;
       }
       
-      const total = cart.reduce((sum, item) => sum + parseFloat(item.total), 0).toFixed(2);
-      const modal = document.getElementById('paymentModal');
+      const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      document.getElementById('paymentTotal').value = total.toFixed(2) + ' ₸';
       document.getElementById('paymentModal').style.display = 'flex';
+      toggleCashInput();
     }
     
     function closePaymentModal() {
       document.getElementById('paymentModal').style.display = 'none';
     }
     
-    async function confirmPayment() {
-      const paymentMethod = document.getElementById('paymentMethod').value;
-      const organization = document.getElementById('organizationSelect').value;
-      const counterpartyId = document.getElementById('counterpartySelect').value || null;
+    function toggleCashInput() {
+      const method = document.getElementById('paymentMethod').value;
+      const cashInput = document.getElementById('cashInputContainer');
+      cashInput.style.display = method === 'cash' ? 'block' : 'none';
+    }
+    
+    function confirmPayment() {
+      const method = document.getElementById('paymentMethod').value;
+      const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
       
-      try {
-        // Здесь должен быть ваш запрос к API
-        console.log('Отправка данных:', {
-          cart: cart,
-          payment_method: paymentMethod,
-          organization: organization,
-          counterparty_id: counterpartyId
-        });
+      if (method === 'cash') {
+        const cashAmount = parseFloat(document.getElementById('cashAmount').value);
+        if (isNaN(cashAmount) || cashAmount < total) {
+          alert('Внесённая сумма меньше суммы чека');
+          return;
+        }
         
-        alert('Продажа оформлена!');
-        cart = [];
-        updateCartDisplay();
-        closePaymentModal();
-      } catch (error) {
-        console.error('Ошибка оплаты:', error);
-        alert('Ошибка при оформлении оплаты');
+        const change = cashAmount - total;
+        if (change > 0) {
+          alert(`Сдача: ${change.toFixed(2)} ₸`);
+        }
       }
-    }
-    
-    // Переключение вкладок
-    function showTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(tab => {
-        tab.classList.remove('active');
-      });
-      document.getElementById(tabId).classList.add('active');
       
-      if (tabId === 'kassa') {
-        setTimeout(() => {
-          document.getElementById('searchInput').focus();
-        }, 100);
-      }
-    }
-    
-    // Горячие клавиши
-    function handleHotkeys(e) {
-      switch(e.key) {
-        case 'F1': 
-          e.preventDefault();
-          document.getElementById('searchInput').focus();
-          break;
-        case 'F2': 
-          e.preventDefault();
-          processPayment();
-          break;
-        case 'F3': 
-          e.preventDefault();
-          clearCart();
-          break;
-        case 'Escape':
-          if (document.getElementById('quantityModal').style.display === 'flex') {
-            closeQuantityModal();
-          }
-          if (document.getElementById('paymentModal').style.display === 'flex') {
-            closePaymentModal();
-          }
-          break;
-        case 'Enter':
-          if (document.getElementById('quantityModal').style.display === 'flex') {
-            e.preventDefault();
-            addToCartWithQuantity();
-          }
-          break;
-      }
+      // Здесь должен быть ваш запрос к API
+      console.log('Отправка данных:', {
+        cart: cart,
+        payment_method: method,
+        total: total
+      });
+      
+      alert('Оплата успешно проведена!');
+      cart = [];
+      updateCartDisplay();
+      closePaymentModal();
     }
     
     // Генерация тестовых данных (для демонстрации)
     function generateTestProducts(count) {
-      const categories = ['Молочные', 'Бакалея', 'Напитки', 'Овощи', 'Фрукты', 'Мясо', 'Рыба', 'Сладости'];
+      const categories = ['Молочные продукты', 'Бакалея', 'Напитки', 'Овощи', 'Фрукты', 'Мясо', 'Рыба', 'Сладости', 'Хлеб', 'Консервы'];
       const products = [];
       
       for (let i = 1; i <= count; i++) {
         const category = categories[Math.floor(Math.random() * categories.length)];
         products.push({
           id: i,
-          name: `Товар ${i}`,
+          name: `Товар ${i} (${category})`,
           price: Math.floor(Math.random() * 900) + 100,
           category: category,
-          barcode: `2000000000${i}`.slice(-10)
+          barcode: `200${i.toString().padStart(7, '0')}`
         });
       }
       
