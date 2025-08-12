@@ -253,7 +253,10 @@
         {% for category in products_by_category.keys() %}
         <option value="{{ category }}">{{ category }}</option>
         {% endfor %}
+        <option value="_new_category_">+ Новая категория</option>
       </select>
+      <input type="text" id="newCategoryInput" name="new_category" 
+               placeholder="Название новой категории" style="flex: 1; display: none;">
       <button type="submit" class="btn">Добавить товар</button>
     </form>
 
@@ -331,6 +334,41 @@
       
       products.forEach(product => {
         const row = document.createElement('tr');
+
+    // Обработчик выбора категории
+    document.getElementById('categorySelect').addEventListener('change', function() {
+      const newCategoryInput = document.getElementById('newCategoryInput');
+      if (this.value === '_new_category_') {
+        newCategoryInput.style.display = 'block';
+        newCategoryInput.required = true;
+      } else {
+        newCategoryInput.style.display = 'none';
+        newCategoryInput.required = false;
+      }
+    });
+
+    // Обработчик отправки формы
+    document.getElementById('addProductForm').addEventListener('submit', function(e) {
+      const categorySelect = document.getElementById('categorySelect');
+      const newCategoryInput = document.getElementById('newCategoryInput');
+      
+      if (categorySelect.value === '_new_category_') {
+        // Заменяем значение выпадающего списка на новую категорию
+        const newCategory = newCategoryInput.value.trim();
+        if (!newCategory) {
+          e.preventDefault();
+          alert('Пожалуйста, введите название новой категории');
+          return;
+        }
+        
+        // Создаем временный input для отправки новой категории
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'category';
+        hiddenInput.value = newCategory;
+        this.appendChild(hiddenInput);
+      }
+    });
         
         // Ячейки с данными
         row.innerHTML = `
@@ -455,3 +493,4 @@
   </script>
 </body>
 </html>
+
