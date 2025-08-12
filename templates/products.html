@@ -46,7 +46,6 @@
       transform: translateY(-2px);
     }
 
-    /* Стили для плиток категорий */
     .categories-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -78,7 +77,6 @@
       font-size: 0.9em;
     }
 
-    /* Модальное окно с товарами категории */
     .modal {
       display: none;
       position: fixed;
@@ -115,7 +113,6 @@
       border-bottom: 1px solid #444;
     }
 
-    /* Таблица товаров в модальном окне */
     .products-table {
       width: 100%;
       border-collapse: collapse;
@@ -139,7 +136,6 @@
       background-color: #3a3a3a;
     }
 
-    /* Формы */
     .product-form, .excel-form {
       display: flex;
       flex-direction: column;
@@ -189,7 +185,6 @@
       gap: 8px;
     }
 
-    /* Поисковая строка */
     .search-container {
       margin: 20px 0;
     }
@@ -204,7 +199,6 @@
       border: 1px solid #444;
     }
 
-    /* Для мобильных устройств */
     @media (max-width: 768px) {
       .categories-grid {
         grid-template-columns: 1fr;
@@ -235,15 +229,13 @@
   <div class="container">
     <h1 class="glow-text">Список товаров</h1>
 
-    <!-- Поиск товаров -->
     <div class="search-container">
       <input type="text" class="search-input" placeholder="Поиск товаров..." id="searchInput">
     </div>
 
-    <!-- Плитки категорий -->
     <div class="categories-grid" id="categoriesGrid">
       {% for category, products in products_by_category.items() %}
-      <div class="category-card" onclick="openCategoryModal('{{ category }}', {{ products|tojson }})">
+      <div class="category-card" data-category="{{ category }}" data-products='{{ products|tojson }}'>
         <div class="category-name">{{ category }}</div>
         <div class="category-count">Товаров: {{ products|length }}</div>
       </div>
@@ -272,7 +264,6 @@
     </form>
   </div>
 
-  <!-- Модальное окно категории -->
   <div id="categoryModal" class="modal">
     <div class="modal-content">
       <button class="close-btn" onclick="closeCategoryModal()">&times;</button>
@@ -299,7 +290,6 @@
     </div>
   </div>
 
-  <!-- Модальное окно редактирования -->
   <div id="editModal" class="modal">
     <div class="modal-content">
       <button class="close-btn" onclick="closeEditModal()">&times;</button>
@@ -322,23 +312,17 @@
   </div>
 
   <script>
+    // Вспомогательные функции
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
 
-    // Функция для безопасной вставки HTML
-    function escapeHtml(unsafe) {
-      if (!unsafe) return '';
-      return unsafe.toString()
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
-    
-    // Функция для безопасной передачи в JS
-    function safeJsString(str) {
-      return JSON.stringify(str || '').slice(1, -1);
-    }
-    
     // Открытие модального окна категории
     function openCategoryModal(categoryName, products) {
       document.getElementById('modalCategoryTitle').textContent = categoryName;
@@ -348,32 +332,59 @@
       products.forEach(product => {
         const row = document.createElement('tr');
         
-        // Безопасное экранирование значений
-        const safeName = JSON.stringify(product.name || '').replace(/^"|"$/g, '');
-        const safeCategory = JSON.stringify(product.category || '').replace(/^"|"$/g, '');
-        const safeWholesale = product.price_wholesale !== null ? product.price_wholesale : 'null';
-        const safeBulk = product.price_bulk !== null ? product.price_bulk : 'null';
-        
+        // Ячейки с данными
         row.innerHTML = `
-          <td>${product.name}</td>
-          <td>${product.price} ₸</td>
-          <td>${product.price_wholesale || '-'} ₸</td>
-          <td>${product.price_bulk || '-'} ₸</td>
-          <td class="action-btns">
-            <button class="btn btn-edit" onclick="event.stopPropagation(); openEditModal(
-              ${product.id},
-              '${safeName.replace(/'/g, "\\'")}',
-              ${product.price},
-              ${safeWholesale},
-              ${safeBulk},
-              '${safeCategory.replace(/'/g, "\\'")}'
-            )">✏️</button>
-            <form action="/delete_product" method="POST" style="display:inline;">
-              <input type="hidden" name="id" value="${product.id}">
-              <button type="submit" class="btn btn-delete" onclick="event.stopPropagation(); return confirm('Удалить этот товар?')">🗑️</button>
-            </form>
-          </td>
+          <td>${escapeHtml(product.name)}</td>
+          <td>${escapeHtml(product.price)} ₸</td>
+          <td>${product.price_wholesale ? escapeHtml(product.price_wholesale) + ' ₸' : '-'}</td>
+          <td>${product.price_bulk ? escapeHtml(product.price_bulk) + ' ₸' : '-'}</td>
         `;
+        
+        // Ячейка с кнопками действий
+        const actionCell = document.createElement('td');
+        actionCell.className = 'action-btns';
+        
+        // Кнопка редактирования
+        const editBtn = document.createElement('button');
+        editBtn.className = 'btn btn-edit';
+        editBtn.innerHTML = '✏️';
+        editBtn.onclick = (e) => {
+          e.stopPropagation();
+          openEditModal(
+            product.id,
+            product.name,
+            product.price,
+            product.price_wholesale,
+            product.price_bulk,
+            product.category
+          );
+        };
+        
+        // Кнопка удаления
+        const deleteForm = document.createElement('form');
+        deleteForm.method = 'POST';
+        deleteForm.action = '/delete_product';
+        deleteForm.style.display = 'inline';
+        
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'id';
+        hiddenInput.value = product.id;
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.type = 'submit';
+        deleteBtn.className = 'btn btn-delete';
+        deleteBtn.innerHTML = '🗑️';
+        deleteBtn.onclick = (e) => {
+          e.stopPropagation();
+          return confirm('Удалить этот товар?');
+        };
+        
+        deleteForm.appendChild(hiddenInput);
+        deleteForm.appendChild(deleteBtn);
+        actionCell.appendChild(editBtn);
+        actionCell.appendChild(deleteForm);
+        row.appendChild(actionCell);
         tableBody.appendChild(row);
       });
       
@@ -387,64 +398,60 @@
       document.body.style.overflow = 'auto';
     }
 
-    // Поиск по всем товарам
-    document.getElementById('searchInput').addEventListener('input', function() {
-      const searchTerm = this.value.toLowerCase();
-      const categoryCards = document.querySelectorAll('.category-card');
-      
-      categoryCards.forEach(card => {
-        const categoryName = card.querySelector('.category-name').textContent.toLowerCase();
-        if (categoryName.includes(searchTerm)) {
-          card.style.display = 'block';
-        } else {
-          card.style.display = 'none';
-        }
-      });
-    });
-
-    // Поиск внутри категории
-    document.getElementById('categorySearchInput').addEventListener('input', function() {
-      const searchTerm = this.value.toLowerCase();
-      const rows = document.querySelectorAll('#modalProductsTable tr');
-      
-      rows.forEach(row => {
-        const productName = row.cells[0].textContent.toLowerCase();
-        if (productName.includes(searchTerm)) {
-          row.style.display = '';
-        } else {
-          row.style.display = 'none';
-        }
-      });
-    });
-
-    // Функции для модального окна редактирования
+    // Открытие модального окна редактирования
     function openEditModal(id, name, price, priceWholesale, priceBulk, category) {
       document.getElementById('editProductId').value = id;
-      document.getElementById('editName').value = name;
-      document.getElementById('editPrice').value = price;
-      document.getElementById('editPriceWholesale').value = 
-        priceWholesale !== null && priceWholesale !== 'null' ? priceWholesale : '';
-      document.getElementById('editPriceBulk').value = 
-        priceBulk !== null && priceBulk !== 'null' ? priceBulk : '';
-      document.getElementById('editCategory').value = category;
+      document.getElementById('editName').value = name || '';
+      document.getElementById('editPrice').value = price || '';
+      document.getElementById('editPriceWholesale').value = priceWholesale || '';
+      document.getElementById('editPriceBulk').value = priceBulk || '';
+      document.getElementById('editCategory').value = category || '';
       
-      closeCategoryModal();
       document.getElementById('editModal').style.display = 'block';
     }
 
+    // Закрытие модального окна редактирования
     function closeEditModal() {
       document.getElementById('editModal').style.display = 'none';
     }
 
+    // Инициализация обработчиков событий
+    document.addEventListener('DOMContentLoaded', function() {
+      // Обработчики для карточек категорий
+      document.querySelectorAll('.category-card').forEach(card => {
+        card.addEventListener('click', function() {
+          const category = this.getAttribute('data-category');
+          const products = JSON.parse(this.getAttribute('data-products'));
+          openCategoryModal(category, products);
+        });
+      });
+      
+      // Поиск по категориям
+      document.getElementById('searchInput').addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        document.querySelectorAll('.category-card').forEach(card => {
+          const categoryName = card.querySelector('.category-name').textContent.toLowerCase();
+          card.style.display = categoryName.includes(searchTerm) ? 'block' : 'none';
+        });
+      });
+      
+      // Поиск внутри категории
+      document.getElementById('categorySearchInput').addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        document.querySelectorAll('#modalProductsTable tr').forEach(row => {
+          const productName = row.cells[0].textContent.toLowerCase();
+          row.style.display = productName.includes(searchTerm) ? '' : 'none';
+        });
+      });
+    });
+
     // Закрытие модальных окон при клике вне их
-    window.onclick = function(event) {
+    window.addEventListener('click', function(event) {
       if (event.target.classList.contains('modal')) {
         closeCategoryModal();
         closeEditModal();
       }
-    }
+    });
   </script>
 </body>
 </html>
-
-
