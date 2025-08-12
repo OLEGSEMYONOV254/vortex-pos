@@ -243,21 +243,28 @@
     </div>
 
     <h2>Добавить товар вручную</h2>
-    <form method="POST" action="/add_product" class="product-form">
+    <form method="POST" action="/add_product" class="product-form" id="addProductForm">
       <input type="text" name="name" placeholder="Название товара" required>
       <input type="number" step="0.01" name="price" placeholder="Розничная цена" required>
       <input type="number" step="0.01" name="price_wholesale" placeholder="Мелкооптовая цена">
       <input type="number" step="0.01" name="price_bulk" placeholder="Оптовая цена">
-      <select name="category" required>
-        <option value="">Выберите категорию</option>
-        {% for category in products_by_category.keys() %}
-        <option value="{{ category }}">{{ category }}</option>
-        {% endfor %}
-        <option value="_new_">+ Создать новую категорию</option>
-      </select>
-     <input type="text" id="newCategoryInput" name="new_category" 
-           placeholder="Введите название новой категории" 
-           style="flex: 1; display: none;">
+      
+      <div class="category-select-container">
+        <select name="category" id="categorySelect" required>
+          <option value="">Выберите категорию</option>
+          {% for category in products_by_category.keys() %}
+          <option value="{{ category }}">{{ category }}</option>
+          {% endfor %}
+          <option value="_NEW_CATEGORY_">+ Создать новую категорию</option>
+        </select>
+        
+        <div id="newCategoryContainer" style="display: none; margin-top: 10px;">
+          <input type="text" id="newCategoryInput" 
+                 placeholder="Введите название новой категории"
+                 style="width: 100%; padding: 8px;">
+        </div>
+      </div>
+      
       <button type="submit" class="btn">Добавить товар</button>
     </form>
 
@@ -421,8 +428,10 @@
   
       // Инициализация обработчиков событий
       document.addEventListener('DOMContentLoaded', function() {
-        const categorySelect = document.getElementById('categorySelect');
-        const newCategoryInput = document.getElementById('newCategoryInput');
+      const categorySelect = document.getElementById('categorySelect');
+      const newCategoryContainer = document.getElementById('newCategoryContainer');
+      const newCategoryInput = document.getElementById('newCategoryInput');
+      const addProductForm = document.getElementById('addProductForm');
         
         // Обработчики для карточек категорий
         document.querySelectorAll('.category-card').forEach(card => {
@@ -453,12 +462,12 @@
   
         // Обработчик выбора категории
         if (categorySelect) {
-          categorySelect.addEventListener('change', function() {
-            if (this.value === '_new_') {
-              newCategoryInput.style.display = 'block';
+           categorySelect.addEventListener('change', function() {
+            if (this.value === '_NEW_CATEGORY_') {
+              newCategoryContainer.style.display = 'block';
               newCategoryInput.required = true;
             } else {
-              newCategoryInput.style.display = 'none';
+              newCategoryContainer.style.display = 'none';
               newCategoryInput.required = false;
             }
           });
@@ -468,22 +477,23 @@
         const addProductForm = document.getElementById('addProductForm');
         if (addProductForm) {
           addProductForm.addEventListener('submit', function(e) {
-            if (categorySelect && categorySelect.value === '_new_') {
-              const newCategory = newCategoryInput.value.trim();
-              
-              if (!newCategory) {
-                e.preventDefault();
-                alert('Пожалуйста, введите название новой категории');
-                return;
+              if (categorySelect.value === '_NEW_CATEGORY_') {
+                const newCategoryName = newCategoryInput.value.trim();
+                
+                if (!newCategoryName) {
+                  e.preventDefault();
+                  alert('Пожалуйста, укажите название новой категории');
+                  return;
+                }
+                
+                // Добавляем скрытое поле с названием новой категории
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'new_category_name';
+                hiddenInput.value = newCategoryName;
+                this.appendChild(hiddenInput);
               }
-              
-              // Добавляем скрытое поле с новой категорией
-              const hiddenInput = document.createElement('input');
-              hiddenInput.type = 'hidden';
-              hiddenInput.name = 'category';
-              hiddenInput.value = newCategory;
-              this.appendChild(hiddenInput);
-            }
+            });
           });
         }
       });
@@ -498,6 +508,7 @@
   </script>
 </body>
 </html>
+
 
 
 
