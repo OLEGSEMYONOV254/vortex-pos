@@ -581,6 +581,17 @@
         counterparties = [];
       }
     }
+
+    function updateCounterpartySelect() {
+      const select = document.getElementById('counterpartySelect');
+      select.innerHTML = '<option value="">Не выбрано</option>';
+      counterparties.forEach(c => {
+        const option = document.createElement('option');
+        option.value = c.id;
+        option.textContent = c.name;
+        select.appendChild(option);
+      });
+    }
     
     // Отображение категорий
     function renderCategoryMenu() {
@@ -879,6 +890,7 @@
   </script>
 </body>
 </html>
+
 
 
 
