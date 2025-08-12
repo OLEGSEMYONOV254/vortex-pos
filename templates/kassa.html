@@ -12,13 +12,12 @@
       padding: 0;
     }
     
-    body {
-      font-family: 'Roboto', sans-serif;
-      background: #f0f2f5;
-      color: #333;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
+    body { 
+      font-family: sans-serif; 
+      background: #0a0a0a; 
+      color: white; 
+      margin: 0; 
+      padding: 0 10px; 
     }
     
     /* Шапка */
@@ -556,16 +555,23 @@
     // Загрузка товаров
     async function loadProducts() {
       try {
-        // Здесь должен быть ваш запрос к API
-        // Для примера используем тестовые данные
-        allProducts = generateTestProducts(3000);
-        
-        // Формируем список категорий
-        const categories = new Set(allProducts.map(p => p.category || 'Без категории'));
-        allCategories = ['Все', ...categories];
+        const response = await fetch('/get_products');
+        allProducts = await response.json();
+        renderProducts(allProducts);
       } catch (error) {
         console.error('Ошибка загрузки товаров:', error);
-        alert('Ошибка загрузки товаров');
+        allProducts = [];
+      }
+    }
+
+    async function loadCounterparties() {
+      try {
+        const response = await fetch('/api/counterparties');
+        counterparties = await response.json();
+        updateCounterpartySelect();
+      } catch (error) {
+        console.error('Ошибка загрузки контрагентов:', error);
+        counterparties = [];
       }
     }
     
@@ -866,3 +872,4 @@
   </script>
 </body>
 </html>
+
