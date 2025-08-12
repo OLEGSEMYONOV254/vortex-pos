@@ -350,6 +350,122 @@
         order: 3;
       }
     }
+    /* Новые стили для плитки товаров */
+    .product-grid-container {
+      grid-column: 1;
+      background: #2a2a2a;
+      border-radius: 8px;
+      padding: 15px;
+      height: fit-content;
+      max-height: 75vh;
+      overflow-y: auto;
+      border: 1px solid #333;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .product-card {
+      background: #3a3a3a;
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #444;
+    }
+
+    .product-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      border-color: #00cc66;
+    }
+
+    .product-name {
+      font-weight: bold;
+      font-size: 0.95em;
+      margin-bottom: 8px;
+      flex-grow: 1;
+    }
+
+    .product-price {
+      color: #00ffcc;
+      font-weight: bold;
+      font-size: 1.1em;
+      margin-bottom: 5px;
+    }
+
+    .product-category {
+      font-size: 0.8em;
+      color: #aaa;
+      margin-bottom: 8px;
+    }
+
+    .quick-add-buttons {
+      display: flex;
+      gap: 5px;
+      margin-top: 5px;
+    }
+
+    .quick-add-btn {
+      flex: 1;
+      background: #4a4a4a;
+      color: white;
+      border: none;
+      padding: 5px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8em;
+      transition: background 0.2s;
+    }
+
+    .quick-add-btn:hover {
+      background: #00cc66;
+    }
+
+    /* Адаптация для мобильных */
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+      
+      .product-grid-container {
+        grid-column: 1;
+        order: 2;
+        max-height: 50vh;
+      }
+      
+      .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      }
+      
+      .cart {
+        order: 1;
+      }
+      
+      .receipt-history {
+        order: 3;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      }
+      
+      .product-name {
+        font-size: 0.85em;
+      }
+      
+      .product-price {
+        font-size: 1em;
+      }
+    }
   </style>
 </head>
 <body>
@@ -373,9 +489,11 @@
 
       <div class="category-list" id="categoryList"></div>
 
-      <div class="top-category-tabs" id="topCategoryTabs"></div>
-
-      <div class="product-grid" id="productGrid"></div>
+      <!-- Обновленный контейнер для товаров -->
+      <div class="product-grid-container">
+        <h3>Товары</h3>
+        <div class="product-grid" id="productGrid"></div>
+      </div>
 
       <div class="cart">
         <h2>Текущий чек <span class="hotkey-hint">(F2 - оплата, F3 - очистка)</span></h2>
@@ -616,20 +734,24 @@
       const productGrid = document.getElementById('productGrid');
       productGrid.innerHTML = '';
       
+      if (products.length === 0) {
+        productGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 20px; color: #aaa;">Товары не найдены</div>';
+        return;
+      }
+      
       products.forEach(product => {
         const card = document.createElement('div');
         card.className = 'product-card';
         card.innerHTML = `
-          <div><strong>${product.name}</strong></div>
-          <div>${product.price} ₸</div>
-          ${product.category ? `<div>${product.category}</div>` : ''}
+          <div class="product-name">${product.name}</div>
+          ${product.category ? `<div class="product-category">${product.category}</div>` : ''}
+          <div class="product-price">${product.price} ₸</div>
           <div class="quick-add-buttons">
-            <button class="quick-add-btn" onclick="addToCart(${JSON.stringify(product)}, 1)">+1</button>
-            <button class="quick-add-btn" onclick="addToCart(${JSON.stringify(product)}, 0.5)">+0.5</button>
+            <button class="quick-add-btn" onclick="event.stopPropagation(); addToCart(${JSON.stringify(product)}, 1)">+1</button>
+            <button class="quick-add-btn" onclick="event.stopPropagation(); addToCart(${JSON.stringify(product)}, 0.5)">+0.5</button>
           </div>
         `;
         card.onclick = () => showQuantityModal(product);
-        card.ondblclick = () => showQuantityModal(product, true);
         productGrid.appendChild(card);
       });
     }
@@ -927,3 +1049,4 @@
   </script>
 </body>
 </html>
+
