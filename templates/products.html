@@ -334,41 +334,6 @@
       
       products.forEach(product => {
         const row = document.createElement('tr');
-
-    // Обработчик выбора категории
-    document.getElementById('categorySelect').addEventListener('change', function() {
-      const newCategoryInput = document.getElementById('newCategoryInput');
-      if (this.value === '_new_category_') {
-        newCategoryInput.style.display = 'block';
-        newCategoryInput.required = true;
-      } else {
-        newCategoryInput.style.display = 'none';
-        newCategoryInput.required = false;
-      }
-    });
-
-    // Обработчик отправки формы
-    document.getElementById('addProductForm').addEventListener('submit', function(e) {
-      const categorySelect = document.getElementById('categorySelect');
-      const newCategoryInput = document.getElementById('newCategoryInput');
-      
-      if (categorySelect.value === '_new_category_') {
-        // Заменяем значение выпадающего списка на новую категорию
-        const newCategory = newCategoryInput.value.trim();
-        if (!newCategory) {
-          e.preventDefault();
-          alert('Пожалуйста, введите название новой категории');
-          return;
-        }
-        
-        // Создаем временный input для отправки новой категории
-        const hiddenInput = document.createElement('input');
-        hiddenInput.type = 'hidden';
-        hiddenInput.name = 'category';
-        hiddenInput.value = newCategory;
-        this.appendChild(hiddenInput);
-      }
-    });
         
         // Ячейки с данными
         row.innerHTML = `
@@ -404,10 +369,10 @@
         deleteForm.action = '/delete_product';
         deleteForm.style.display = 'inline';
         
-        const hiddenInput = document.createElement('input');
-        hiddenInput.type = 'hidden';
-        hiddenInput.name = 'id';
-        hiddenInput.value = product.id;
+        const productIdInput = document.createElement('input');
+        productIdInput.type = 'hidden';
+        productIdInput.name = 'id';
+        productIdInput.value = product.id;
         
         const deleteBtn = document.createElement('button');
         deleteBtn.type = 'submit';
@@ -418,7 +383,7 @@
           return confirm('Удалить этот товар?');
         };
         
-        deleteForm.appendChild(hiddenInput);
+        deleteForm.appendChild(productIdInput);
         deleteForm.appendChild(deleteBtn);
         actionCell.appendChild(editBtn);
         actionCell.appendChild(deleteForm);
@@ -481,6 +446,39 @@
           row.style.display = productName.includes(searchTerm) ? '' : 'none';
         });
       });
+
+      // Обработчик выбора категории
+      document.getElementById('categorySelect').addEventListener('change', function() {
+        const newCategoryInput = document.getElementById('newCategoryInput');
+        if (this.value === '_new_category_') {
+          newCategoryInput.style.display = 'block';
+          newCategoryInput.required = true;
+        } else {
+          newCategoryInput.style.display = 'none';
+          newCategoryInput.required = false;
+        }
+      });
+
+      // Обработчик отправки формы
+      document.getElementById('addProductForm').addEventListener('submit', function(e) {
+        const categorySelect = document.getElementById('categorySelect');
+        const newCategoryInput = document.getElementById('newCategoryInput');
+        
+        if (categorySelect.value === '_new_category_') {
+          const newCategory = newCategoryInput.value.trim();
+          if (!newCategory) {
+            e.preventDefault();
+            alert('Пожалуйста, введите название новой категории');
+            return;
+          }
+          
+          const categoryHiddenInput = document.createElement('input');
+          categoryHiddenInput.type = 'hidden';
+          categoryHiddenInput.name = 'category';
+          categoryHiddenInput.value = newCategory;
+          this.appendChild(categoryHiddenInput);
+        }
+      });
     });
 
     // Закрытие модальных окон при клике вне их
@@ -493,4 +491,5 @@
   </script>
 </body>
 </html>
+
 
