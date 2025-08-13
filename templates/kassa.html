@@ -5,6 +5,7 @@
   <title>Касса</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
+    /* Ваши оригинальные стили остаются без изменений */
     body { 
       font-family: sans-serif; 
       background: #1a1a1a; 
@@ -352,6 +353,7 @@
   </style>
 </head>
 <body>
+  <!-- Ваш HTML остается без изменений -->
   <nav class="nav-grid">
         <a href="/" class="nav-card">🏠 Главная</a>
         <a href="/products" class="nav-card">📦 Товары</a>
@@ -392,12 +394,12 @@
       </div>
     </div>
 
-    <!-- Модальное окно ввода количества -->
+    <!-- Модальные окна остаются без изменений -->
     <div id="quantityModal" class="modal">
       <div class="modal-content">
         <h3 id="modalProductName"></h3>
         <div class="quantity-input-container">
-          <input type="text" id="quantityInput" value="1.00" readonly>
+          <input type="text" id="quantityInput" value="" placeholder="Введите количество" onkeydown="handleQuantityKeyDown(event)">
         </div>
         <div class="numeric-keypad">
           <button class="keypad-btn" onclick="appendToQuantity('1')">1</button>
@@ -420,7 +422,6 @@
       </div>
     </div>
 
-    <!-- Модальное окно оплаты -->
     <div id="paymentModal" class="modal">
       <div class="payment-modal-content">
         <h3>Оформление оплаты</h3>
@@ -455,7 +456,7 @@
     </div>
   </div>
 
-  <!-- Остальные вкладки -->
+  <!-- Остальные вкладки остаются без изменений -->
   <div id="home" class="tab-content">
     <div class="container">
       <h1 class="glow-text">Главная страница</h1>
@@ -503,6 +504,7 @@
     let receiptHistory = [];
     let isQuickAddMode = false;
     const socket = io();
+    const CART_STORAGE_KEY = 'saved_cart';
 
     // Инициализация при загрузке
     document.addEventListener('DOMContentLoaded', async () => {
@@ -511,6 +513,10 @@
       await loadReceiptHistory();
       renderCategoryMenu(allProducts);
       renderProducts(allProducts);
+      
+      // Восстановление корзины из localStorage
+      loadCartFromStorage();
+      
       document.getElementById('searchInput').focus();
       
       // Обработчики горячих клавиш
@@ -526,6 +532,25 @@
         console.log('Сумма на экране:', data);
       });
     });
+
+    // Сохранение корзины в localStorage
+    function saveCartToStorage() {
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+    }
+
+    // Загрузка корзины из localStorage
+    function loadCartFromStorage() {
+      const savedCart = localStorage.getItem(CART_STORAGE_KEY);
+      if (savedCart) {
+        cart = JSON.parse(savedCart);
+        updateCartDisplay();
+      }
+    }
+
+    // Очистка сохраненной корзины
+    function clearSavedCart() {
+      localStorage.removeItem(CART_STORAGE_KEY);
+    }
 
     // Функции работы с товарами
     async function loadProducts() {
@@ -653,6 +678,9 @@
       });
       
       totalAmount.textContent = Math.round(total);
+      
+      // Сохраняем корзину после каждого изменения
+      saveCartToStorage();
     }
 
     // Функции работы с корзиной
@@ -684,7 +712,6 @@
           cart = cart.filter(i => i.id !== productId);
         } else {
           item.total = Math.round(item.price * item.quantity);
-
         }
         updateCartDisplay();
       }
@@ -698,19 +725,20 @@
     function clearCart() {
       cart = [];
       updateCartDisplay();
+      clearSavedCart();
     }
 
     // Модальные окна
     function showQuantityModal(product, quickAdd = false) {
       currentProduct = product;
       document.getElementById('modalProductName').textContent = product.name;
-      document.getElementById('quantityInput').value = quickAdd ? '1.00' : '1.00';
+      document.getElementById('quantityInput').value = '';
+      document.getElementById('quantityInput').placeholder = 'Введите количество';
       document.getElementById('quantityModal').style.display = 'flex';
       isQuickAddMode = quickAdd;
       
       setTimeout(() => {
         document.getElementById('quantityInput').focus();
-        document.getElementById('quantityInput').select();
       }, 100);
     }
 
@@ -722,20 +750,31 @@
       const input = document.getElementById('quantityInput');
       let current = input.value;
       
-      if (current === '0' && value !== '.') {
-        current = value;
-      } else if (value === '.' && current.includes('.')) {
+      if (value === '.' && current.includes('.')) {
         return;
-      } else {
-        current += value;
       }
       
-      if (current.startsWith('.')) current = '0' + current;
-      input.value = current;
+      input.value = current + value;
     }
 
     function clearQuantity() {
-      document.getElementById('quantityInput').value = '0';
+      document.getElementById('quantityInput').value = '';
+    }
+
+    // Обработка ввода с клавиатуры
+    function handleQuantityKeyDown(event) {
+      // Разрешаем: цифры (0-9), точка, Backspace, Delete, Tab, Enter
+      if ((event.key >= '0' && event.key <= '9') || 
+          event.key === '.' || 
+          event.key === 'Backspace' || 
+          event.key === 'Delete' || 
+          event.key === 'Tab' || 
+          event.key === 'Enter') {
+        return;
+      }
+      
+      // Запрещаем все остальные символы
+      event.preventDefault();
     }
 
     function addToCartWithQuantity() {
@@ -743,6 +782,8 @@
       if (quantity > 0) {
         addToCart(currentProduct, quantity);
         closeQuantityModal();
+      } else {
+        alert('Введите корректное количество');
       }
     }
 
@@ -783,6 +824,7 @@
           alert('Продажа оформлена!');
           cart = [];
           updateCartDisplay();
+          clearSavedCart();
           closePaymentModal();
           loadReceiptHistory();
         } else {
@@ -867,7 +909,7 @@
           history.style.display = history.style.display === 'none' ? 'block' : 'none';
           break;
         case 'Enter':
-          if (isQuickAddMode) {
+          if (document.getElementById('quantityModal').style.display === 'flex') {
             e.preventDefault();
             addToCartWithQuantity();
           }
@@ -883,6 +925,5 @@
       }
     }
   </script>
-  
 </body>
 </html>
