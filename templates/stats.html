@@ -209,6 +209,8 @@
                             Удалённо
                         {% elif r.payment_method == 'bill' %}
                             Счёт на оплату
+                        {% elif r.payment_method == 'cash/qr' %}
+                            Наличные/QR
                         {% else %}
                             Другой
                         {% endif %}
@@ -230,4 +232,5 @@
 </body>
 
 </html>
+
 
