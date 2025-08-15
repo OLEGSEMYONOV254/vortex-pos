@@ -15,7 +15,7 @@
     }
     .container {
       display: grid;
-      grid-template-columns: 200px 1fr 1fr;
+      grid-template-columns: 200px 1fr;
       gap: 20px;
       max-width: 100%;
     }
@@ -241,25 +241,7 @@
       background: #00cc66;
       font-weight: bold;
     }
-    .receipt-history {
-      background: #2a2a2a;
-      padding: 15px;
-      border-radius: 5px;
-      grid-column: 3;
-      grid-row: 3;
-      max-height: 60vh;
-      overflow-y: auto;
-    }
-    .receipt-item {
-      padding: 10px;
-      margin-bottom: 10px;
-      background: #3a3a3a;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .receipt-item:hover {
-      background: #444;
-    }
+    
     .hotkey-hint {
       font-size: 0.8em;
       color: #aaa;
@@ -346,9 +328,7 @@
       .cart {
         order: 1;
       }
-      .receipt-history {
-        order: 3;
-      }
+      
     }
     .customer-tabs {
       display: flex;
@@ -416,11 +396,7 @@
         </div>
       </div>
 
-      <div class="receipt-history" id="receiptHistory">
-        <h3>История операций <span class="hotkey-hint">(F4)</span></h3>
-        <div id="receiptHistoryList"></div>
-      </div>
-    </div>
+      
 
     <!-- Модальные окна остаются без изменений -->
     <div id="quantityModal" class="modal">
@@ -551,7 +527,7 @@
     document.addEventListener('DOMContentLoaded', async () => {
       await loadProducts();
       await loadCounterparties();
-      await loadReceiptHistory();
+      
       renderCategoryMenu(allProducts);
       renderProducts(allProducts);
       renderCustomerTabs();
@@ -681,16 +657,7 @@
       }
     }
 
-    async function loadReceiptHistory() {
-      try {
-        const response = await fetch('/api/receipts?limit=10');
-        receiptHistory = await response.json();
-        renderReceiptHistory();
-      } catch (error) {
-        console.error('Ошибка загрузки истории:', error);
-        receiptHistory = [];
-      }
-    }
+    
 
     function updateCounterpartySelect() {
       const select = document.getElementById('counterpartySelect');
@@ -740,22 +707,7 @@
       });
     }
 
-    function renderReceiptHistory() {
-      const list = document.getElementById('receiptHistoryList');
-      list.innerHTML = '';
-      
-      receiptHistory.forEach(receipt => {
-        const item = document.createElement('div');
-        item.className = 'receipt-item';
-        item.innerHTML = `
-          <div><strong>Чек #${receipt.id}</strong></div>
-          <div>${new Date(receipt.date).toLocaleString()}</div>
-          <div>${receipt.total} ₸ (${receipt.payment_method})</div>
-        `;
-        item.onclick = () => viewReceiptDetails(receipt.id);
-        list.appendChild(item);
-      });
-    }
+    
 
     // Обновление отображения корзины
     function updateCartDisplay() {
@@ -993,9 +945,7 @@
       renderProducts(filtered);
     }
 
-    function viewReceiptDetails(receiptId) {
-      window.open(`/receipt_details/${receiptId}`, '_blank');
-    }
+    
 
     function showTotal() {
       const customer = getCurrentCustomer();
@@ -1040,11 +990,7 @@
           e.preventDefault();
           clearCart();
           break;
-        case 'F4': 
-          e.preventDefault();
-          const history = document.getElementById('receiptHistory');
-          history.style.display = history.style.display === 'none' ? 'block' : 'none';
-          break;
+        
         case 'Enter':
           if (document.getElementById('quantityModal').style.display === 'flex') {
             e.preventDefault();
@@ -1064,6 +1010,7 @@
   </script>
 </body>
 </html>
+
 
 
 
