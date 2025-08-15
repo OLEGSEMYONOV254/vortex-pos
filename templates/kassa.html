@@ -634,14 +634,21 @@
     }
     // Сохранение корзины в localStorage
     function saveCartToStorage() {
-      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+      const customer = getCurrentCustomer();
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify({
+        customers: customers,
+        currentCustomerId: currentCustomerId
+      }));
     }
 
     // Загрузка корзины из localStorage
     function loadCartFromStorage() {
-      const savedCart = localStorage.getItem(CART_STORAGE_KEY);
-      if (savedCart) {
-        cart = JSON.parse(savedCart);
+      const savedData = localStorage.getItem(CART_STORAGE_KEY);
+      if (savedData) {
+        const data = JSON.parse(savedData);
+        customers = data.customers || customers;
+        currentCustomerId = data.currentCustomerId || currentCustomerId;
+        renderCustomerTabs();
         updateCartDisplay();
       }
     }
@@ -899,12 +906,13 @@
     }
 
     function processPayment() {
-      if (cart.length === 0) {
+      const customer = getCurrentCustomer();
+      if (customer.cart.length === 0) {
         alert('Добавьте товары в чек перед оплатой');
         return;
       }
       
-      const total = cart.reduce((sum, item) => sum + parseFloat(item.total), 0).toFixed(2);
+      const total = customer.cart.reduce((sum, item) => sum + parseFloat(item.total), 0).toFixed(2);
       const modal = document.getElementById('paymentModal');
       modal.querySelector('h3').innerHTML = `Оформление оплаты <small style="display: block; font-size: 0.7em; margin-top: 5px; color: #00ffcc;">Сумма: ${total} ₸</small>`;
       modal.style.display = 'flex';
@@ -990,14 +998,16 @@
     }
 
     function showTotal() {
-      const total = cart.reduce((sum, item) => sum + parseFloat(item.total), 0).toFixed(2);
+      const customer = getCurrentCustomer();
+      const total = customer.cart.reduce((sum, item) => sum + parseFloat(item.total), 0).toFixed(2);
       fetch('/send_to_screen', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           total: total,
           payment_method: 'cash',
-          items: cart
+          items: customer.cart,
+          customer_name: customer.name
         })
       });
     }
@@ -1054,6 +1064,7 @@
   </script>
 </body>
 </html>
+
 
 
 
