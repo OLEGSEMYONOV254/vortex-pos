@@ -592,9 +592,8 @@
         counterpartyId: null
       });
       
-      // Обновляем вкладки
+      // Обновляем UI вкладок
       renderCustomerTabs();
-      // Переключаемся на нового клиента
       switchCustomer(newId);
     }
     
@@ -783,7 +782,7 @@
       
       // Обновляем заголовок с именем клиента
       document.querySelector('.cart h2').innerHTML = `Текущий чек: ${customer.name} <span class="hotkey-hint">(F2 - оплата, F3 - очистка)</span>`;
-    }
+    
       
       // Сохраняем корзину после каждого изменения
       saveCartToStorage();
@@ -1055,5 +1054,6 @@
   </script>
 </body>
 </html>
+
 
 
