@@ -2,16 +2,20 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Промо-экран кассы</title>
+    <title>Промоэкран кассы</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="screen-orientation" content="landscape">
+    <meta name="full-screen" content="yes">
+    <meta name="browsermode" content="application">
     <style>
         body {
-            background-color: #111;
+            background-color: #1a1a1a;
             color: #00ffcc;
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
@@ -19,22 +23,40 @@
             overflow: hidden;
         }
 
-        .container {
+        #promo-container {
             width: 90%;
             max-width: 800px;
+            position: relative;
         }
 
-        .amount {
-            font-size: 6rem;
+        #promo-display {
+            font-size: 4rem;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px #00ffcc;
+            min-height: 120px;
+            transition: all 0.3s ease;
+        }
+
+        #amount {
+            font-size: 5rem;
             font-weight: bold;
             margin: 20px 0;
-            text-shadow: 0 0 20px #00ffcc;
+            color: white;
+            text-shadow: 0 0 15px #00ffcc;
+            transition: all 0.3s;
         }
 
-        .qr-code {
+        #qr-container {
+            margin: 20px auto;
             width: 250px;
             height: 250px;
-            margin: 0 auto;
+            display: none;
+        }
+
+        #qr-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
             border: 2px solid #00ffcc;
             border-radius: 10px;
             background: white;
@@ -42,74 +64,157 @@
             box-sizing: border-box;
         }
 
-        .qr-code img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
+        .items-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 20px 0;
+            padding: 0 20px;
+            text-align: left;
         }
 
-        .status {
-            font-size: 2rem;
-            margin-top: 30px;
-            color: #aaa;
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 1.2rem;
+            padding: 5px 0;
+            border-bottom: 1px dashed rgba(0, 255, 204, 0.3);
         }
 
         @media (max-width: 768px) {
-            .amount {
-                font-size: 4rem;
+            #promo-display {
+                font-size: 2.5rem;
+                min-height: 80px;
             }
             
-            .qr-code {
+            #amount {
+                font-size: 3.5rem;
+            }
+            
+            #qr-container {
                 width: 200px;
                 height: 200px;
             }
+            
+            .item-row {
+                font-size: 1rem;
+            }
+        }
+
+        /* Анимации */
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="amount" id="amount">0 ₸</div>
+    <div id="promo-container">
+        <div id="promo-display">Добро пожаловать!</div>
+        <div id="amount">0 ₸</div>
         
-        <div class="qr-code" id="qr-code">
-            <img src="/static/qrАскадир.png" alt="QR-код">
+        <div id="qr-container">
+            <img id="qr-image" src="/static/qrАскадир.png" alt="QR-код для оплаты">
         </div>
         
-        <div class="status" id="status">Ожидание заказа...</div>
+        <div id="items-list" class="items-list">
+            <!-- Товары будут добавляться здесь -->
+        </div>
     </div>
 
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
     <script>
-        // Элементы
-        const amountEl = document.getElementById('amount');
-        const qrCodeEl = document.getElementById('qr-code');
-        const statusEl = document.getElementById('status');
-        
-        // Показываем сумму и QR-код
-        function showPayment(amount) {
-            amountEl.textContent = formatNumber(amount) + ' ₸';
-            qrCodeEl.style.display = 'block';
-            statusEl.textContent = 'К оплате:';
-        }
-        
-        // Сбрасываем экран
-        function resetScreen() {
-            amountEl.textContent = '0 ₸';
-            qrCodeEl.style.display = 'none';
-            statusEl.textContent = 'Ожидание заказа...';
-        }
+        // Элементы интерфейса
+        const display = document.getElementById("promo-display");
+        const amountEl = document.getElementById("amount");
+        const qrContainer = document.getElementById("qr-container");
+        const itemsList = document.getElementById("items-list");
         
         // Форматирование чисел
         function formatNumber(num) {
             return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
         }
         
-        // Тестовые данные (можно удалить)
-        function test() {
-            showPayment(3750);
-            setTimeout(resetScreen, 5000);
+        // Обновление списка товаров
+        function updateItemsList(items) {
+            itemsList.innerHTML = '';
+            
+            if (!items || items.length === 0) return;
+            
+            items.slice(0, 5).forEach(item => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'item-row fade-in';
+                itemEl.innerHTML = `
+                    <span>${item.name}</span>
+                    <span>${formatNumber(Math.round(item.total))} ₸</span>
+                `;
+                itemsList.appendChild(itemEl);
+            });
+            
+            if (items.length > 5) {
+                const moreEl = document.createElement('div');
+                moreEl.className = 'item-row';
+                moreEl.innerHTML = `
+                    <span>+${items.length - 5} товаров</span>
+                    <span></span>
+                `;
+                itemsList.appendChild(moreEl);
+            }
         }
         
-        // Запускаем тест при загрузке (для демо)
-        setTimeout(test, 1000);
+        // Обработка данных о платеже
+        function handlePaymentData(data) {
+            const total = Math.round(data.total);
+            
+            // Обновляем сумму
+            amountEl.textContent = `${formatNumber(total)} ₸`;
+            
+            // Показываем QR-код
+            qrContainer.style.display = 'block';
+            qrContainer.classList.add('fade-in');
+            
+            // Обновляем список товаров
+            updateItemsList(data.items || []);
+            
+            // Меняем приветственное сообщение
+            display.textContent = "К оплате:";
+        }
+        
+        // Очистка экрана
+        function clearScreen() {
+            display.textContent = "Ожидание следующего клиента";
+            amountEl.textContent = "0 ₸";
+            qrContainer.style.display = 'none';
+            itemsList.innerHTML = "";
+        }
+        
+        // ================== SOCKET.IO ================== //
+        const socket = io();
+        
+        socket.on("connect", () => {
+            console.log("Подключено к серверу");
+        });
+        
+        socket.on("show_total", handlePaymentData);
+        
+        socket.on("clear_screen", clearScreen);
+        
+        // Автоматическое обновление каждые 2 часа
+        setTimeout(() => location.reload(), 7200000);
+        
+        // Тестовые данные (можно удалить в продакшене)
+        window.testData = () => {
+            handlePaymentData({
+                total: 0,
+                items: [
+                    
+                ]
+            });
+        };
     </script>
 </body>
 </html>
