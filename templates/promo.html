@@ -81,16 +81,16 @@
         }
         
         .qr-container {
-            width: 200px; /* Уменьшил размер */
+            width: 200px;
             height: 200px;
             margin: 20px auto;
-            border: 2px solid var(--neon-cyan); /* Тоньше бордер */
-            box-shadow: 0 0 10px var(--neon-cyan); /* Меньше тень */
+            border: 2px solid var(--neon-cyan);
+            box-shadow: 0 0 10px var(--neon-cyan);
             position: relative;
             overflow: hidden;
             display: none;
-            background: white; /* Белый фон для лучшей читаемости QR */
-            padding: 10px; /* Отступ внутри контейнера */
+            background: white;
+            padding: 10px;
             box-sizing: border-box;
         }
         
@@ -111,9 +111,11 @@
         }
         
         .qr-image {
+            border: 1px solid red;
             width: 100%;
             height: 100%;
-            object-fit: contain; /* Гарантирует, что QR-код полностью поместится */
+            object-fit: contain;
+            background: white;
         }
         
         .payment-method {
