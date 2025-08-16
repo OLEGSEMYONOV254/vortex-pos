@@ -2,125 +2,141 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>ПРОМОЭКРАН КАССЫ</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Промо-экран кассы</title>
     <style>
-        :root {
-            --neon-cyan: #00ffcc;
-            --neon-pink: #ff00aa;
-            --dark-bg: #0a0a12;
-        }
-        
         body {
-            background-color: var(--dark-bg);
+            background-color: #0a0a12;
             margin: 0;
             padding: 0;
-            font-family: 'Courier New', monospace;
-            color: var(--neon-cyan);
             height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            font-family: 'Courier New', monospace;
+            color: #00ffcc;
             text-align: center;
+            overflow: hidden;
         }
-
-        .amount {
+        
+        .display {
             font-size: 5rem;
             font-weight: bold;
-            text-shadow: 0 0 10px var(--neon-cyan);
             margin: 20px 0;
+            text-shadow: 0 0 10px #00ffcc;
+            transition: all 0.3s;
         }
-
+        
         .qr-container {
+            width: 300px;
+            height: 300px;
+            background: white;
+            padding: 15px;
             margin: 20px auto;
-            width: 250px;
-            height: 250px;
-            border: 3px solid var(--neon-cyan);
             display: none;
         }
-
+        
         .qr-image {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            background: white;
-            padding: 10px;
         }
-
+        
+        .payment-method {
+            font-size: 1.5rem;
+            margin: 15px 0;
+            color: #ffffff;
+        }
+        
         .warning {
             font-size: 1.2rem;
-            color: var(--neon-pink);
-            margin-top: 20px;
+            color: #ff5555;
             max-width: 80%;
+            margin: 0 auto;
         }
-
-        .controls {
-            position: fixed;
-            bottom: 20px;
-            left: 0;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
+        
+        .customer-info {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #00ccff;
         }
-
-        button {
-            background: var(--neon-cyan);
-            color: var(--dark-bg);
-            border: none;
-            padding: 10px 15px;
-            font-family: 'Courier New';
-            font-weight: bold;
-            cursor: pointer;
+        
+        @media (max-width: 768px) {
+            .display { font-size: 3rem; }
+            .qr-container { width: 250px; height: 250px; }
         }
     </style>
 </head>
 <body>
-    <div id="promo-display" class="amount">ДОБРО ПОЖАЛОВАТЬ</div>
+    <div id="customer" class="customer-info"></div>
+    <div id="amount" class="display">0 ₸</div>
     
-    <div class="qr-container" id="qr-container">
-        <img id="qr-image" src="/static/qrАскадир.png" alt="QR-код для оплаты">
+    <div id="qr-container" class="qr-container">
+        <img id="qr-code" class="qr-image" src="/static/qrАскадир.png" alt="QR-код">
     </div>
     
-    <div id="payment-method"></div>
-    <div class="warning">⚠ ГАРАНТИЯ НЕ РАСПРОСТРАНЯЕТСЯ НА РЕСТАВРАЦИЮ ⚠</div>
-
-    <div class="controls">
-        <button onclick="showPayment(1500, 'qr')">Тест QR</button>
-        <button onclick="showPayment(1500, 'cash')">Тест наличные</button>
-        <button onclick="resetScreen()">Сброс</button>
-    </div>
+    <div id="method" class="payment-method"></div>
+    <div class="warning">ГАРАНТИЯ НЕ РАСПРОСТРАНЯЕТСЯ НА РЕСТАВРАЦИОННЫЕ РАБОТЫ</div>
 
     <script>
-        // Основные функции
-        function showPayment(amount, paymentType) {
-            document.getElementById('promo-display').textContent = amount + ' ₸';
+        // Конфигурация
+        const POLL_INTERVAL = 500; // Проверка каждые 0.5 секунды
+        const CART_STORAGE_KEY = 'saved_cart'; // Ключ, который использует касса
+        
+        // Элементы
+        const amountEl = document.getElementById('amount');
+        const qrContainer = document.getElementById('qr-container');
+        const methodEl = document.getElementById('method');
+        const customerEl = document.getElementById('customer');
+        
+        // Проверка обновлений корзины
+        function checkCartUpdates() {
+            const cartData = localStorage.getItem(CART_STORAGE_KEY);
             
-            const qrContainer = document.getElementById('qr-container');
-            qrContainer.style.display = paymentType === 'qr' ? 'block' : 'none';
+            if (cartData) {
+                try {
+                    const data = JSON.parse(cartData);
+                    const currentCustomer = data.customers?.find(c => c.id === data.currentCustomerId);
+                    
+                    if (currentCustomer && currentCustomer.cart?.length > 0) {
+                        // Рассчитываем сумму
+                        const total = currentCustomer.cart.reduce((sum, item) => sum + parseFloat(item.total), 0);
+                        
+                        // Обновляем дисплей
+                        amountEl.textContent = Math.round(total) + ' ₸';
+                        customerEl.textContent = currentCustomer.name || '';
+                        
+                        // Определяем метод оплаты (по умолчанию QR)
+                        const paymentMethod = currentCustomer.paymentMethod || 'qr';
+                        
+                        if (paymentMethod === 'qr') {
+                            qrContainer.style.display = 'block';
+                            methodEl.textContent = 'Оплата по QR-коду';
+                        } else {
+                            qrContainer.style.display = 'none';
+                            methodEl.textContent = 'Оплата наличными';
+                        }
+                        
+                        return;
+                    }
+                } catch (e) {
+                    console.error('Ошибка разбора данных:', e);
+                }
+            }
             
-            document.getElementById('payment-method').textContent = 
-                paymentType === 'cash' ? 'ОПЛАТА НАЛИЧНЫМИ' : 'ОПЛАТА ПО QR-КОДУ';
+            // Если корзина пуста или данные не получены
+            amountEl.textContent = '0 ₸';
+            customerEl.textContent = '';
+            methodEl.textContent = '';
+            qrContainer.style.display = 'none';
         }
-
-        function resetScreen() {
-            document.getElementById('promo-display').textContent = 'ОЖИДАНИЕ';
-            document.getElementById('qr-container').style.display = 'none';
-            document.getElementById('payment-method').textContent = '';
-        }
-
-        // Автосброс через 30 секунд бездействия
-        let resetTimer = setTimeout(resetScreen, 30000);
-
-        function resetTimerFn() {
-            clearTimeout(resetTimer);
-            resetTimer = setTimeout(resetScreen, 30000);
-        }
-
-        // Обновляем таймер при любом действии
-        document.addEventListener('click', resetTimerFn);
-        document.addEventListener('keydown', resetTimerFn);
+        
+        // Запускаем проверку обновлений
+        setInterval(checkCartUpdates, POLL_INTERVAL);
+        checkCartUpdates(); // Проверяем сразу при загрузке
+        
+        // Автоматическое обновление страницы каждые 2 часа
+        setTimeout(() => location.reload(), 7200000);
     </script>
 </body>
 </html>
