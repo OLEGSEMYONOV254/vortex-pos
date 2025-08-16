@@ -2,159 +2,398 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Промоэкран</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Интерактивный промоэкран кассы</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="screen-orientation" content="landscape">
     <meta name="full-screen" content="yes">
     <meta name="browsermode" content="application">
     <style>
+        :root {
+            --primary: #00ffcc;
+            --secondary: #ff00aa;
+            --bg-dark: #121212;
+            --bg-light: #1e1e1e;
+            --text-light: #ffffff;
+            --text-dimmed: #aaaaaa;
+        }
+
         body {
-            background-color: #1a1a1a;
-            color: #00ffcc;
-            font-family: 'Arial', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--primary);
+            font-family: 'Segoe UI', Arial, sans-serif;
             margin: 0;
             padding: 0;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             text-align: center;
             overflow: hidden;
-            animation: prevent-sleep 60s infinite linear;
+            touch-action: manipulation;
         }
 
-        #promo-container {
-            width: 90%;
-            max-width: 800px;
+        .container {
+            width: 95%;
+            max-width: 900px;
+            background: var(--bg-light);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 0 30px rgba(0, 255, 204, 0.2);
             position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 255, 204, 0.1);
         }
 
-        #promo-display {
-            font-size: 4rem;
-            margin-bottom: 30px;
-            text-shadow: 0 0 10px #00ffcc;
-            min-height: 120px;
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 255, 204, 0.05) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+            z-index: -1;
         }
 
-        #qr-container {
-            margin: 20px 0;
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .header {
+            font-size: 2.8rem;
+            margin-bottom: 25px;
+            font-weight: 600;
+            text-shadow: 0 0 15px var(--primary);
             transition: all 0.3s ease;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .amount {
+            font-size: 5rem;
+            font-weight: 700;
+            margin: 20px 0;
+            color: var(--text-light);
+            text-shadow: 0 0 20px var(--primary);
+            transition: all 0.3s;
+        }
+
+        .qr-container {
+            margin: 25px auto;
+            position: relative;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .qr-frame {
+            width: 280px;
+            height: 280px;
+            border: 3px solid var(--primary);
+            border-radius: 12px;
+            background: white;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 300px;
+            box-shadow: 0 0 30px rgba(0, 255, 204, 0.4);
+            position: relative;
+            overflow: hidden;
+            margin: 0 auto;
         }
 
-        #qr-image {
-            width: auto;
-            height: auto;
-            max-width: 100%;
-            max-height: 300px;
-            border: 2px solid #00ffcc;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
-            opacity: 0;
-            transform: scale(0.8);
-            transition: all 0.5s ease;
+        .qr-frame::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                135deg,
+                rgba(0, 255, 204, 0) 0%,
+                rgba(0, 255, 204, 0.1) 50%,
+                rgba(0, 255, 204, 0) 100%
+            );
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .qr-image {
+            width: 92%;
+            height: 92%;
             object-fit: contain;
-        }
-
-        #qr-image.visible {
-            opacity: 1;
-            transform: scale(1);
+            transition: all 0.3s ease;
         }
 
         .payment-method {
             font-size: 2rem;
-            margin-top: 20px;
-            color: #ffffff;
+            margin: 25px 0;
+            color: var(--text-light);
+            font-weight: 500;
         }
 
         .receipt-info {
-            font-size: 1.5rem;
-            margin-top: 20px;
-            color: #aaaaaa;
+            font-size: 1.4rem;
+            margin: 15px 0;
+            color: var(--text-dimmed);
         }
 
-        #sound-btn {
+        .items-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 20px 0;
+            padding: 0 20px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) transparent;
+        }
+
+        .items-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .items-list::-webkit-scrollbar-thumb {
+            background-color: var(--primary);
+            border-radius: 3px;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed rgba(0, 255, 204, 0.2);
+            font-size: 1.2rem;
+        }
+
+        .item-name {
+            text-align: left;
+            flex: 2;
+        }
+
+        .item-price {
+            text-align: right;
+            flex: 1;
+            color: var(--text-light);
+        }
+
+        .controls {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            padding: 10px 15px;
-            background: #00ffcc;
-            color: #1a1a1a;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
+            display: flex;
+            gap: 10px;
             z-index: 1000;
         }
 
-        @keyframes prevent-sleep {
-            0% { opacity: 0.999; }
-            50% { opacity: 1; }
-            100% { opacity: 0.999; }
+        .control-btn {
+            padding: 12px 18px;
+            background: rgba(0, 255, 204, 0.2);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            backdrop-filter: blur(5px);
+        }
+
+        .control-btn:hover {
+            background: rgba(0, 255, 204, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .control-btn:active {
+            transform: translateY(0);
+        }
+
+        .status-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            animation: status-pulse 3s infinite alternate;
+            z-index: 1000;
+        }
+
+        @keyframes status-pulse {
+            0% { opacity: 0.7; }
+            100% { opacity: 1; }
         }
 
         @media (max-width: 768px) {
-            #promo-display {
-                font-size: 2.5rem;
-            }
-
-            #qr-container {
-                height: 200px;
+            .header {
+                font-size: 2rem;
+                min-height: 90px;
             }
             
-            #qr-image {
-                max-height: 200px;
+            .amount {
+                font-size: 3.5rem;
             }
+            
+            .qr-frame {
+                width: 220px;
+                height: 220px;
+            }
+            
+            .payment-method {
+                font-size: 1.6rem;
+            }
+            
+            .receipt-info {
+                font-size: 1.2rem;
+            }
+            
+            .item-row {
+                font-size: 1rem;
+            }
+        }
+
+        /* Анимации */
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
         }
     </style>
 </head>
 <body>
-    <div id="promo-container">
-        <div id="promo-display">Добро пожаловать!</div>
-        <div id="qr-container">
-            <img id="qr-image" src="/static/qrАскадир.png" alt="QR-код для оплаты">
+    <div class="status-bar"></div>
+    
+    <div class="container pulse">
+        <div id="promo-display" class="header">Добро пожаловать!</div>
+        <div id="amount" class="amount">0 ₸</div>
+        
+        <div id="qr-container" class="qr-container" style="display: none;">
+            <div class="qr-frame">
+                <img id="qr-image" class="qr-image" src="/static/qrАскадир.png" alt="QR-код для оплаты">
+            </div>
         </div>
+        
         <div id="payment-method" class="payment-method"></div>
+        
+        <div id="items-list" class="items-list">
+            <!-- Список товаров будет здесь -->
+        </div>
+        
         <div id="receipt-info" class="receipt-info"></div>
     </div>
 
-    <button id="sound-btn">Активировать звук</button>
+    <div class="controls">
+        <button id="sound-btn" class="control-btn">🔊 Звук</button>
+        <button id="test-btn" class="control-btn">🧪 Тест</button>
+    </div>
 
     <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
     <script>
-        const socket = io();
+        // Элементы интерфейса
         const display = document.getElementById("promo-display");
-        const qrImage = document.getElementById("qr-image");
+        const amountEl = document.getElementById("amount");
+        const qrContainer = document.getElementById("qr-container");
         const paymentMethod = document.getElementById("payment-method");
         const receiptInfo = document.getElementById("receipt-info");
+        const itemsList = document.getElementById("items-list");
         const soundBtn = document.getElementById("sound-btn");
+        const testBtn = document.getElementById("test-btn");
+        
+        // Состояние приложения
         let currentReceiptId = null;
-        let wakeLock = null;
         let soundEnabled = false;
+        let wakeLock = null;
 
-        // Проверяем загрузку изображения
-        qrImage.onload = function() {
-            console.log('Изображение загружено. Размеры:', 
-                this.naturalWidth, 'x', this.naturalHeight);
+        // ================== ИНИЦИАЛИЗАЦИЯ ================== //
+        document.addEventListener('DOMContentLoaded', () => {
+            requestWakeLock();
+            document.addEventListener('visibilitychange', handleVisibilityChange);
             
-            // Автоматическое масштабирование
-            if (this.naturalWidth > 300 || this.naturalHeight > 300) {
-                this.style.maxWidth = '100%';
-                this.style.height = 'auto';
-            }
-        };
+            // Проверка загрузки QR-кода
+            document.getElementById('qr-image').onload = function() {
+                console.log('QR-код загружен:', this.naturalWidth, 'x', this.naturalHeight);
+            };
+            
+            // Тестовый режим
+            testBtn.addEventListener('click', showTestData);
+        });
 
-        qrImage.onerror = function() {
-            console.error('Ошибка загрузки QR-кода');
-            this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300"><rect width="300" height="300" fill="white"/><text x="150" y="150" font-family="Arial" font-size="16" text-anchor="middle" fill="red">QR-код не загружен</text></svg>';
-        };
+        // ================== ФУНКЦИИ ================== //
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('Экран будет активен');
+                }
+            } catch (err) {
+                console.error('Wake Lock ошибка:', err);
+            }
+        }
+
+        function handleVisibilityChange() {
+            if (document.visibilityState === 'visible' && wakeLock === null) {
+                requestWakeLock();
+            }
+        }
+
+        function formatNumber(num) {
+            return new Intl.NumberFormat('ru-RU').format(num);
+        }
+
+        function showQR(show = true) {
+            qrContainer.style.display = show ? 'block' : 'none';
+            if (show) {
+                qrContainer.classList.add('fade-in');
+            }
+        }
+
+        function updateItemsList(items) {
+            itemsList.innerHTML = '';
+            
+            if (!items || items.length === 0) return;
+            
+            // Показываем первые 5 товаров
+            items.slice(0, 5).forEach(item => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'item-row fade-in';
+                itemEl.innerHTML = `
+                    <span class="item-name">${item.name}</span>
+                    <span class="item-price">${formatNumber(Math.round(item.total))} ₸</span>
+                `;
+                itemsList.appendChild(itemEl);
+            });
+            
+            // Показываем количество скрытых товаров
+            if (items.length > 5) {
+                const moreEl = document.createElement('div');
+                moreEl.className = 'item-row';
+                moreEl.innerHTML = `
+                    <span class="item-name">+${items.length - 5} товаров</span>
+                    <span class="item-price"></span>
+                `;
+                itemsList.appendChild(moreEl);
+            }
+        }
 
         // ================== СИНТЕЗ РЕЧИ ================== //
-        function loadVoices() {
+        async function initSpeech() {
             return new Promise(resolve => {
                 const voices = window.speechSynthesis.getVoices();
                 if (voices.length > 0) {
@@ -169,27 +408,25 @@
 
         async function speak(text) {
             if (!soundEnabled) return;
-
+            
             try {
-                const voices = await loadVoices();
-                const russianVoice = voices.find(v => v.lang === 'ru-RU') ||
-                                   voices.find(v => v.lang.includes('ru'));
-
+                const voices = await initSpeech();
+                const russianVoice = voices.find(v => v.lang === 'ru-RU') || 
+                                     voices.find(v => v.lang.includes('ru'));
+                
                 if (!russianVoice) {
                     console.warn("Русский голос не найден");
                     return;
                 }
-
+                
                 const utterance = new SpeechSynthesisUtterance();
-                utterance.text = text
-                    .replace(/₸/g, 'тенге')
-                    .replace(/(\d+)/g, num => num.split('').join(' '));
-
+                utterance.text = text.replace(/₸/g, 'тенге')
+                                    .replace(/(\d+)/g, num => num.split('').join(' '));
                 utterance.voice = russianVoice;
-                utterance.rate = 0.85;
-                utterance.pitch = 0.9;
-                utterance.volume = 1.0;
-
+                utterance.rate = 0.9;
+                utterance.pitch = 1;
+                utterance.volume = 1;
+                
                 window.speechSynthesis.cancel();
                 window.speechSynthesis.speak(utterance);
             } catch (e) {
@@ -197,86 +434,96 @@
             }
         }
 
-        // ================== АКТИВАЦИЯ ЗВУКА ================== //
+        // ================== ОБРАБОТКА СОБЫТИЙ ================== //
         soundBtn.addEventListener('click', async () => {
             try {
                 await speak("Звук активирован");
-                soundEnabled = true;
-                soundBtn.textContent = "Звук включён";
-                soundBtn.style.background = "#00cc99";
-                setTimeout(() => soundBtn.style.opacity = "0.5", 2000);
+                soundEnabled = !soundEnabled;
+                soundBtn.textContent = soundEnabled ? "🔊 Вкл" : "🔇 Выкл";
+                soundBtn.style.background = soundEnabled 
+                    ? "rgba(0, 255, 204, 0.3)" 
+                    : "rgba(255, 0, 0, 0.2)";
+                soundBtn.style.borderColor = soundEnabled ? "var(--primary)" : "var(--secondary)";
             } catch (e) {
-                soundBtn.textContent = "Ошибка активации звука";
-                console.error("Ошибка активации:", e);
+                soundBtn.textContent = "❌ Ошибка";
+                console.error("Ошибка звука:", e);
             }
         });
 
-        // ================== ОСТАЛЬНЫЕ ФУНКЦИИ ================== //
-        async function requestWakeLock() {
-            try {
-                if ('wakeLock' in navigator) {
-                    wakeLock = await navigator.wakeLock.request('screen');
-                }
-            } catch (err) {
-                console.error('Ошибка Wake Lock:', err);
-            }
+        function showTestData() {
+            const testData = {
+                total: 3750,
+                payment_method: 'qr',
+                receipt_id: Math.floor(Math.random() * 10000),
+                items: [
+                    { name: "Кофе Латте", total: 1200 },
+                    { name: "Круассан", total: 450 },
+                    { name: "Салат Цезарь", total: 950 },
+                    { name: "Минеральная вода", total: 350 },
+                    { name: "Чизкейк", total: 800 }
+                ]
+            };
+            
+            handlePaymentData(testData);
         }
 
-        function showQR() {
-            qrImage.classList.add('visible');
-        }
-
-        function hideQR() {
-            qrImage.classList.remove('visible');
-        }
-
-        // ================== ОБРАБОТЧИКИ СОБЫТИЙ ================== //
-        document.addEventListener('DOMContentLoaded', () => {
-            requestWakeLock();
-            document.addEventListener('visibilitychange', () => {
-                if (document.visibilityState === 'visible' && wakeLock === null) {
-                    requestWakeLock();
-                }
-            });
-        });
-
-        socket.on("connect", () => {
-            console.log("Промоэкран подключен к серверу");
-        });
-
-        socket.on("show_total", (data) => {
-            const totalRounded = Math.round(data.total);
-            const totalText = `К оплате: ${totalRounded} ₸`;
-            display.innerHTML = `К оплате: <span style="color: white;">${totalRounded} ₸</span>`;
-            paymentMethod.textContent = data.payment_method === 'cash' ?
-                "Оплата наличными" : "Оплата по QR-коду";
-            showQR();
-
+        function handlePaymentData(data) {
+            // Форматируем сумму
+            const totalText = `${formatNumber(Math.round(data.total))} ₸`;
+            amountEl.textContent = totalText;
+            
+            // Обновляем метод оплаты
+            paymentMethod.textContent = data.payment_method === 'cash' 
+                ? "Оплата наличными" 
+                : "Оплата по QR-коду";
+            
+            // Показываем/скрываем QR-код
+            showQR(data.payment_method !== 'cash');
+            
+            // Обновляем информацию о чеке
             if (data.receipt_id) {
                 currentReceiptId = data.receipt_id;
                 receiptInfo.textContent = `Чек №${data.receipt_id}`;
             }
-
-            setTimeout(() => {
-                speak(totalText);
-                if (data.payment_method !== 'cash') {
-                    setTimeout(() => speak("Оплата по QR коду"), 1500);
-                }
-            }, 500);
-
+            
+            // Обновляем список товаров
+            updateItemsList(data.items || []);
+            
+            // Озвучиваем информацию
+            if (soundEnabled) {
+                setTimeout(() => {
+                    speak(`К оплате ${totalText}`);
+                    if (data.payment_method !== 'cash') {
+                        setTimeout(() => speak("Отсканируйте QR код для оплаты"), 1500);
+                    }
+                }, 500);
+            }
+            
+            // Обновляем Wake Lock
             if (wakeLock !== null) requestWakeLock();
+        }
+
+        // ================== SOCKET.IO ================== //
+        const socket = io();
+
+        socket.on("connect", () => {
+            console.log("Подключено к серверу");
+            display.textContent = "Готов к работе";
         });
+
+        socket.on("show_total", handlePaymentData);
 
         socket.on("clear_screen", () => {
             display.textContent = "Ожидание следующего клиента";
+            amountEl.textContent = "0 ₸";
             paymentMethod.textContent = "";
             receiptInfo.textContent = "";
-            hideQR();
+            itemsList.innerHTML = "";
+            showQR(false);
         });
 
-        setTimeout(() => {
-            display.textContent = "Ожидание заказа...";
-        }, 3000);
+        // Автоматическое обновление каждые 2 часа
+        setTimeout(() => location.reload(), 7200000);
     </script>
 </body>
 </html>
