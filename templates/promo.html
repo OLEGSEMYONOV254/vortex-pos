@@ -2,157 +2,503 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Промоэкран кассы</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="screen-orientation" content="landscape">
-    <meta name="full-screen" content="yes">
-    <meta name="browsermode" content="application">
+    <title>Управление промо-экраном кассы</title>
     <style>
+        :root {
+            --primary: #00ffcc;
+            --dark-bg: #121212;
+            --panel-bg: #1e1e1e;
+            --text-light: #ffffff;
+        }
+        
         body {
-            background-color: #1a1a1a;
-            color: #00ffcc;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             margin: 0;
             padding: 0;
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+        }
+        
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+        
+        /* Стили для промо-экрана */
+        .promo-screen {
+            flex: 2;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            text-align: center;
+            background-color: var(--dark-bg);
+            border-right: 1px solid #333;
+            position: relative;
             overflow: hidden;
         }
-
-        #promo-container {
+        
+        .promo-content {
             width: 90%;
             max-width: 800px;
-            position: relative;
+            text-align: center;
         }
-
-        #promo-display {
-            font-size: 4rem;
+        
+        .promo-header {
+            font-size: 3rem;
             margin-bottom: 30px;
-            text-shadow: 0 0 10px #00ffcc;
+            color: var(--primary);
+            text-shadow: 0 0 10px var(--primary);
             min-height: 120px;
-            transition: all 0.3s ease;
         }
-
-        #amount {
+        
+        .promo-amount {
             font-size: 5rem;
             font-weight: bold;
             margin: 20px 0;
-            color: white;
-            text-shadow: 0 0 15px #00ffcc;
-            transition: all 0.3s;
+            color: var(--text-light);
         }
-
-        #qr-container {
-            margin: 20px auto;
+        
+        .promo-qr {
             width: 250px;
             height: 250px;
+            margin: 20px auto;
             display: none;
         }
-
-        #qr-image {
+        
+        .promo-qr img {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            border: 2px solid #00ffcc;
+            border: 2px solid var(--primary);
             border-radius: 10px;
             background: white;
             padding: 10px;
-            box-sizing: border-box;
         }
-
-        .items-list {
+        
+        .promo-items {
             max-height: 200px;
             overflow-y: auto;
             margin: 20px 0;
-            padding: 0 20px;
             text-align: left;
         }
-
-        .item-row {
+        
+        .promo-warning {
+            font-size: 1.5rem;
+            margin-top: 30px;
+            color: #ff5555;
+        }
+        
+        .promo-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+            opacity: 0.3;
+            display: none;
+        }
+        
+        /* Стили для панели управления */
+        .control-panel {
+            flex: 1;
+            background-color: var(--panel-bg);
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .control-section {
+            margin-bottom: 30px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 20px;
+        }
+        
+        .control-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #333;
+            border: 1px solid #555;
+            color: white;
+            border-radius: 4px;
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: #111;
+            border: none;
+            padding: 10px 15px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        
+        button:hover {
+            background-color: #00e6b8;
+            transform: translateY(-2px);
+        }
+        
+        .btn-group {
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 1.2rem;
-            padding: 5px 0;
-            border-bottom: 1px dashed rgba(0, 255, 204, 0.3);
+            flex-wrap: wrap;
+            gap: 10px;
         }
-
-        @media (max-width: 768px) {
-            #promo-display {
-                font-size: 2.5rem;
-                min-height: 80px;
+        
+        .btn-danger {
+            background-color: #ff5555;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background-color: #555;
+            color: white;
+        }
+        
+        @media (max-width: 1200px) {
+            .container {
+                flex-direction: column;
             }
             
-            #amount {
-                font-size: 3.5rem;
+            .promo-screen {
+                height: 50vh;
+                border-right: none;
+                border-bottom: 1px solid #333;
             }
             
-            #qr-container {
-                width: 200px;
-                height: 200px;
+            .control-panel {
+                height: 50vh;
+                overflow-y: auto;
             }
-            
-            .item-row {
-                font-size: 1rem;
-            }
-        }
-
-        /* Анимации */
-        .fade-in {
-            animation: fadeIn 0.5s ease-out forwards;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
-    <div id="promo-container">
-        <div id="promo-display">Добро пожаловать!</div>
-        <div id="amount">0 ₸</div>
-        
-        <div id="qr-container">
-            <img id="qr-image" src="/static/qrАскадир.png" alt="QR-код для оплаты">
+    <div class="container">
+        <!-- Промо-экран -->
+        <div class="promo-screen">
+            <video class="promo-video" loop muted>
+                <source src="/static/waiting_video.mp4" type="video/mp4">
+            </video>
+            
+            <div class="promo-content">
+                <div class="promo-header" id="promo-header">Добро пожаловать!</div>
+                <div class="promo-amount" id="promo-amount">0 ₸</div>
+                
+                <div class="promo-qr" id="promo-qr">
+                    <img src="/static/qrАскадир.png" alt="QR-код">
+                </div>
+                
+                <div class="promo-items" id="promo-items">
+                    <!-- Товары будут здесь -->
+                </div>
+                
+                <div class="promo-warning" id="promo-warning"></div>
+            </div>
         </div>
         
-        <div id="items-list" class="items-list">
-            <!-- Товары будут добавляться здесь -->
+        <!-- Панель управления -->
+        <div class="control-panel">
+            <div class="control-section">
+                <h2 class="control-title">Управление промо-экраном</h2>
+                
+                <div class="control-group">
+                    <label>Текущий статус:</label>
+                    <div class="btn-group">
+                        <button id="btn-welcome">Приветствие</button>
+                        <button id="btn-waiting">Ожидание</button>
+                        <button id="btn-clear">Очистить</button>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <label>Пользовательский текст:</label>
+                    <input type="text" id="custom-text" placeholder="Введите текст">
+                    <button id="btn-show-text">Показать текст</button>
+                </div>
+            </div>
+            
+            <div class="control-section">
+                <h2 class="control-title">Управление оплатой</h2>
+                
+                <div class="control-group">
+                    <label>Сумма к оплате:</label>
+                    <input type="number" id="payment-amount" placeholder="Введите сумму">
+                    <div class="btn-group">
+                        <button id="btn-show-payment">Показать сумму</button>
+                        <button id="btn-hide-payment">Скрыть сумму</button>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <label>QR-код:</label>
+                    <div class="btn-group">
+                        <button id="btn-show-qr">Показать QR</button>
+                        <button id="btn-hide-qr">Скрыть QR</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="control-section">
+                <h2 class="control-title">Настройки гарантии</h2>
+                <div class="control-group">
+                    <label>Сообщение о гарантии:</label>
+                    <select id="warranty-select">
+                        <option value="none">Без гарантии</option>
+                        <option value="3months">Гарантия 3 месяца</option>
+                        <option value="1year">Гарантия 1 год</option>
+                        <option value="custom">Свой текст</option>
+                    </select>
+                    <textarea id="custom-warranty" placeholder="Введите свой текст гарантии" style="display: none;"></textarea>
+                    <button id="btn-apply-warranty">Применить</button>
+                </div>
+            </div>
+            
+            <div class="control-section">
+                <h2 class="control-title">Мультимедиа</h2>
+                
+                <div class="control-group">
+                    <label>Фоновое видео:</label>
+                    <div class="btn-group">
+                        <button id="btn-video-on">Включить</button>
+                        <button id="btn-video-off">Выключить</button>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <label>Звуковые уведомления:</label>
+                    <div class="btn-group">
+                        <button id="btn-sound-on">Включить</button>
+                        <button id="btn-sound-off">Выключить</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="control-section">
+                <h2 class="control-title">Дополнительно</h2>
+                <div class="btn-group">
+                    <button id="btn-test-data" class="btn-secondary">Тестовые данные</button>
+                    <button id="btn-reset" class="btn-danger">Сбросить все</button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
     <script>
-        // Элементы интерфейса
-        const display = document.getElementById("promo-display");
-        const amountEl = document.getElementById("amount");
-        const qrContainer = document.getElementById("qr-container");
-        const itemsList = document.getElementById("items-list");
+        // Элементы промо-экрана
+        const promoHeader = document.getElementById('promo-header');
+        const promoAmount = document.getElementById('promo-amount');
+        const promoQr = document.getElementById('promo-qr');
+        const promoItems = document.getElementById('promo-items');
+        const promoWarning = document.getElementById('promo-warning');
+        const promoVideo = document.querySelector('.promo-video');
         
-        // Форматирование чисел
-        function formatNumber(num) {
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+        // Элементы управления
+        const paymentAmountInput = document.getElementById('payment-amount');
+        const customTextInput = document.getElementById('custom-text');
+        const warrantySelect = document.getElementById('warranty-select');
+        const customWarranty = document.getElementById('custom-warranty');
+        
+        // Состояние
+        let soundEnabled = false;
+        let currentItems = [];
+        
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', () => {
+            // Загружаем видео
+            promoVideo.load();
+            
+            // Показываем приветствие
+            showWelcome();
+        });
+        
+        // ================== ОБРАБОТЧИКИ КНОПОК ================== //
+        
+        // Управление состоянием
+        document.getElementById('btn-welcome').addEventListener('click', showWelcome);
+        document.getElementById('btn-waiting').addEventListener('click', showWaiting);
+        document.getElementById('btn-clear').addEventListener('click', clearScreen);
+        
+        // Пользовательский текст
+        document.getElementById('btn-show-text').addEventListener('click', () => {
+            const text = customTextInput.value.trim();
+            if (text) {
+                promoHeader.textContent = text;
+                promoAmount.textContent = '';
+                promoQr.style.display = 'none';
+                promoItems.innerHTML = '';
+            }
+        });
+        
+        // Управление оплатой
+        document.getElementById('btn-show-payment').addEventListener('click', showPayment);
+        document.getElementById('btn-hide-payment').addEventListener('click', () => {
+            promoAmount.textContent = '0 ₸';
+            promoQr.style.display = 'none';
+        });
+        
+        // Управление QR-кодом
+        document.getElementById('btn-show-qr').addEventListener('click', () => {
+            promoQr.style.display = 'block';
+        });
+        document.getElementById('btn-hide-qr').addEventListener('click', () => {
+            promoQr.style.display = 'none';
+        });
+        
+        // Гарантия
+        warrantySelect.addEventListener('change', () => {
+            if (warrantySelect.value === 'custom') {
+                customWarranty.style.display = 'block';
+            } else {
+                customWarranty.style.display = 'none';
+            }
+        });
+        
+        document.getElementById('btn-apply-warranty').addEventListener('click', () => {
+            let warrantyText = '';
+            
+            switch(warrantySelect.value) {
+                case 'none':
+                    warrantyText = '';
+                    break;
+                case '3months':
+                    warrantyText = '⚠ Гарантия 3 месяца';
+                    break;
+                case '1year':
+                    warrantyText = '⚠ Гарантия 1 год';
+                    break;
+                case 'custom':
+                    warrantyText = customWarranty.value.trim();
+                    break;
+            }
+            
+            promoWarning.textContent = warrantyText;
+        });
+        
+        // Мультимедиа
+        document.getElementById('btn-video-on').addEventListener('click', () => {
+            promoVideo.style.display = 'block';
+            promoVideo.play();
+        });
+        
+        document.getElementById('btn-video-off').addEventListener('click', () => {
+            promoVideo.style.display = 'none';
+            promoVideo.pause();
+        });
+        
+        document.getElementById('btn-sound-on').addEventListener('click', () => {
+            soundEnabled = true;
+            speak('Звук включен');
+        });
+        
+        document.getElementById('btn-sound-off').addEventListener('click', () => {
+            soundEnabled = false;
+        });
+        
+        // Дополнительные функции
+        document.getElementById('btn-test-data').addEventListener('click', showTestData);
+        document.getElementById('btn-reset').addEventListener('click', resetAll);
+        
+        // ================== ОСНОВНЫЕ ФУНКЦИИ ================== //
+        
+        function showWelcome() {
+            promoHeader.textContent = 'Добро пожаловать!';
+            promoAmount.textContent = '0 ₸';
+            promoQr.style.display = 'none';
+            promoItems.innerHTML = '';
+            promoWarning.textContent = '';
         }
         
-        // Обновление списка товаров
-        function updateItemsList(items) {
-            itemsList.innerHTML = '';
+        function showWaiting() {
+            promoHeader.textContent = 'Ожидание заказа...';
+            promoAmount.textContent = '';
+            promoQr.style.display = 'none';
+            promoItems.innerHTML = '';
+        }
+        
+        function clearScreen() {
+            promoHeader.textContent = '';
+            promoAmount.textContent = '';
+            promoQr.style.display = 'none';
+            promoItems.innerHTML = '';
+            promoWarning.textContent = '';
+        }
+        
+        function showPayment() {
+            const amount = paymentAmountInput.value.trim();
+            if (!amount) return;
             
-            if (!items || items.length === 0) return;
+            const formattedAmount = formatNumber(parseInt(amount));
+            promoHeader.textContent = 'К оплате:';
+            promoAmount.textContent = formattedAmount + ' ₸';
+            promoQr.style.display = 'block';
+            
+            if (soundEnabled) {
+                speak(`К оплате ${formattedAmount} тенге`);
+            }
+        }
+        
+        function showTestData() {
+            currentItems = [
+                { name: "Кофе Латте", total: 1200 },
+                { name: "Круассан", total: 450 },
+                { name: "Салат Цезарь", total: 950 }
+            ];
+            
+            promoHeader.textContent = 'К оплате:';
+            promoAmount.textContent = '2 600 ₸';
+            promoQr.style.display = 'block';
+            promoWarning.textContent = '⚠ Гарантия 3 месяца';
+            
+            updateItemsList(currentItems);
+            
+            if (soundEnabled) {
+                speak('К оплате 2 600 тенге');
+            }
+        }
+        
+        function resetAll() {
+            showWelcome();
+            paymentAmountInput.value = '';
+            customTextInput.value = '';
+            warrantySelect.value = 'none';
+            customWarranty.value = '';
+            customWarranty.style.display = 'none';
+            promoVideo.style.display = 'none';
+            promoVideo.pause();
+            soundEnabled = false;
+        }
+        
+        function updateItemsList(items) {
+            promoItems.innerHTML = '';
             
             items.slice(0, 5).forEach(item => {
                 const itemEl = document.createElement('div');
-                itemEl.className = 'item-row fade-in';
+                itemEl.className = 'item-row';
                 itemEl.innerHTML = `
                     <span>${item.name}</span>
                     <span>${formatNumber(Math.round(item.total))} ₸</span>
                 `;
-                itemsList.appendChild(itemEl);
+                promoItems.appendChild(itemEl);
             });
             
             if (items.length > 5) {
@@ -162,59 +508,20 @@
                     <span>+${items.length - 5} товаров</span>
                     <span></span>
                 `;
-                itemsList.appendChild(moreEl);
+                promoItems.appendChild(moreEl);
             }
         }
         
-        // Обработка данных о платеже
-        function handlePaymentData(data) {
-            const total = Math.round(data.total);
-            
-            // Обновляем сумму
-            amountEl.textContent = `${formatNumber(total)} ₸`;
-            
-            // Показываем QR-код
-            qrContainer.style.display = 'block';
-            qrContainer.classList.add('fade-in');
-            
-            // Обновляем список товаров
-            updateItemsList(data.items || []);
-            
-            // Меняем приветственное сообщение
-            display.textContent = "К оплате:";
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
         }
         
-        // Очистка экрана
-        function clearScreen() {
-            display.textContent = "Ожидание следующего клиента";
-            amountEl.textContent = "0 ₸";
-            qrContainer.style.display = 'none';
-            itemsList.innerHTML = "";
+        function speak(text) {
+            if (!soundEnabled) return;
+            
+            // В реальном приложении здесь будет синтез речи
+            console.log("Озвучка:", text);
         }
-        
-        // ================== SOCKET.IO ================== //
-        const socket = io();
-        
-        socket.on("connect", () => {
-            console.log("Подключено к серверу");
-        });
-        
-        socket.on("show_total", handlePaymentData);
-        
-        socket.on("clear_screen", clearScreen);
-        
-        // Автоматическое обновление каждые 2 часа
-        setTimeout(() => location.reload(), 7200000);
-        
-        // Тестовые данные (можно удалить в продакшене)
-        window.testData = () => {
-            handlePaymentData({
-                total: 0,
-                items: [
-                    
-                ]
-            });
-        };
     </script>
 </body>
 </html>
