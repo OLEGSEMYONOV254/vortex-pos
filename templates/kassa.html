@@ -616,7 +616,7 @@
     // Инициализация при загрузке
     document.addEventListener('DOMContentLoaded', async () => {
       // Загрузка тестовых данных
-      await loadTestProducts();
+      await loadProducts();
       await loadTestCounterparties();
       
       // Инициализация интерфейса
@@ -802,32 +802,33 @@
 
     // ================== ФУНКЦИИ РАБОТЫ С ТОВАРАМИ ================== //
     
-    async function loadTestProducts() {
-      // Тестовые данные товаров
-      allProducts = [
-        { id: 1, name: "Кофе Латте", price: 1200, category: "Напитки" },
-        { id: 2, name: "Эспрессо", price: 800, category: "Напитки" },
-        { id: 3, name: "Капучино", price: 1100, category: "Напитки" },
-        { id: 4, name: "Круассан", price: 450, category: "Выпечка" },
-        { id: 5, name: "Салат Цезарь", price: 950, category: "Еда" },
-        { id: 6, name: "Чизкейк", price: 800, category: "Десерты" },
-        { id: 7, name: "Минеральная вода", price: 350, category: "Напитки" },
-        { id: 8, name: "Сэндвич", price: 650, category: "Еда" },
-        { id: 9, name: "Тирамису", price: 850, category: "Десерты" },
-        { id: 10, name: "Чай зеленый", price: 500, category: "Напитки" },
-        { id: 11, name: "Чай черный", price: 500, category: "Напитки" },
-        { id: 12, name: "Брауни", price: 700, category: "Десерты" }
-      ];
+    async function loadProducts() {
+      try {
+        const response = await fetch('/api/products'); // Ваш эндпоинт для получения товаров
+        if (!response.ok) throw new Error('Ошибка загрузки товаров');
+        
+        allProducts = await response.json();
+        renderCategoryMenu(allProducts);
+        renderProducts(allProducts);
+      } catch (error) {
+        console.error('Ошибка загрузки товаров:', error);
+        // Можно показать уведомление пользователю
+        alert('Не удалось загрузить товары. Пожалуйста, попробуйте позже.');
+        allProducts = []; // Очищаем список товаров при ошибке
+      }
     }
     
-    async function loadTestCounterparties() {
-      // Тестовые данные контрагентов
-      counterparties = [
-        { id: 1, name: "ИП Петров" },
-        { id: 2, name: "ООО Ромашка" },
-        { id: 3, name: "АО Север" }
-      ];
-      updateCounterpartySelect();
+    async function loadCounterparties() {
+      try {
+        const response = await fetch('/api/counterparties'); // Ваш эндпоинт
+        if (!response.ok) throw new Error('Ошибка загрузки контрагентов');
+        
+        counterparties = await response.json();
+        updateCounterpartySelect();
+      } catch (error) {
+        console.error('Ошибка загрузки контрагентов:', error);
+        counterparties = [];
+      }
     }
     
     function updateCounterpartySelect() {
@@ -1062,3 +1063,4 @@
   </script>
 </body>
 </html>
+
