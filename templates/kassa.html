@@ -1021,12 +1021,24 @@
       const customer = getCurrentCustomer();
       const total = customer.cart.reduce((sum, item) => sum + parseFloat(item.total), 0).toFixed(2);
       
-      // В реальном приложении здесь будет отправка на сервер
-      console.log('Отправка суммы на экран:', {
-        total: total,
-        payment_method: 'cash',
-        items: customer.cart,
-        customer_name: customer.name
+      // Отправляем данные на сервер для отображения на промо-экране
+      fetch('/send_to_screen', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          total: total,
+          payment_method: 'qr', // Указываем метод оплаты QR
+          items: customer.cart,
+          customer_name: customer.name
+        })
+      })
+      .then(response => {
+        if (!response.ok) throw new Error('Ошибка отправки на промо-экран');
+        console.log('Данные успешно отправлены на промо-экран');
+      })
+      .catch(error => {
+        console.error('Ошибка:', error);
+        alert('Не удалось отправить данные на промо-экран');
       });
     }
     
@@ -1063,6 +1075,7 @@
   </script>
 </body>
 </html>
+
 
 
 
