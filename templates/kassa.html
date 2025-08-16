@@ -979,45 +979,47 @@
       customer.paymentMethod = document.getElementById('paymentMethod').value;
       customer.organization = document.getElementById('organizationSelect').value;
       customer.counterpartyId = document.getElementById('counterpartySelect').value || null;
-    
+      
+      if (customer.cart.length === 0) {
+        alert('Корзина пуста!');
+        return;
+      }
+      
       try {
-        // 1. Отправляем данные на сервер
-        const response = await fetch('/api/receipts', {
+        const response = await fetch('/process_sale', {
           method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + localStorage.getItem('token')
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            customer: customer.name,
-            items: customer.cart,
-            total: customer.cart.reduce((sum, item) => sum + parseFloat(item.total), 0),
+            cart: customer.cart,
             payment_method: customer.paymentMethod,
             organization: customer.organization,
             counterparty_id: customer.counterpartyId,
-            timestamp: new Date().toISOString()
+            customer_name: customer.name
           })
         });
-    
-        if (!response.ok) throw new Error('Ошибка сервера');
-    
-        // 2. После успешного сохранения
-        const result = await response.json();
-        console.log('Чек сохранён:', result);
-    
-        // 3. Обновляем интерфейс
-        customers = customers.filter(c => c.id !== customer.id);
-        if (customers.length === 0) addCustomer();
-        else switchCustomer(customers[0].id);
         
-        closePaymentModal();
-        
-        // 4. Отправляем уведомление об обновлении отчётов
-        socket.emit('receipt_processed', result);
-    
+        if (response.ok) {
+          alert(`Продажа для ${customer.name} оформлена!`);
+          
+          // Удаляем клиента после оплаты
+          customers = customers.filter(c => c.id !== customer.id);
+          
+          // Если клиентов не осталось, создаем нового
+          if (customers.length === 0) {
+            addCustomer();
+          } else {
+            // Иначе переключаемся на первого клиента
+            switchCustomer(customers[0].id);
+          }
+          
+          closePaymentModal();
+          loadReceiptHistory();
+        } else {
+          throw new Error('Ошибка сервера');
+        }
       } catch (error) {
-        console.error('Ошибка сохранения чека:', error);
-        alert('Ошибка при сохранении чека! Данные не потеряны, попробуйте ещё раз.');
+        console.error('Ошибка оплаты:', error);
+        alert('Ошибка при оформлении оплаты');
       }
     }
 
@@ -1081,6 +1083,7 @@
   </script>
 </body>
 </html>
+
 
 
 
