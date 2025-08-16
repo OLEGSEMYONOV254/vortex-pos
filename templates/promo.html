@@ -27,7 +27,6 @@
             position: relative;
         }
         
-        /* Анимированный фон */
         .bg-effect {
             position: absolute;
             top: 0;
@@ -47,7 +46,6 @@
             100% { opacity: 0.15; }
         }
         
-        /* Основные элементы */
         .display-container {
             background: rgba(10, 10, 30, 0.7);
             border: 1px solid var(--neon-cyan);
@@ -81,46 +79,20 @@
         }
         
         .qr-container {
-            width: 50px;
-            height: 50px;
+            width: 200px;
+            height: 200px;
             margin: 20px auto;
             border: 2px solid var(--neon-cyan);
-            box-shadow: 0 0 10px var(--neon-cyan);
-            position: relative;
-            overflow: hidden;
-            display: none;
             background: white;
             padding: 10px;
+            display: none;
             box-sizing: border-box;
         }
         
-        .qr-container::before {
-            content: "";
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            background: 
-                linear-gradient(transparent 0%, rgba(0, 255, 204, 0.1) 50%, transparent 100%);
-            animation: scan 3s linear infinite;
-            z-index: 1;
-        }
-        
-        @keyframes scan {
-            0% { transform: translateY(-100%); }
-            100% { transform: translateY(100%); }
-        }
-        
         .qr-image {
-            max-width: 50px;
-            max-height: 50px;
-            width: auto;
-            height: auto;
-            display: block;
-            margin: 0 auto;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
         
         .payment-method {
@@ -154,12 +126,11 @@
             font-size: 1.1rem;
         }
         
-        /* Адаптивность */
-       @media (max-width: 768px) {
-            .qr-container {
-                width: 150px;
-                height: 150px;
-            }
+        @media (max-width: 768px) {
+            .amount { font-size: 3rem; }
+            .qr-container { width: 150px; height: 150px; }
+            .payment-method { font-size: 1.4rem; }
+            .warning { font-size: 1.1rem; }
         }
     </style>
 </head>
@@ -187,8 +158,8 @@
 
     <script>
         // Конфигурация
-        const POLL_INTERVAL = 500; // Проверка каждые 0.5 секунды
-        const CART_STORAGE_KEY = 'saved_cart'; // Ключ, который использует касса
+        const POLL_INTERVAL = 500;
+        const CART_STORAGE_KEY = 'saved_cart';
         
         // Элементы
         const amountEl = document.getElementById('amount');
@@ -197,16 +168,14 @@
         const customerEl = document.getElementById('customer');
         const itemsList = document.getElementById('items-list');
         
-        // Форматирование чисел
         function formatNumber(num) {
             return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
         }
         
-        // Обновление списка товаров
         function updateItemsList(items) {
             itemsList.innerHTML = '';
             
-            items.slice(0, 5).forEach(item => { // Показываем первые 5 товаров
+            items.slice(0, 5).forEach(item => {
                 const itemEl = document.createElement('div');
                 itemEl.className = 'item-row';
                 itemEl.innerHTML = `
@@ -227,7 +196,6 @@
             }
         }
         
-        // Проверка обновлений корзины
         function checkCartUpdates() {
             const cartData = localStorage.getItem(CART_STORAGE_KEY);
             
@@ -237,18 +205,15 @@
                     const currentCustomer = data.customers?.find(c => c.id === data.currentCustomerId);
                     
                     if (currentCustomer && currentCustomer.cart?.length > 0) {
-                        // Рассчитываем сумму
                         const total = currentCustomer.cart.reduce((sum, item) => sum + parseFloat(item.total), 0);
                         
-                        // Обновляем дисплей
                         amountEl.textContent = formatNumber(Math.round(total)) + ' ₸';
                         customerEl.textContent = currentCustomer.name || '';
                         updateItemsList(currentCustomer.cart);
                         
-                        // Определяем метод оплаты
                         const paymentMethod = currentCustomer.paymentMethod || 'qr';
                         
-                        if (paymentMethod.includes('qr')) { // Для всех вариантов с QR
+                        if (paymentMethod.includes('qr')) {
                             qrContainer.style.display = 'block';
                             methodEl.textContent = paymentMethod === 'cash/qr' 
                                 ? 'Оплата: Наличные + QR' 
@@ -268,7 +233,6 @@
                 }
             }
             
-            // Если корзина пуста или данные не получены
             amountEl.textContent = '0 ₸';
             customerEl.textContent = '';
             methodEl.textContent = '';
@@ -276,14 +240,11 @@
             itemsList.innerHTML = '';
         }
         
-        // Запускаем проверку обновлений
         setInterval(checkCartUpdates, POLL_INTERVAL);
-        checkCartUpdates(); // Проверяем сразу при загрузке
+        checkCartUpdates();
         
-        // Автоматическое обновление страницы каждые 2 часа
         setTimeout(() => location.reload(), 7200000);
         
-        // Для тестирования (можно удалить в продакшене)
         window.testPromo = () => {
             localStorage.setItem(CART_STORAGE_KEY, JSON.stringify({
                 currentCustomerId: 0,
