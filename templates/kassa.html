@@ -712,6 +712,17 @@
     const socket = io();
     const CART_STORAGE_KEY = 'saved_cart';
 
+    function updateCartCounter() {
+      const customer = getCurrentCustomer();
+      if (!customer) return;
+      
+      const totalItems = customer.cart.reduce((sum, item) => sum + item.quantity, 0);
+      const cartCounter = document.getElementById('cartCounter');
+      if (cartCounter) {
+        cartCounter.textContent = totalItems;
+      }
+    }
+
     function updateCartDisplay() {
         const customer = getCurrentCustomer();
         if (!customer) return;
@@ -795,16 +806,7 @@
       }
 
       // Обновляем счетчик товаров
-      function updateCartCounter() {
-        const customer = getCurrentCustomer();
-        if (!customer) return;
-        
-        const totalItems = customer.cart.reduce((sum, item) => sum + item.quantity, 0);
-        const cartCounter = document.getElementById('cartCounter');
-        if (cartCounter) {
-          cartCounter.textContent = totalItems;
-        }
-      }
+      
 
       // Вызываем при обновлении корзины
       
@@ -1296,6 +1298,7 @@
   </script>
 </body>
 </html>
+
 
 
 
