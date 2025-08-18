@@ -133,6 +133,7 @@
         const amountEl = document.getElementById("amount");
         const qrContainer = document.getElementById("qr-container");
         const itemsList = document.getElementById("items-list");
+        let wakeLock = null;
         
         // Форматирование чисел
         function formatNumber(num) {
@@ -215,6 +216,25 @@
                 ]
             });
         };
+        async function enableWakeLock() {
+            try {
+              wakeLock = await navigator.wakeLock.request("screen");
+              console.log("✅ Экран не будет гаснуть");
+        
+              // если блокировка потеряется (например, вкладку свернули или браузер обновил)
+              wakeLock.addEventListener("release", () => {
+                console.log("❌ Блокировка экрана снята");
+                wakeLock = null;
+              });
+            } catch (err) {
+              console.error(`Ошибка блокировки: ${err.name}, ${err.message}`);
+            }
+          }
+        
+          // запускаем сразу при загрузке страницы
+          document.addEventListener("DOMContentLoaded", () => {
+            enableWakeLock();
+          });
     </script>
 </body>
 </html>
