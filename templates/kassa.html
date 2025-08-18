@@ -729,22 +729,33 @@
       const mobileCartToggle = document.getElementById('mobileCartToggle');
       const cartContainer = document.querySelector('.cart-container');
       
-      mobileCartToggle.addEventListener('click', () => {
-        cartContainer.classList.toggle('expanded');
-      });
+      if (mobileCartToggle && cartContainer) {
+        mobileCartToggle.addEventListener('click', () => {
+          cartContainer.classList.toggle('expanded');
+        });
+      }
 
       // Обновляем счетчик товаров
       function updateCartCounter() {
         const customer = getCurrentCustomer();
+        if (!customer) return;
+        
         const totalItems = customer.cart.reduce((sum, item) => sum + item.quantity, 0);
-        document.getElementById('cartCounter').textContent = totalItems;
+        const cartCounter = document.getElementById('cartCounter');
+        if (cartCounter) {
+          cartCounter.textContent = totalItems;
+        }
       }
 
-       // Вызываем при обновлении корзины
+      // Вызываем при обновлении корзины
       function updateCartDisplay() {
         const customer = getCurrentCustomer();
+        if (!customer) return;
+        
         const cartItems = document.getElementById('cartItems');
         const totalAmount = document.getElementById('totalAmount');
+        
+        if (!cartItems || !totalAmount) return;
         
         cartItems.innerHTML = '';
         
@@ -772,33 +783,35 @@
         });
         
         totalAmount.textContent = Math.round(total);
-        document.getElementById('cartCounter').textContent = totalItems;
+        updateCartCounter();
         saveCartToStorage();
-        // ... существующий код
-        updateCartCounter(); // Добавьте эту строку
       }
-    
       
       // Фокус на поиск
-      document.getElementById('searchInput').focus();
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput) {
+        searchInput.focus();
+      }
       
       // Обработчики горячих клавиш
       document.addEventListener('keydown', handleHotkeys);
       
       // Сокет-события
-      socket.on('receipt_processed', (data) => {
-        console.log('Чек обработан:', data);
-      });
-      
-      socket.on('show_total', (data) => {
-        console.log('Сумма на экране:', data);
-      });
+      if (socket) {
+        socket.on('receipt_processed', (data) => {
+          console.log('Чек обработан:', data);
+        });
+        
+        socket.on('show_total', (data) => {
+          console.log('Сумма на экране:', data);
+        });
+      }
     });
 
     // ================== ФУНКЦИИ РАБОТЫ С КЛИЕНТАМИ ================== //
     
     function getCurrentCustomer() {
-      return customers.find(c => c.id === currentCustomerId);
+      return customers.find(c => c.id === currentCustomerId) || customers[0];
     }
     
     function addCustomer() {
@@ -833,6 +846,8 @@
     
     function renderCustomerTabs() {
       const container = document.getElementById('customerTabs');
+      if (!container) return;
+      
       // Сохраняем кнопку добавления
       const addBtn = container.querySelector('.btn');
       container.innerHTML = '';
@@ -847,7 +862,9 @@
       });
       
       // Возвращаем кнопку добавления
-      container.appendChild(addBtn);
+      if (addBtn) {
+        container.appendChild(addBtn);
+      }
     }
 
     // ================== ФУНКЦИИ РАБОТЫ С КОРЗИНОЙ ================== //
@@ -860,29 +877,39 @@
     }
 
     function loadCartFromStorage() {
-      const savedData = localStorage.getItem(CART_STORAGE_KEY);
-      if (savedData) {
-        const data = JSON.parse(savedData);
-        customers = data.customers || customers;
-        currentCustomerId = data.currentCustomerId || currentCustomerId;
-        renderCustomerTabs();
-        updateCartDisplay();
+      try {
+        const savedData = localStorage.getItem(CART_STORAGE_KEY);
+        if (savedData) {
+          const data = JSON.parse(savedData);
+          customers = data.customers || customers;
+          currentCustomerId = data.currentCustomerId || currentCustomerId;
+          renderCustomerTabs();
+          updateCartDisplay();
+        }
+      } catch (e) {
+        console.error('Ошибка при загрузке корзины:', e);
+        clearSavedCart();
       }
     }
 
     function clearSavedCart() {
       localStorage.removeItem(CART_STORAGE_KEY);
     }
-
     
-
     function addToCart(product, quantity = 1) {
+      if (!product || !product.id || !product.price) return;
+      
       const customer = getCurrentCustomer();
+      if (!customer) return;
+      
       const existingItem = customer.cart.find(item => item.id === product.id);
       const total = Math.round(product.price * quantity * 100) / 100;
       const toggle = document.getElementById('mobileCartToggle');
-      toggle.classList.add('added');
-      setTimeout(() => toggle.classList.remove('added'), 500);
+      
+      if (toggle) {
+        toggle.classList.add('added');
+        setTimeout(() => toggle.classList.remove('added'), 500);
+      }
       
       if (existingItem) {
         existingItem.quantity = parseFloat((existingItem.quantity + quantity).toFixed(2));
@@ -902,6 +929,8 @@
 
     function changeQuantity(productId, delta) {
       const customer = getCurrentCustomer();
+      if (!customer) return;
+      
       const item = customer.cart.find(item => item.id === productId);
       if (item) {
         item.quantity = parseFloat((item.quantity + delta).toFixed(2));
@@ -916,12 +945,16 @@
 
     function removeFromCart(productId) {
       const customer = getCurrentCustomer();
+      if (!customer) return;
+      
       customer.cart = customer.cart.filter(item => item.id !== productId);
       updateCartDisplay();
     }
 
     function clearCart() {
       const customer = getCurrentCustomer();
+      if (!customer) return;
+      
       customer.cart = [];
       updateCartDisplay();
     }
@@ -930,7 +963,7 @@
     
     async function loadProducts() {
       try {
-        const response = await fetch('/get_products'); // Ваш эндпоинт для получения товаров
+        const response = await fetch('/get_products');
         if (!response.ok) throw new Error('Ошибка загрузки товаров');
         
         allProducts = await response.json();
@@ -938,15 +971,14 @@
         renderProducts(allProducts);
       } catch (error) {
         console.error('Ошибка загрузки товаров:', error);
-        // Можно показать уведомление пользователю
         alert('Не удалось загрузить товары. Пожалуйста, попробуйте позже.');
-        allProducts = []; // Очищаем список товаров при ошибке
+        allProducts = [];
       }
     }
     
     async function loadCounterparties() {
       try {
-        const response = await fetch('/api/counterparties'); // Ваш эндпоинт
+        const response = await fetch('/api/counterparties');
         if (!response.ok) throw new Error('Ошибка загрузки контрагентов');
         
         counterparties = await response.json();
@@ -959,6 +991,8 @@
     
     function updateCounterpartySelect() {
       const select = document.getElementById('counterpartySelect');
+      if (!select) return;
+      
       select.innerHTML = '<option value="">Не выбрано</option>';
       counterparties.forEach(c => {
         const option = document.createElement('option');
@@ -970,6 +1004,8 @@
     
     function renderCategoryMenu(products) {
       const container = document.getElementById('categoryContainer');
+      if (!container) return;
+      
       const categories = ['Все', ...new Set(products.map(p => p.category || 'Без категории'))];
       
       container.innerHTML = '';
@@ -985,6 +1021,8 @@
     
     function renderProducts(products) {
       const container = document.getElementById('productGrid');
+      if (!container) return;
+      
       container.innerHTML = '';
       
       products.forEach(product => {
@@ -1028,23 +1066,43 @@
     // ================== МОДАЛЬНЫЕ ОКНА ================== //
     
     function showQuantityModal(product) {
+      if (!product) return;
+      
       currentProduct = product;
-      document.getElementById('modalProductName').textContent = product.name;
-      document.getElementById('quantityInput').value = '';
-      document.getElementById('quantityInput').placeholder = 'Введите количество';
-      document.getElementById('quantityModal').style.display = 'flex';
+      const modal = document.getElementById('quantityModal');
+      if (!modal) return;
+      
+      const productName = document.getElementById('modalProductName');
+      if (productName) {
+        productName.textContent = product.name;
+      }
+      
+      const quantityInput = document.getElementById('quantityInput');
+      if (quantityInput) {
+        quantityInput.value = '';
+        quantityInput.placeholder = 'Введите количество';
+      }
+      
+      modal.style.display = 'flex';
       
       setTimeout(() => {
-        document.getElementById('quantityInput').focus();
+        if (quantityInput) {
+          quantityInput.focus();
+        }
       }, 100);
     }
     
     function closeQuantityModal() {
-      document.getElementById('quantityModal').style.display = 'none';
+      const modal = document.getElementById('quantityModal');
+      if (modal) {
+        modal.style.display = 'none';
+      }
     }
     
     function appendToQuantity(value) {
       const input = document.getElementById('quantityInput');
+      if (!input) return;
+      
       let current = input.value;
       
       if (value === '.' && current.includes('.')) {
@@ -1055,7 +1113,10 @@
     }
     
     function clearQuantity() {
-      document.getElementById('quantityInput').value = '';
+      const input = document.getElementById('quantityInput');
+      if (input) {
+        input.value = '';
+      }
     }
     
     function handleQuantityKeyDown(event) {
@@ -1074,7 +1135,10 @@
     }
     
     function addToCartWithQuantity() {
-      const quantity = parseFloat(document.getElementById('quantityInput').value) || 0;
+      const quantityInput = document.getElementById('quantityInput');
+      if (!quantityInput || !currentProduct) return;
+      
+      const quantity = parseFloat(quantityInput.value) || 0;
       if (quantity > 0) {
         addToCart(currentProduct, quantity);
         closeQuantityModal();
@@ -1085,40 +1149,41 @@
     
     function processPayment() {
       const customer = getCurrentCustomer();
-      if (customer.cart.length === 0) {
+      if (!customer || customer.cart.length === 0) {
         alert('Добавьте товары в чек перед оплатой');
         return;
       }
       
       const total = customer.cart.reduce((sum, item) => sum + parseFloat(item.total), 0).toFixed(2);
       const modal = document.getElementById('paymentModal');
-      modal.querySelector('h3').innerHTML = `Оформление оплаты <small style="display: block; font-size: 0.7em; margin-top: 5px; color: var(--primary);">Сумма: ${total} ₸</small>`;
-      modal.style.display = 'flex';
-      document.querySelector('.cart-container').classList.remove('expanded');
-      let startY;
-
-      cartContainer.addEventListener('touchstart', (e) => {
-        startY = e.touches[0].clientY;
-      }, {passive: true});
+      if (!modal) return;
       
-      cartContainer.addEventListener('touchmove', (e) => {
-        const y = e.touches[0].clientY;
-        if (y - startY > 50) { // Свайп вниз
-          cartContainer.classList.remove('expanded');
-        }
-      }, {passive: true});
+      const modalTitle = modal.querySelector('h3');
+      if (modalTitle) {
+        modalTitle.innerHTML = `Оформление оплаты <small style="display: block; font-size: 0.7em; margin-top: 5px; color: var(--primary);">Сумма: ${total} ₸</small>`;
+      }
+      
+      modal.style.display = 'flex';
+      const cartContainer = document.querySelector('.cart-container');
+      if (cartContainer) {
+        cartContainer.classList.remove('expanded');
+      }
     }
     
     function closePaymentModal() {
-      document.getElementById('paymentModal').style.display = 'none';
+      const modal = document.getElementById('paymentModal');
+      if (modal) {
+        modal.style.display = 'none';
+      }
     }
     
     async function confirmPayment() {
       const customer = getCurrentCustomer();
+      if (!customer) return;
+      
       customer.paymentMethod = document.getElementById('paymentMethod').value;
       customer.organization = document.getElementById('organizationSelect').value;
       customer.counterpartyId = document.getElementById('counterpartySelect').value || null;
-      
       
       if (customer.cart.length === 0) {
         alert('Корзина пуста!');
@@ -1153,7 +1218,6 @@
           }
           
           closePaymentModal();
-          
         } else {
           throw new Error('Ошибка сервера');
         }
@@ -1167,6 +1231,8 @@
     
     function showTotal() {
       const customer = getCurrentCustomer();
+      if (!customer) return;
+      
       const total = customer.cart.reduce((sum, item) => sum + parseFloat(item.total), 0).toFixed(2);
       
       // Отправляем данные на сервер для отображения на промо-экране
@@ -1175,7 +1241,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           total: total,
-          payment_method: 'qr', // Указываем метод оплаты QR
+          payment_method: 'qr',
           items: customer.cart,
           customer_name: customer.name
         })
@@ -1191,10 +1257,15 @@
     }
     
     function handleHotkeys(e) {
+      if (!e) return;
+      
       switch(e.key) {
         case 'F1': 
           e.preventDefault();
-          document.getElementById('searchInput').focus();
+          const searchInput = document.getElementById('searchInput');
+          if (searchInput) {
+            searchInput.focus();
+          }
           break;
         case 'F2': 
           e.preventDefault();
@@ -1223,6 +1294,7 @@
   </script>
 </body>
 </html>
+
 
 
 
