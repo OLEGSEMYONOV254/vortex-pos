@@ -712,43 +712,7 @@
     const socket = io();
     const CART_STORAGE_KEY = 'saved_cart';
 
-    // Инициализация при загрузке
-    document.addEventListener('DOMContentLoaded', async () => {
-      // Загрузка тестовых данных
-      await loadProducts();
-      await loadCounterparties();
-      
-      // Инициализация интерфейса
-      renderCategoryMenu(allProducts);
-      renderProducts(allProducts);
-      renderCustomerTabs();
-      
-      // Восстановление корзины из localStorage
-      loadCartFromStorage();
-
-      const mobileCartToggle = document.getElementById('mobileCartToggle');
-      const cartContainer = document.querySelector('.cart-container');
-      
-      if (mobileCartToggle && cartContainer) {
-        mobileCartToggle.addEventListener('click', () => {
-          cartContainer.classList.toggle('expanded');
-        });
-      }
-
-      // Обновляем счетчик товаров
-      function updateCartCounter() {
-        const customer = getCurrentCustomer();
-        if (!customer) return;
-        
-        const totalItems = customer.cart.reduce((sum, item) => sum + item.quantity, 0);
-        const cartCounter = document.getElementById('cartCounter');
-        if (cartCounter) {
-          cartCounter.textContent = totalItems;
-        }
-      }
-
-      // Вызываем при обновлении корзины
-      function updateCartDisplay() {
+    function updateCartDisplay() {
         const customer = getCurrentCustomer();
         if (!customer) return;
         
@@ -806,6 +770,44 @@
           console.log('Сумма на экране:', data);
         });
       }
+
+    // Инициализация при загрузке
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Загрузка тестовых данных
+      await loadProducts();
+      await loadCounterparties();
+      
+      // Инициализация интерфейса
+      renderCategoryMenu(allProducts);
+      renderProducts(allProducts);
+      renderCustomerTabs();
+      
+      // Восстановление корзины из localStorage
+      loadCartFromStorage();
+
+      const mobileCartToggle = document.getElementById('mobileCartToggle');
+      const cartContainer = document.querySelector('.cart-container');
+      
+      if (mobileCartToggle && cartContainer) {
+        mobileCartToggle.addEventListener('click', () => {
+          cartContainer.classList.toggle('expanded');
+        });
+      }
+
+      // Обновляем счетчик товаров
+      function updateCartCounter() {
+        const customer = getCurrentCustomer();
+        if (!customer) return;
+        
+        const totalItems = customer.cart.reduce((sum, item) => sum + item.quantity, 0);
+        const cartCounter = document.getElementById('cartCounter');
+        if (cartCounter) {
+          cartCounter.textContent = totalItems;
+        }
+      }
+
+      // Вызываем при обновлении корзины
+      
     });
 
     // ================== ФУНКЦИИ РАБОТЫ С КЛИЕНТАМИ ================== //
@@ -1294,6 +1296,7 @@
   </script>
 </body>
 </html>
+
 
 
 
