@@ -528,6 +528,32 @@
       align-items: center;
       justify-content: center;
     }
+
+    /* Для компьютеров (ширина больше 768px) */
+    @media (min-width: 769px) {
+      .sticky-header {
+        position: sticky;
+        top: 0;
+        background: var(--dark-bg);
+        z-index: 100;
+        padding-top: 15px;
+        padding-bottom: 15px;
+      }
+      
+      .sticky-header::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: -15px;
+        right: -15px;
+        height: 15px;
+        background: linear-gradient(to bottom, var(--dark-bg), transparent);
+      }
+      
+      .product-grid {
+        margin-top: 20px;
+      }
+    }
     
     /* Адаптация для мобильных */
     @media (max-width: 768px) {
@@ -577,6 +603,59 @@
     .mobile-cart-toggle.added {
       animation: bounce 0.5s;
     }
+
+    /* Компактная корзина для компьютера */
+    .cart-container.compact {
+      display: none; /* По умолчанию скрыта */
+      margin-top: 10px;
+      padding: 10px;
+    }
+    
+    @media (min-width: 769px) {
+      .cart-container.compact {
+        display: block;
+      }
+      
+      .cart-container.full-version {
+        display: none;
+      }
+      
+      .cart-container.compact .cart-items,
+      .cart-container.compact .cart-actions {
+        display: none;
+      }
+      
+      .cart-container.compact .cart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0;
+      }
+      
+      .cart-container.compact .cart-title {
+        font-size: 1rem;
+      }
+      
+      .cart-container.compact .cart-total {
+        margin-top: 0;
+        font-size: 1rem;
+        border-top: none;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .cart-container.compact {
+        display: none !important;
+      }
+      
+      .cart-container.full-version {
+        display: block;
+      }
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
   </style>
 </head>
 <body>
@@ -600,35 +679,48 @@
     </div>
     
     <!-- Поиск товаров -->
-    <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Поиск товаров... (F1)" oninput="searchProducts()">
+    <div class="sticky-header">
+      <!-- Поиск товаров -->
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Поиск товаров... (F1)" oninput="searchProducts()">
+      </div>
+
+      <div class="cart-container compact">
+        <div class="cart-header">
+          <div class="cart-title">Текущий чек</div>
+          <div class="cart-total">
+            Итого: <span id="totalAmount">0</span> ₸
+          </div>
+        </div>
+      </div>
     </div>
     
     <!-- Категории товаров -->
-    <div class="category-container" id="categoryContainer"></div>
+     <div class="category-container" id="categoryContainer"></div>
     
     <!-- Список товаров -->
     <div class="product-grid" id="productGrid"></div>
     
     <!-- Корзина -->
-    <div class="cart-container">
-      <div class="cart-header">
-        <div class="cart-title">Текущий чек</div>
-        <small class="hotkey-hint">F2 - оплата, F3 - очистка</small>
+    <div class="cart-container full-version">
+      <div class="cart-container">
+        <div class="cart-header">
+          <div class="cart-title">Текущий чек</div>
+          <small class="hotkey-hint">F2 - оплата, F3 - очистка</small>
+        </div>
+        
+        <div class="cart-items" id="cartItems"></div>
+        
+        <div class="cart-total">
+          Итого: <span id="totalAmount">0</span> ₸
+        </div>
+        
+        <div class="cart-actions">
+          <button class="btn" onclick="showTotal()">💵 Показать сумму</button>
+          <button class="btn btn-danger" onclick="clearCart()">🧹 Очистить (F3)</button>
+          <button class="btn btn-pay" onclick="processPayment()">💰 Оплатить (F2)</button>
+        </div>
       </div>
-      
-      <div class="cart-items" id="cartItems"></div>
-      
-      <div class="cart-total">
-        Итого: <span id="totalAmount">0</span> ₸
-      </div>
-      
-      <div class="cart-actions">
-        <button class="btn" onclick="showTotal()">💵 Показать сумму</button>
-        <button class="btn btn-danger" onclick="clearCart()">🧹 Очистить (F3)</button>
-        <button class="btn btn-pay" onclick="processPayment()">💰 Оплатить (F2)</button>
-      </div>
-    </div>
   </div>
   
   <!-- Модальное окно количества -->
@@ -1256,18 +1348,19 @@
       loadCartFromStorage();
 
       const mobileCartToggle = document.getElementById('mobileCartToggle');
-      const cartContainer = document.querySelector('.cart-container');
+      const compactCart = document.querySelector('.cart-container.compact');
+      const fullCart = document.querySelector('.cart-container.full-version');
       
-      if (isMobile && mobileCartToggle && cartContainer) {
+      if (isMobile && mobileCartToggle && fullCart) {
         mobileCartToggle.addEventListener('click', () => {
-          cartContainer.classList.toggle('expanded');
+          fullCart.classList.toggle('expanded');
         });
         
         document.addEventListener('click', (e) => {
-          if (!cartContainer.contains(e.target) && 
+          if (!fullCart.contains(e.target) && 
               e.target !== mobileCartToggle && 
-              cartContainer.classList.contains('expanded')) {
-            cartContainer.classList.remove('expanded');
+              fullCart.classList.contains('expanded')) {
+            fullCart.classList.remove('expanded');
           }
         });
       }
@@ -1301,3 +1394,4 @@
   </script>
 </body>
 </html>
+
