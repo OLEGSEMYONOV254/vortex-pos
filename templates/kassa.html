@@ -485,33 +485,66 @@
       padding: 12px;
       font-size: 1em;
     }
+    .mobile-cart-toggle {
+      display: none; /* По умолчанию скрыто */
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+      cursor: pointer;
+    }
     
+    #cartCounter {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: var(--danger);
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
     /* Адаптация для мобильных */
-    @media (min-width: 768px) {
-      .container {
-        grid-template-columns: 1fr 1fr;
+    @media (max-width: 768px) {
+      .cart-container {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 60vh;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+        z-index: 999;
+        margin-top: 0;
+        border-radius: 15px 15px 0 0;
+        box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.2);
+        overflow-y: auto;
       }
       
-      .cart-container {
-        margin-top: 0;
-        grid-column: 2;
-        grid-row: 3 / span 3;
+      .cart-container.expanded {
+        transform: translateY(0);
+      }
+      
+      .mobile-cart-toggle {
+        display: flex;
       }
       
       .product-grid {
-        grid-column: 1;
-      }
-      
-      .category-container {
-        grid-column: 1;
-      }
-      
-      .search-box {
-        grid-column: 1;
-      }
-      
-      .customer-tabs {
-        grid-column: 1 / -1;
+        margin-bottom: 80px; /* Чтобы не перекрывалось корзиной */
       }
     }
     
@@ -523,6 +556,14 @@
     
     .fade-in {
       animation: fadeIn 0.3s ease-out;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+    
+    .mobile-cart-toggle.added {
+      animation: bounce 0.5s;
     }
   </style>
 </head>
@@ -647,6 +688,10 @@
     </div>
   </div>
 
+  <div class="mobile-cart-toggle" id="mobileCartToggle">
+    🛒 <span id="cartCounter">0</span>
+  </div>
+
   <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
   <script>
     // Глобальные переменные
@@ -680,6 +725,59 @@
       
       // Восстановление корзины из localStorage
       loadCartFromStorage();
+
+      const mobileCartToggle = document.getElementById('mobileCartToggle');
+      const cartContainer = document.querySelector('.cart-container');
+      
+      mobileCartToggle.addEventListener('click', () => {
+        cartContainer.classList.toggle('expanded');
+      });
+
+      // Обновляем счетчик товаров
+      function updateCartCounter() {
+        const customer = getCurrentCustomer();
+        const totalItems = customer.cart.reduce((sum, item) => sum + item.quantity, 0);
+        document.getElementById('cartCounter').textContent = totalItems;
+      }
+
+       // Вызываем при обновлении корзины
+      function updateCartDisplay() {
+        const customer = getCurrentCustomer();
+        const cartItems = document.getElementById('cartItems');
+        const totalAmount = document.getElementById('totalAmount');
+        
+        cartItems.innerHTML = '';
+        
+        let total = 0;
+        let totalItems = 0;
+        
+        customer.cart.forEach(item => {
+          total += parseFloat(item.total);
+          totalItems += item.quantity;
+          
+          const cartItem = document.createElement('div');
+          cartItem.className = 'cart-item fade-in';
+          cartItem.innerHTML = `
+            <div class="cart-item-info">
+              <div class="cart-item-name">${item.name}</div>
+              <div class="cart-item-details">${item.price} ₸ × ${item.quantity} = ${item.total} ₸</div>
+            </div>
+            <div class="cart-item-controls">
+              <button class="quantity-btn" onclick="changeQuantity(${item.id}, -0.5)">-0.5</button>
+              <button class="quantity-btn" onclick="changeQuantity(${item.id}, 0.5)">+0.5</button>
+              <button class="remove-btn" onclick="removeFromCart(${item.id})">×</button>
+            </div>
+          `;
+          cartItems.appendChild(cartItem);
+        });
+        
+        totalAmount.textContent = Math.round(total);
+        document.getElementById('cartCounter').textContent = totalItems;
+        saveCartToStorage();
+        // ... существующий код
+        updateCartCounter(); // Добавьте эту строку
+      }
+    
       
       // Фокус на поиск
       document.getElementById('searchInput').focus();
@@ -776,41 +874,15 @@
       localStorage.removeItem(CART_STORAGE_KEY);
     }
 
-    function updateCartDisplay() {
-      const customer = getCurrentCustomer();
-      const cartItems = document.getElementById('cartItems');
-      const totalAmount = document.getElementById('totalAmount');
-      cartItems.innerHTML = '';
-      
-      let total = 0;
-      customer.cart.forEach(item => {
-        total += parseFloat(item.total);
-        const cartItem = document.createElement('div');
-        cartItem.className = 'cart-item fade-in';
-        cartItem.innerHTML = `
-          <div class="cart-item-info">
-            <div class="cart-item-name">${item.name}</div>
-            <div class="cart-item-details">${item.price} ₸ × ${item.quantity} = ${item.total} ₸</div>
-          </div>
-          <div class="cart-item-controls">
-            <button class="quantity-btn" onclick="changeQuantity(${item.id}, -0.5)">-0.5</button>
-            <button class="quantity-btn" onclick="changeQuantity(${item.id}, -0.25)">-0.25</button>
-            <button class="quantity-btn" onclick="changeQuantity(${item.id}, 0.25)">+0.25</button>
-            <button class="quantity-btn" onclick="changeQuantity(${item.id}, 0.5)">+0.5</button>
-            <button class="remove-btn" onclick="removeFromCart(${item.id})">×</button>
-          </div>
-        `;
-        cartItems.appendChild(cartItem);
-      });
-      
-      totalAmount.textContent = Math.round(total);
-      saveCartToStorage();
-    }
+    
 
     function addToCart(product, quantity = 1) {
       const customer = getCurrentCustomer();
       const existingItem = customer.cart.find(item => item.id === product.id);
       const total = Math.round(product.price * quantity * 100) / 100;
+      const toggle = document.getElementById('mobileCartToggle');
+      toggle.classList.add('added');
+      setTimeout(() => toggle.classList.remove('added'), 500);
       
       if (existingItem) {
         existingItem.quantity = parseFloat((existingItem.quantity + quantity).toFixed(2));
@@ -1022,6 +1094,19 @@
       const modal = document.getElementById('paymentModal');
       modal.querySelector('h3').innerHTML = `Оформление оплаты <small style="display: block; font-size: 0.7em; margin-top: 5px; color: var(--primary);">Сумма: ${total} ₸</small>`;
       modal.style.display = 'flex';
+      document.querySelector('.cart-container').classList.remove('expanded');
+      let startY;
+
+      cartContainer.addEventListener('touchstart', (e) => {
+        startY = e.touches[0].clientY;
+      }, {passive: true});
+      
+      cartContainer.addEventListener('touchmove', (e) => {
+        const y = e.touches[0].clientY;
+        if (y - startY > 50) { // Свайп вниз
+          cartContainer.classList.remove('expanded');
+        }
+      }, {passive: true});
     }
     
     function closePaymentModal() {
@@ -1033,6 +1118,7 @@
       customer.paymentMethod = document.getElementById('paymentMethod').value;
       customer.organization = document.getElementById('organizationSelect').value;
       customer.counterpartyId = document.getElementById('counterpartySelect').value || null;
+      
       
       if (customer.cart.length === 0) {
         alert('Корзина пуста!');
@@ -1137,6 +1223,7 @@
   </script>
 </body>
 </html>
+
 
 
 
