@@ -580,24 +580,15 @@
   <!-- Основной контент -->
   <div class="container">
     <h1 class="glow-text">Кассовый аппарат</h1>
+
+    
     
     <!-- Вкладки клиентов -->
     <div class="customer-tabs" id="customerTabs">
       <button class="customer-tab active" data-id="0">Клиент 1</button>
       <button class="btn" onclick="addCustomer()">+ Добавить</button>
     </div>
-    
-    <!-- Поиск товаров -->
-    <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Поиск товаров... (F1)" oninput="searchProducts()">
-    </div>
-    
-    <!-- Категории товаров -->
-    <div class="category-container" id="categoryContainer"></div>
-    
-    <!-- Список товаров -->
-    <div class="product-grid" id="productGrid"></div>
-    
+
     <!-- Корзина -->
     <div class="cart-container">
       <div class="cart-header">
@@ -617,6 +608,19 @@
         <button class="btn btn-pay" onclick="processPayment()">💰 Оплатить (F2)</button>
       </div>
     </div>
+    
+    <!-- Поиск товаров -->
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Поиск товаров... (F1)" oninput="searchProducts()">
+    </div>
+    
+    <!-- Категории товаров -->
+    <div class="category-container" id="categoryContainer"></div>
+    
+    <!-- Список товаров -->
+    <div class="product-grid" id="productGrid"></div>
+    
+    
   </div>
   
   <!-- Модальное окно количества -->
@@ -1298,3 +1302,4 @@
   </script>
 </body>
 </html>
+
