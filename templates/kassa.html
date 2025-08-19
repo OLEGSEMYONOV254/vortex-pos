@@ -536,18 +536,50 @@
         top: 0;
         background: var(--dark-bg);
         z-index: 100;
-        padding-top: 15px;
-        padding-bottom: 15px;
+        padding: 15px 0;
+        margin-bottom: 15px;
       }
       
-      .sticky-header::after {
-        content: "";
-        position: absolute;
-        bottom: 0;
-        left: -15px;
-        right: -15px;
-        height: 15px;
-        background: linear-gradient(to bottom, var(--dark-bg), transparent);
+      .fixed-cart {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+      }
+      
+      .fixed-cart .search-box {
+        flex-grow: 1;
+        margin-bottom: 0;
+      }
+      
+      .compact-cart {
+        background: var(--panel-bg);
+        padding: 10px 15px;
+        border-radius: 8px;
+        min-width: 200px;
+      }
+      
+      .compact-cart .cart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0;
+      }
+      
+      .compact-cart .cart-title {
+        font-size: 1rem;
+        margin-right: 10px;
+      }
+      
+      .compact-cart .cart-total {
+        margin-top: 0;
+        font-size: 1rem;
+        padding-top: 0;
+        border-top: none;
+      }
+      
+      .full-cart {
+        display: none !important;
       }
       
       .product-grid {
@@ -557,7 +589,15 @@
     
     /* Адаптация для мобильных */
     @media (max-width: 768px) {
-      .cart-container {
+      .sticky-header {
+        position: static;
+      }
+      
+      .compact-cart {
+        display: none !important;
+      }
+      
+      .full-cart {
         position: fixed;
         bottom: 0;
         left: 0;
@@ -572,7 +612,7 @@
         overflow-y: auto;
       }
       
-      .cart-container.expanded {
+      .full-cart.expanded {
         transform: translateY(0);
       }
       
@@ -604,55 +644,6 @@
       animation: bounce 0.5s;
     }
 
-    /* Компактная корзина для компьютера */
-    .cart-container.compact {
-      display: none; /* По умолчанию скрыта */
-      margin-top: 10px;
-      padding: 10px;
-    }
-    
-    @media (min-width: 769px) {
-      .cart-container.compact {
-        display: block;
-      }
-      
-      .cart-container.full-version {
-        display: none;
-      }
-      
-      .cart-container.compact .cart-items,
-      .cart-container.compact .cart-actions {
-        display: none;
-      }
-      
-      .cart-container.compact .cart-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 0;
-      }
-      
-      .cart-container.compact .cart-title {
-        font-size: 1rem;
-      }
-      
-      .cart-container.compact .cart-total {
-        margin-top: 0;
-        font-size: 1rem;
-        border-top: none;
-      }
-    }
-    
-    @media (max-width: 768px) {
-      .cart-container.compact {
-        display: none !important;
-      }
-      
-      .cart-container.full-version {
-        display: block;
-      }
-    }
-
     html {
       scroll-behavior: smooth;
     }
@@ -678,49 +669,51 @@
       <button class="btn" onclick="addCustomer()">+ Добавить</button>
     </div>
     
-    <!-- Поиск товаров -->
+    <!-- Закрепленная верхняя панель -->
     <div class="sticky-header">
-      <!-- Поиск товаров -->
-      <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Поиск товаров... (F1)" oninput="searchProducts()">
-      </div>
-
-      <div class="cart-container compact">
-        <div class="cart-header">
-          <div class="cart-title">Текущий чек</div>
-          <div class="cart-total">
-            Итого: <span id="totalAmount">0</span> ₸
+      <div class="fixed-cart">
+        <!-- Поиск товаров -->
+        <div class="search-box">
+          <input type="text" id="searchInput" placeholder="Поиск товаров... (F1)" oninput="searchProducts()">
+        </div>
+        
+        <!-- Компактная корзина (для компьютера) -->
+        <div class="compact-cart">
+          <div class="cart-header">
+            <div class="cart-title">Текущий чек</div>
+            <div class="cart-total">
+              Итого: <span id="compactTotalAmount">0</span> ₸
+            </div>
           </div>
         </div>
       </div>
+      
+      <!-- Категории товаров -->
+      <div class="category-container" id="categoryContainer"></div>
     </div>
-    
-    <!-- Категории товаров -->
-     <div class="category-container" id="categoryContainer"></div>
     
     <!-- Список товаров -->
     <div class="product-grid" id="productGrid"></div>
     
-    <!-- Корзина -->
-    <div class="cart-container full-version">
-      <div class="cart-container">
-        <div class="cart-header">
-          <div class="cart-title">Текущий чек</div>
-          <small class="hotkey-hint">F2 - оплата, F3 - очистка</small>
-        </div>
-        
-        <div class="cart-items" id="cartItems"></div>
-        
-        <div class="cart-total">
-          Итого: <span id="totalAmount">0</span> ₸
-        </div>
-        
-        <div class="cart-actions">
-          <button class="btn" onclick="showTotal()">💵 Показать сумму</button>
-          <button class="btn btn-danger" onclick="clearCart()">🧹 Очистить (F3)</button>
-          <button class="btn btn-pay" onclick="processPayment()">💰 Оплатить (F2)</button>
-        </div>
+    <!-- Полная корзина (для мобильных и скрытая на компьютере) -->
+    <div class="cart-container full-cart">
+      <div class="cart-header">
+        <div class="cart-title">Текущий чек</div>
+        <small class="hotkey-hint">F2 - оплата, F3 - очистка</small>
       </div>
+      
+      <div class="cart-items" id="cartItems"></div>
+      
+      <div class="cart-total">
+        Итого: <span id="fullTotalAmount">0</span> ₸
+      </div>
+      
+      <div class="cart-actions">
+        <button class="btn" onclick="showTotal()">💵 Показать сумму</button>
+        <button class="btn btn-danger" onclick="clearCart()">🧹 Очистить (F3)</button>
+        <button class="btn btn-pay" onclick="processPayment()">💰 Оплатить (F2)</button>
+      </div>
+    </div>
   </div>
   
   <!-- Модальное окно количества -->
@@ -835,9 +828,10 @@
       if (!customer) return;
       
       const cartItems = document.getElementById('cartItems');
-      const totalAmount = document.getElementById('totalAmount');
+      const fullTotalAmount = document.getElementById('fullTotalAmount');
+      const compactTotalAmount = document.getElementById('compactTotalAmount');
       
-      if (!cartItems || !totalAmount) return;
+      if (!cartItems || !fullTotalAmount || !compactTotalAmount) return;
       
       cartItems.innerHTML = '';
       
@@ -864,7 +858,8 @@
         cartItems.appendChild(cartItem);
       });
       
-      totalAmount.textContent = Math.round(total);
+      fullTotalAmount.textContent = Math.round(total);
+      compactTotalAmount.textContent = Math.round(total);
       updateCartCounter();
       saveCartToStorage();
     }
@@ -1213,7 +1208,7 @@
       }
       
       modal.style.display = 'flex';
-      const cartContainer = document.querySelector('.cart-container');
+      const cartContainer = document.querySelector('.full-cart');
       if (cartContainer && isMobile) {
         cartContainer.classList.remove('expanded');
       }
@@ -1348,8 +1343,7 @@
       loadCartFromStorage();
 
       const mobileCartToggle = document.getElementById('mobileCartToggle');
-      const compactCart = document.querySelector('.cart-container.compact');
-      const fullCart = document.querySelector('.cart-container.full-version');
+      const fullCart = document.querySelector('.full-cart');
       
       if (isMobile && mobileCartToggle && fullCart) {
         mobileCartToggle.addEventListener('click', () => {
@@ -1385,13 +1379,11 @@
 
     // Обработчик изменения размера окна
     window.addEventListener('resize', () => {
-      const cartContainer = document.querySelector('.cart-container');
-      if (window.innerWidth > 768 && cartContainer) {
-        cartContainer.style.display = 'block';
-        cartContainer.classList.remove('expanded');
+      const fullCart = document.querySelector('.full-cart');
+      if (window.innerWidth > 768 && fullCart) {
+        fullCart.classList.remove('expanded');
       }
     });
   </script>
 </body>
 </html>
-
