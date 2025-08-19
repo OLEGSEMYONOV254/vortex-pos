@@ -431,8 +431,7 @@
       gap: 10px;
       margin-top: 15px;
     }
-    
-    .payment-modal-content {
+     .payment-modal-content {
       background: linear-gradient(145deg, #2a2a2a, #1f1f1f);
       padding: 25px;
       border-radius: 10px;
@@ -440,7 +439,6 @@
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
       border: 1px solid #444;
     }
-    
     .payment-modal-content h3 {
       color: #00ffcc;
       text-align: center;
@@ -448,18 +446,15 @@
       font-size: 1.5em;
       text-shadow: 0 0 5px rgba(0, 255, 204, 0.3);
     }
-    
     .payment-input-group {
       margin-bottom: 20px;
     }
-    
     .payment-input-group label {
       display: block;
       margin-bottom: 8px;
       color: #aaa;
       font-size: 0.9em;
     }
-    
     .payment-input-group select {
       width: 100%;
       padding: 12px 15px;
@@ -475,28 +470,23 @@
       background-position: right 10px center;
       background-size: 15px;
     }
-    
     .payment-input-group select:focus {
       outline: none;
       border-color: #00ffcc;
       box-shadow: 0 0 0 2px rgba(0, 255, 204, 0.2);
     }
-    
     .payment-actions {
       display: flex;
       gap: 15px;
       margin-top: 25px;
     }
-    
     .payment-actions .btn {
       flex: 1;
       padding: 12px;
       font-size: 1em;
     }
-    
-    /* Мобильная кнопка корзины */
     .mobile-cart-toggle {
-      display: none;
+      display: none; /* По умолчанию скрыто */
       position: fixed;
       bottom: 20px;
       right: 20px;
@@ -528,76 +518,9 @@
       align-items: center;
       justify-content: center;
     }
-
-    /* Для компьютеров (ширина больше 768px) */
-    @media (min-width: 769px) {
-      .sticky-header {
-        position: sticky;
-        top: 0;
-        background: var(--dark-bg);
-        z-index: 100;
-        padding: 15px 0;
-        margin-bottom: 15px;
-      }
-      
-      .fixed-cart {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 15px;
-      }
-      
-      .fixed-cart .search-box {
-        flex-grow: 1;
-        margin-bottom: 0;
-      }
-      
-      .compact-cart {
-        background: var(--panel-bg);
-        padding: 10px 15px;
-        border-radius: 8px;
-        min-width: 200px;
-      }
-      
-      .compact-cart .cart-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 0;
-      }
-      
-      .compact-cart .cart-title {
-        font-size: 1rem;
-        margin-right: 10px;
-      }
-      
-      .compact-cart .cart-total {
-        margin-top: 0;
-        font-size: 1rem;
-        padding-top: 0;
-        border-top: none;
-      }
-      
-      .full-cart {
-        display: none !important;
-      }
-      
-      .product-grid {
-        margin-top: 20px;
-      }
-    }
-    
     /* Адаптация для мобильных */
     @media (max-width: 768px) {
-      .sticky-header {
-        position: static;
-      }
-      
-      .compact-cart {
-        display: none !important;
-      }
-      
-      .full-cart {
+      .cart-container {
         position: fixed;
         bottom: 0;
         left: 0;
@@ -612,7 +535,7 @@
         overflow-y: auto;
       }
       
-      .full-cart.expanded {
+      .cart-container.expanded {
         transform: translateY(0);
       }
       
@@ -621,7 +544,7 @@
       }
       
       .product-grid {
-        margin-bottom: 80px;
+        margin-bottom: 80px; /* Чтобы не перекрывалось корзиной */
       }
     }
     
@@ -634,7 +557,6 @@
     .fade-in {
       animation: fadeIn 0.3s ease-out;
     }
-    
     @keyframes bounce {
       0%, 100% { transform: scale(1); }
       50% { transform: scale(1.2); }
@@ -643,21 +565,17 @@
     .mobile-cart-toggle.added {
       animation: bounce 0.5s;
     }
-
-    html {
-      scroll-behavior: smooth;
-    }
   </style>
 </head>
 <body>
   <!-- Навигация -->
   <nav class="nav-grid">
-    <a href="/" class="nav-card">🏠 Главная</a>
-    <a href="/products" class="nav-card">📦 Товары</a>
-    <a href="/kassa" class="nav-card">💵 Касса</a>
-    <a href="/stats" class="nav-card">📊 Отчёты</a>
-    <a href="/counterparties" class="nav-card">🧾 Контрагенты</a>
-  </nav>
+        <a href="/" class="nav-card">🏠 Главная</a>
+        <a href="/products" class="nav-card">📦 Товары</a>
+        <a href="/kassa" class="nav-card">💵 Касса</a>
+        <a href="/stats" class="nav-card">📊 Отчёты</a>
+        <a href="/counterparties" class="nav-card">🧾 Контрагенты</a>
+    </nav>
 
   <!-- Основной контент -->
   <div class="container">
@@ -669,34 +587,19 @@
       <button class="btn" onclick="addCustomer()">+ Добавить</button>
     </div>
     
-    <!-- Закрепленная верхняя панель -->
-    <div class="sticky-header">
-      <div class="fixed-cart">
-        <!-- Поиск товаров -->
-        <div class="search-box">
-          <input type="text" id="searchInput" placeholder="Поиск товаров... (F1)" oninput="searchProducts()">
-        </div>
-        
-        <!-- Компактная корзина (для компьютера) -->
-        <div class="compact-cart">
-          <div class="cart-header">
-            <div class="cart-title">Текущий чек</div>
-            <div class="cart-total">
-              Итого: <span id="compactTotalAmount">0</span> ₸
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Категории товаров -->
-      <div class="category-container" id="categoryContainer"></div>
+    <!-- Поиск товаров -->
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Поиск товаров... (F1)" oninput="searchProducts()">
     </div>
+    
+    <!-- Категории товаров -->
+    <div class="category-container" id="categoryContainer"></div>
     
     <!-- Список товаров -->
     <div class="product-grid" id="productGrid"></div>
     
-    <!-- Полная корзина (для мобильных и скрытая на компьютере) -->
-    <div class="cart-container full-cart">
+    <!-- Корзина -->
+    <div class="cart-container">
       <div class="cart-header">
         <div class="cart-title">Текущий чек</div>
         <small class="hotkey-hint">F2 - оплата, F3 - очистка</small>
@@ -705,7 +608,7 @@
       <div class="cart-items" id="cartItems"></div>
       
       <div class="cart-total">
-        Итого: <span id="fullTotalAmount">0</span> ₸
+        Итого: <span id="totalAmount">0</span> ₸
       </div>
       
       <div class="cart-actions">
@@ -746,8 +649,8 @@
   
   <!-- Модальное окно оплаты -->
   <div id="paymentModal" class="modal">
-    <div class="payment-modal-content">
-      <h3>Оформление оплаты</h3>
+    <div class="modal-content">
+      <h3 class="modal-title">Оформление оплаты</h3>
       
       <div class="payment-input-group">
         <label>Способ оплаты</label>
@@ -778,14 +681,13 @@
         </select>
       </div>
       
-      <div class="payment-actions">
+      <div class="modal-actions">
         <button class="btn btn-pay" onclick="confirmPayment()">✅ Подтвердить</button>
         <button class="btn btn-danger" onclick="closePaymentModal()">❌ Отмена (Esc)</button>
       </div>
     </div>
   </div>
 
-  <!-- Кнопка корзины для мобильных -->
   <div class="mobile-cart-toggle" id="mobileCartToggle">
     🛒 <span id="cartCounter">0</span>
   </div>
@@ -809,9 +711,7 @@
     let counterparties = [];
     const socket = io();
     const CART_STORAGE_KEY = 'saved_cart';
-    const isMobile = window.innerWidth <= 768;
 
-    // Функции для работы с корзиной
     function updateCartCounter() {
       const customer = getCurrentCustomer();
       if (!customer) return;
@@ -824,46 +724,155 @@
     }
 
     function updateCartDisplay() {
-      const customer = getCurrentCustomer();
-      if (!customer) return;
-      
-      const cartItems = document.getElementById('cartItems');
-      const fullTotalAmount = document.getElementById('fullTotalAmount');
-      const compactTotalAmount = document.getElementById('compactTotalAmount');
-      
-      if (!cartItems || !fullTotalAmount || !compactTotalAmount) return;
-      
-      cartItems.innerHTML = '';
-      
-      let total = 0;
-      let totalItems = 0;
-      
-      customer.cart.forEach(item => {
-        total += parseFloat(item.total);
-        totalItems += item.quantity;
+        const customer = getCurrentCustomer();
+        if (!customer) return;
         
-        const cartItem = document.createElement('div');
-        cartItem.className = 'cart-item fade-in';
-        cartItem.innerHTML = `
-          <div class="cart-item-info">
-            <div class="cart-item-name">${item.name}</div>
-            <div class="cart-item-details">${item.price} ₸ × ${item.quantity} = ${item.total} ₸</div>
-          </div>
-          <div class="cart-item-controls">
-            <button class="quantity-btn" onclick="changeQuantity(${item.id}, -0.5)">-0.5</button>
-            <button class="quantity-btn" onclick="changeQuantity(${item.id}, 0.5)">+0.5</button>
-            <button class="remove-btn" onclick="removeFromCart(${item.id})">×</button>
-          </div>
-        `;
-        cartItems.appendChild(cartItem);
+        const cartItems = document.getElementById('cartItems');
+        const totalAmount = document.getElementById('totalAmount');
+        
+        if (!cartItems || !totalAmount) return;
+        
+        cartItems.innerHTML = '';
+        
+        let total = 0;
+        let totalItems = 0;
+        
+        customer.cart.forEach(item => {
+          total += parseFloat(item.total);
+          totalItems += item.quantity;
+          
+          const cartItem = document.createElement('div');
+          cartItem.className = 'cart-item fade-in';
+          cartItem.innerHTML = `
+            <div class="cart-item-info">
+              <div class="cart-item-name">${item.name}</div>
+              <div class="cart-item-details">${item.price} ₸ × ${item.quantity} = ${item.total} ₸</div>
+            </div>
+            <div class="cart-item-controls">
+              <button class="quantity-btn" onclick="changeQuantity(${item.id}, -0.5)">-0.5</button>
+              <button class="quantity-btn" onclick="changeQuantity(${item.id}, 0.5)">+0.5</button>
+              <button class="remove-btn" onclick="removeFromCart(${item.id})">×</button>
+            </div>
+          `;
+          cartItems.appendChild(cartItem);
+        });
+        
+        totalAmount.textContent = Math.round(total);
+        updateCartCounter();
+        saveCartToStorage();
+      }
+      
+      // Фокус на поиск
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput) {
+        searchInput.focus();
+      }
+      
+      // Обработчики горячих клавиш
+      document.addEventListener('keydown', handleHotkeys);
+      
+      // Сокет-события
+      if (socket) {
+        socket.on('receipt_processed', (data) => {
+          console.log('Чек обработан:', data);
+        });
+        
+        socket.on('show_total', (data) => {
+          console.log('Сумма на экране:', data);
+        });
+      }
+
+    // Инициализация при загрузке
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Загрузка тестовых данных
+      await loadProducts();
+      await loadCounterparties();
+      
+      // Инициализация интерфейса
+      renderCategoryMenu(allProducts);
+      renderProducts(allProducts);
+      renderCustomerTabs();
+      
+      // Восстановление корзины из localStorage
+      loadCartFromStorage();
+
+      const mobileCartToggle = document.getElementById('mobileCartToggle');
+      const cartContainer = document.querySelector('.cart-container');
+      
+      if (mobileCartToggle && cartContainer) {
+        mobileCartToggle.addEventListener('click', () => {
+          cartContainer.classList.toggle('expanded');
+        });
+      }
+
+      // Обновляем счетчик товаров
+      
+
+      // Вызываем при обновлении корзины
+      
+    });
+
+    // ================== ФУНКЦИИ РАБОТЫ С КЛИЕНТАМИ ================== //
+    
+    function getCurrentCustomer() {
+      return customers.find(c => c.id === currentCustomerId) || customers[0];
+    }
+    
+    function addCustomer() {
+      const newId = customers.length > 0 ? Math.max(...customers.map(c => c.id)) + 1 : 0;
+      customers.push({
+        id: newId,
+        name: `Клиент ${newId + 1}`,
+        cart: [],
+        paymentMethod: "",
+        organization: "",
+        counterpartyId: null
       });
       
-      fullTotalAmount.textContent = Math.round(total);
-      compactTotalAmount.textContent = Math.round(total);
-      updateCartCounter();
-      saveCartToStorage();
+      renderCustomerTabs();
+      switchCustomer(newId);
+    }
+    
+    function switchCustomer(customerId) {
+      currentCustomerId = customerId;
+      
+      // Обновляем активную вкладку
+      document.querySelectorAll('.customer-tab').forEach(tab => {
+        tab.classList.remove('active');
+        if (parseInt(tab.dataset.id) === customerId) {
+          tab.classList.add('active');
+        }
+      });
+      
+      // Обновляем отображение корзины
+      updateCartDisplay();
+    }
+    
+    function renderCustomerTabs() {
+      const container = document.getElementById('customerTabs');
+      if (!container) return;
+      
+      // Сохраняем кнопку добавления
+      const addBtn = container.querySelector('.btn');
+      container.innerHTML = '';
+      
+      customers.forEach(customer => {
+        const tab = document.createElement('button');
+        tab.className = `customer-tab ${customer.id === currentCustomerId ? 'active' : ''}`;
+        tab.textContent = customer.name;
+        tab.dataset.id = customer.id;
+        tab.onclick = () => switchCustomer(customer.id);
+        container.appendChild(tab);
+      });
+      
+      // Возвращаем кнопку добавления
+      if (addBtn) {
+        container.appendChild(addBtn);
+      }
     }
 
+    // ================== ФУНКЦИИ РАБОТЫ С КОРЗИНОЙ ================== //
+    
     function saveCartToStorage() {
       localStorage.setItem(CART_STORAGE_KEY, JSON.stringify({
         customers: customers,
@@ -954,61 +963,8 @@
       updateCartDisplay();
     }
 
-    // Функции для работы с клиентами
-    function getCurrentCustomer() {
-      return customers.find(c => c.id === currentCustomerId) || customers[0];
-    }
+    // ================== ФУНКЦИИ РАБОТЫ С ТОВАРАМИ ================== //
     
-    function addCustomer() {
-      const newId = customers.length > 0 ? Math.max(...customers.map(c => c.id)) + 1 : 0;
-      customers.push({
-        id: newId,
-        name: `Клиент ${newId + 1}`,
-        cart: [],
-        paymentMethod: "",
-        organization: "",
-        counterpartyId: null
-      });
-      
-      renderCustomerTabs();
-      switchCustomer(newId);
-    }
-    
-    function switchCustomer(customerId) {
-      currentCustomerId = customerId;
-      
-      document.querySelectorAll('.customer-tab').forEach(tab => {
-        tab.classList.remove('active');
-        if (parseInt(tab.dataset.id) === customerId) {
-          tab.classList.add('active');
-        }
-      });
-      
-      updateCartDisplay();
-    }
-    
-    function renderCustomerTabs() {
-      const container = document.getElementById('customerTabs');
-      if (!container) return;
-      
-      const addBtn = container.querySelector('.btn');
-      container.innerHTML = '';
-      
-      customers.forEach(customer => {
-        const tab = document.createElement('button');
-        tab.className = `customer-tab ${customer.id === currentCustomerId ? 'active' : ''}`;
-        tab.textContent = customer.name;
-        tab.dataset.id = customer.id;
-        tab.onclick = () => switchCustomer(customer.id);
-        container.appendChild(tab);
-      });
-      
-      if (addBtn) {
-        container.appendChild(addBtn);
-      }
-    }
-
-    // Функции для работы с товарами
     async function loadProducts() {
       try {
         const response = await fetch('/get_products');
@@ -1096,6 +1052,7 @@
         : allProducts.filter(p => (p.category || 'Без категории') === category);
       renderProducts(filtered);
       
+      // Обновляем активную кнопку категории
       document.querySelectorAll('.category-btn').forEach(btn => {
         btn.classList.toggle('active', btn.textContent === category);
       });
@@ -1110,7 +1067,8 @@
       renderProducts(filtered);
     }
 
-    // Модальные окна
+    // ================== МОДАЛЬНЫЕ ОКНА ================== //
+    
     function showQuantityModal(product) {
       if (!product) return;
       
@@ -1166,6 +1124,7 @@
     }
     
     function handleQuantityKeyDown(event) {
+      // Разрешаем: цифры (0-9), точка, Backspace, Delete, Tab, Enter
       if ((event.key >= '0' && event.key <= '9') || 
           event.key === '.' || 
           event.key === 'Backspace' || 
@@ -1175,6 +1134,7 @@
         return;
       }
       
+      // Запрещаем все остальные символы
       event.preventDefault();
     }
     
@@ -1208,8 +1168,8 @@
       }
       
       modal.style.display = 'flex';
-      const cartContainer = document.querySelector('.full-cart');
-      if (cartContainer && isMobile) {
+      const cartContainer = document.querySelector('.cart-container');
+      if (cartContainer) {
         cartContainer.classList.remove('expanded');
       }
     }
@@ -1250,11 +1210,14 @@
         if (response.ok) {
           alert(`Продажа для ${customer.name} оформлена!`);
           
+          // Удаляем клиента после оплаты
           customers = customers.filter(c => c.id !== customer.id);
           
+          // Если клиентов не осталось, создаем нового
           if (customers.length === 0) {
             addCustomer();
           } else {
+            // Иначе переключаемся на первого клиента
             switchCustomer(customers[0].id);
           }
           
@@ -1268,13 +1231,15 @@
       }
     }
 
-    // Вспомогательные функции
+    // ================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ================== //
+    
     function showTotal() {
       const customer = getCurrentCustomer();
       if (!customer) return;
       
       const total = customer.cart.reduce((sum, item) => sum + parseFloat(item.total), 0).toFixed(2);
       
+      // Отправляем данные на сервер для отображения на промо-экране
       fetch('/send_to_screen', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1330,60 +1295,6 @@
           break;
       }
     }
-
-    // Инициализация при загрузке
-    document.addEventListener('DOMContentLoaded', async () => {
-      await loadProducts();
-      await loadCounterparties();
-      
-      renderCategoryMenu(allProducts);
-      renderProducts(allProducts);
-      renderCustomerTabs();
-      
-      loadCartFromStorage();
-
-      const mobileCartToggle = document.getElementById('mobileCartToggle');
-      const fullCart = document.querySelector('.full-cart');
-      
-      if (isMobile && mobileCartToggle && fullCart) {
-        mobileCartToggle.addEventListener('click', () => {
-          fullCart.classList.toggle('expanded');
-        });
-        
-        document.addEventListener('click', (e) => {
-          if (!fullCart.contains(e.target) && 
-              e.target !== mobileCartToggle && 
-              fullCart.classList.contains('expanded')) {
-            fullCart.classList.remove('expanded');
-          }
-        });
-      }
-
-      const searchInput = document.getElementById('searchInput');
-      if (searchInput) {
-        searchInput.focus();
-      }
-      
-      document.addEventListener('keydown', handleHotkeys);
-      
-      if (socket) {
-        socket.on('receipt_processed', (data) => {
-          console.log('Чек обработан:', data);
-        });
-        
-        socket.on('show_total', (data) => {
-          console.log('Сумма на экране:', data);
-        });
-      }
-    });
-
-    // Обработчик изменения размера окна
-    window.addEventListener('resize', () => {
-      const fullCart = document.querySelector('.full-cart');
-      if (window.innerWidth > 768 && fullCart) {
-        fullCart.classList.remove('expanded');
-      }
-    });
   </script>
 </body>
 </html>
