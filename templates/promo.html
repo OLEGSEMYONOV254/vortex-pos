@@ -24,17 +24,28 @@
             position: relative;
         }
 
-        /* Видео фон */
+        /* Контейнер для YouTube видео */
         #video-background {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
             z-index: -1;
             opacity: 0.3;
             transition: opacity 0.5s ease;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        #video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(26, 26, 26, 0.7), rgba(26, 26, 26, 0.5));
+            z-index: 0;
         }
 
         #promo-container {
@@ -100,6 +111,25 @@
             border-bottom: 1px dashed rgba(0, 255, 204, 0.3);
         }
 
+        #video-control {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10;
+            background: rgba(0, 255, 204, 0.2);
+            color: #00ffcc;
+            border: 1px solid #00ffcc;
+            border-radius: 5px;
+            padding: 8px 12px;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+        }
+
+        #video-control:hover {
+            background: rgba(0, 255, 204, 0.4);
+        }
+
         @media (max-width: 768px) {
             #promo-display {
                 font-size: 2.5rem;
@@ -118,6 +148,13 @@
             .item-row {
                 font-size: 1rem;
             }
+
+            #video-control {
+                bottom: 10px;
+                right: 10px;
+                padding: 5px 8px;
+                font-size: 0.8rem;
+            }
         }
 
         /* Анимации */
@@ -132,11 +169,14 @@
     </style>
 </head>
 <body>
-    <!-- Видео фон -->
-    <video id="video-background" autoplay muted loop playsinline>
-        <source src="/static/promo-video.mp4" type="video/mp4">
-        Ваш браузер не поддерживает видео.
-    </video>
+    <!-- YouTube видео фон -->
+    <div id="video-background">
+        <div id="player"></div>
+        <div id="video-overlay"></div>
+    </div>
+    
+    <!-- Кнопка управления видео -->
+    <button id="video-control">Пауза</button>
     
     <div id="promo-container">
         <div id="promo-display">Добро пожаловать!</div>
@@ -151,6 +191,8 @@
         </div>
     </div>
 
+    <!-- YouTube IFrame API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
     <script>
         // Элементы интерфейса
@@ -158,11 +200,67 @@
         const amountEl = document.getElementById("amount");
         const qrContainer = document.getElementById("qr-container");
         const itemsList = document.getElementById("items-list");
-        const videoBackground = document.getElementById("video-background");
+        const videoControl = document.getElementById("video-control");
+        let player;
         let wakeLock = null;
         
         // Состояние видео
         let isVideoPlaying = true;
+        
+        // Инициализация YouTube плеера
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '100%',
+                width: '100%',
+                playerVars: {
+                    'autoplay': 1,
+                    'controls': 0,
+                    'disablekb': 1,
+                    'fs': 0,
+                    'loop': 1,
+                    'modestbranding': 1,
+                    'playsinline': 1,
+                    'rel': 0,
+                    'showinfo': 0,
+                    'mute': 1,
+                    'playlist': 'jNQXAC9IVRw' // для loop работает только с playlist
+                },
+                videoId: 'https://youtu.be/5bUa1w24ASc?list=RD5bUa1w24ASc', // Замените на ID вашего видео
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+        
+        function onPlayerReady(event) {
+            console.log("YouTube плеер готов");
+            event.target.playVideo();
+            isVideoPlaying = true;
+        }
+        
+        function onPlayerStateChange(event) {
+            // Состояния видео: -1 - не началось, 0 - закончилось, 1 - воспроизводится, 2 - пауза, 3 - буферизация
+            if (event.data === YT.PlayerState.PLAYING) {
+                isVideoPlaying = true;
+                videoControl.textContent = "Пауза";
+            } else if (event.data === YT.PlayerState.PAUSED) {
+                isVideoPlaying = false;
+                videoControl.textContent = "Воспроизвести";
+            } else if (event.data === YT.PlayerState.ENDED) {
+                // Перезапускаем видео, когда оно заканчивается
+                event.target.playVideo();
+            }
+        }
+        
+        // Управление видео через кнопку
+        videoControl.addEventListener('click', function() {
+            if (isVideoPlaying) {
+                player.pauseVideo();
+            } else {
+                player.playVideo();
+            }
+        });
         
         // Форматирование чисел
         function formatNumber(num) {
@@ -214,10 +312,9 @@
             display.textContent = "К оплате:";
             
             // Останавливаем видео
-            if (isVideoPlaying) {
-                videoBackground.pause();
-                isVideoPlaying = false;
-                videoBackground.style.opacity = "0";
+            if (isVideoPlaying && player) {
+                player.pauseVideo();
+                document.getElementById('video-background').style.opacity = "0.1";
             }
         }
         
@@ -229,15 +326,9 @@
             itemsList.innerHTML = "";
             
             // Запускаем видео снова
-            if (!isVideoPlaying) {
-                videoBackground.play()
-                    .then(() => {
-                        isVideoPlaying = true;
-                        videoBackground.style.opacity = "0.3";
-                    })
-                    .catch(error => {
-                        console.error("Ошибка воспроизведения видео:", error);
-                    });
+            if (!isVideoPlaying && player) {
+                player.playVideo();
+                document.getElementById('video-background').style.opacity = "0.3";
             }
         }
         
@@ -254,51 +345,6 @@
         
         // Автоматическое обновление каждые 2 часа
         setTimeout(() => location.reload(), 7200000);
-        
-        // Обработка ошибок видео
-        videoBackground.addEventListener('error', function(e) {
-            console.error("Ошибка загрузки видео:", e);
-            videoBackground.style.display = 'none';
-        });
-        
-        // Попытка автоматического воспроизведения при загрузке
-        document.addEventListener('DOMContentLoaded', function() {
-            videoBackground.play()
-                .then(() => {
-                    console.log("Видео запущено автоматически");
-                    isVideoPlaying = true;
-                })
-                .catch(error => {
-                    console.warn("Автовоспроизведение не сработало:", error);
-                    // Показываем кнопку для ручного запуска
-                    const playButton = document.createElement('button');
-                    playButton.textContent = 'Запустить видео';
-                    playButton.style.position = 'absolute';
-                    playButton.style.top = '10px';
-                    playButton.style.left = '10px';
-                    playButton.style.zIndex = '2';
-                    playButton.style.padding = '10px';
-                    playButton.style.background = '#00ffcc';
-                    playButton.style.color = '#1a1a1a';
-                    playButton.style.border = 'none';
-                    playButton.style.borderRadius = '5px';
-                    playButton.style.cursor = 'pointer';
-                    
-                    playButton.addEventListener('click', function() {
-                        videoBackground.play()
-                            .then(() => {
-                                isVideoPlaying = true;
-                                playButton.style.display = 'none';
-                                videoBackground.style.opacity = "0.3";
-                            })
-                            .catch(error => {
-                                console.error("Не удалось запустить видео:", error);
-                            });
-                    });
-                    
-                    document.body.appendChild(playButton);
-                });
-        });
         
         // Блокировка затемнения экрана
         async function enableWakeLock() {
