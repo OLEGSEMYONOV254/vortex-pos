@@ -48,6 +48,12 @@
             z-index: 0;
         }
 
+        #youtube-player {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
         #promo-container {
             width: 90%;
             max-width: 800px;
@@ -130,6 +136,17 @@
             background: rgba(0, 255, 204, 0.4);
         }
 
+        #video-error {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #1a1a1a, #2a2a2a);
+            z-index: -1;
+        }
+
         @media (max-width: 768px) {
             #promo-display {
                 font-size: 2.5rem;
@@ -171,8 +188,9 @@
 <body>
     <!-- YouTube видео фон -->
     <div id="video-background">
-        <div id="player"></div>
+        <div id="youtube-player"></div>
         <div id="video-overlay"></div>
+        <div id="video-error"></div>
     </div>
     
     <!-- Кнопка управления видео -->
@@ -201,36 +219,46 @@
         const qrContainer = document.getElementById("qr-container");
         const itemsList = document.getElementById("items-list");
         const videoControl = document.getElementById("video-control");
+        const videoError = document.getElementById("video-error");
         let player;
         let wakeLock = null;
         
         // Состояние видео
         let isVideoPlaying = true;
         
+        // ID видео для демонстрации (замените на свой)
+        const VIDEO_ID = 'jNQXAC9IVRw'; // Пример ID - видео "Me at the zoo"
+        
         // Инициализация YouTube плеера
         function onYouTubeIframeAPIReady() {
-            player = new YT.Player('player', {
-                height: '100%',
-                width: '100%',
-                playerVars: {
-                    'autoplay': 1,
-                    'controls': 0,
-                    'disablekb': 1,
-                    'fs': 0,
-                    'loop': 1,
-                    'modestbranding': 1,
-                    'playsinline': 1,
-                    'rel': 0,
-                    'showinfo': 0,
-                    'mute': 1,
-                    'playlist': 'jNQXAC9IVRw' // для loop работает только с playlist
-                },
-                videoId: 'https://youtu.be/5bUa1w24ASc?list=RD5bUa1w24ASc', // Замените на ID вашего видео
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
-                }
-            });
+            try {
+                player = new YT.Player('youtube-player', {
+                    height: '100%',
+                    width: '100%',
+                    playerVars: {
+                        'autoplay': 1,
+                        'controls': 0,
+                        'disablekb': 1,
+                        'fs': 0,
+                        'loop': 1,
+                        'modestbranding': 1,
+                        'playsinline': 1,
+                        'rel': 0,
+                        'showinfo': 0,
+                        'mute': 1,
+                        'playlist': www.youtube.com/watch?v=5bUa1w24ASc&list=RD5bUa1w24ASc&start_radio=1&t=3489s // для loop работает только с playlist
+                    },
+                    videoId: www.youtube.com/watch?v=5bUa1w24ASc&list=RD5bUa1w24ASc&start_radio=1&t=3489s,
+                    events: {
+                        'onReady': onPlayerReady,
+                        'onStateChange': onPlayerStateChange,
+                        'onError': onPlayerError
+                    }
+                });
+            } catch (error) {
+                console.error("Ошибка инициализации YouTube плеера:", error);
+                showVideoError();
+            }
         }
         
         function onPlayerReady(event) {
@@ -251,6 +279,16 @@
                 // Перезапускаем видео, когда оно заканчивается
                 event.target.playVideo();
             }
+        }
+        
+        function onPlayerError(event) {
+            console.error("Ошибка YouTube плеера:", event.data);
+            showVideoError();
+        }
+        
+        function showVideoError() {
+            videoError.style.display = 'block';
+            videoControl.style.display = 'none';
         }
         
         // Управление видео через кнопку
@@ -365,6 +403,14 @@
         // запускаем сразу при загрузке страницы
         document.addEventListener("DOMContentLoaded", () => {
             enableWakeLock();
+            
+            // Альтернативная инициализация, если YouTube API не загрузилось
+            setTimeout(() => {
+                if (typeof YT === 'undefined' || typeof YT.Player === 'undefined') {
+                    console.error("YouTube API не загрузилось");
+                    showVideoError();
+                }
+            }, 5000);
         });
     </script>
 </body>
