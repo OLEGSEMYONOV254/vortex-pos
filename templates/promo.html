@@ -21,12 +21,31 @@
             height: 100vh;
             text-align: center;
             overflow: hidden;
+            position: relative;
+        }
+
+        /* Видео фон */
+        #video-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+            opacity: 0.3;
+            transition: opacity 0.5s ease;
         }
 
         #promo-container {
             width: 90%;
             max-width: 800px;
             position: relative;
+            z-index: 1;
+            background-color: rgba(26, 26, 26, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.2);
         }
 
         #promo-display {
@@ -113,6 +132,12 @@
     </style>
 </head>
 <body>
+    <!-- Видео фон -->
+    <video id="video-background" autoplay muted loop playsinline>
+        <source src="/static/promo-video.mp4" type="video/mp4">
+        Ваш браузер не поддерживает видео.
+    </video>
+    
     <div id="promo-container">
         <div id="promo-display">Добро пожаловать!</div>
         <div id="amount">0 ₸</div>
@@ -133,7 +158,11 @@
         const amountEl = document.getElementById("amount");
         const qrContainer = document.getElementById("qr-container");
         const itemsList = document.getElementById("items-list");
+        const videoBackground = document.getElementById("video-background");
         let wakeLock = null;
+        
+        // Состояние видео
+        let isVideoPlaying = true;
         
         // Форматирование чисел
         function formatNumber(num) {
@@ -183,6 +212,13 @@
             
             // Меняем приветственное сообщение
             display.textContent = "К оплате:";
+            
+            // Останавливаем видео
+            if (isVideoPlaying) {
+                videoBackground.pause();
+                isVideoPlaying = false;
+                videoBackground.style.opacity = "0";
+            }
         }
         
         // Очистка экрана
@@ -191,6 +227,18 @@
             amountEl.textContent = "0 ₸";
             qrContainer.style.display = 'none';
             itemsList.innerHTML = "";
+            
+            // Запускаем видео снова
+            if (!isVideoPlaying) {
+                videoBackground.play()
+                    .then(() => {
+                        isVideoPlaying = true;
+                        videoBackground.style.opacity = "0.3";
+                    })
+                    .catch(error => {
+                        console.error("Ошибка воспроизведения видео:", error);
+                    });
+            }
         }
         
         // ================== SOCKET.IO ================== //
@@ -207,15 +255,52 @@
         // Автоматическое обновление каждые 2 часа
         setTimeout(() => location.reload(), 7200000);
         
-        // Тестовые данные (можно удалить в продакшене)
-        window.testData = () => {
-            handlePaymentData({
-                total: 0,
-                items: [
+        // Обработка ошибок видео
+        videoBackground.addEventListener('error', function(e) {
+            console.error("Ошибка загрузки видео:", e);
+            videoBackground.style.display = 'none';
+        });
+        
+        // Попытка автоматического воспроизведения при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            videoBackground.play()
+                .then(() => {
+                    console.log("Видео запущено автоматически");
+                    isVideoPlaying = true;
+                })
+                .catch(error => {
+                    console.warn("Автовоспроизведение не сработало:", error);
+                    // Показываем кнопку для ручного запуска
+                    const playButton = document.createElement('button');
+                    playButton.textContent = 'Запустить видео';
+                    playButton.style.position = 'absolute';
+                    playButton.style.top = '10px';
+                    playButton.style.left = '10px';
+                    playButton.style.zIndex = '2';
+                    playButton.style.padding = '10px';
+                    playButton.style.background = '#00ffcc';
+                    playButton.style.color = '#1a1a1a';
+                    playButton.style.border = 'none';
+                    playButton.style.borderRadius = '5px';
+                    playButton.style.cursor = 'pointer';
                     
-                ]
-            });
-        };
+                    playButton.addEventListener('click', function() {
+                        videoBackground.play()
+                            .then(() => {
+                                isVideoPlaying = true;
+                                playButton.style.display = 'none';
+                                videoBackground.style.opacity = "0.3";
+                            })
+                            .catch(error => {
+                                console.error("Не удалось запустить видео:", error);
+                            });
+                    });
+                    
+                    document.body.appendChild(playButton);
+                });
+        });
+        
+        // Блокировка затемнения экрана
         async function enableWakeLock() {
             try {
               wakeLock = await navigator.wakeLock.request("screen");
@@ -229,12 +314,12 @@
             } catch (err) {
               console.error(`Ошибка блокировки: ${err.name}, ${err.message}`);
             }
-          }
+        }
         
-          // запускаем сразу при загрузке страницы
-          document.addEventListener("DOMContentLoaded", () => {
+        // запускаем сразу при загрузке страницы
+        document.addEventListener("DOMContentLoaded", () => {
             enableWakeLock();
-          });
+        });
     </script>
 </body>
 </html>
