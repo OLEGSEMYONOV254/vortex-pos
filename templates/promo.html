@@ -21,48 +21,12 @@
             height: 100vh;
             text-align: center;
             overflow: hidden;
-            position: relative;
-        }
-
-        /* Контейнер для YouTube видео */
-        #video-background {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            opacity: 0.3;
-            transition: opacity 0.5s ease;
-            pointer-events: none;
-            overflow: hidden;
-        }
-
-        #video-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom, rgba(26, 26, 26, 0.7), rgba(26, 26, 26, 0.5));
-            z-index: 0;
-        }
-
-        #youtube-player {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
         }
 
         #promo-container {
             width: 90%;
             max-width: 800px;
             position: relative;
-            z-index: 1;
-            background-color: rgba(26, 26, 26, 0.7);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 255, 204, 0.2);
         }
 
         #promo-display {
@@ -117,36 +81,6 @@
             border-bottom: 1px dashed rgba(0, 255, 204, 0.3);
         }
 
-        #video-control {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            z-index: 10;
-            background: rgba(0, 255, 204, 0.2);
-            color: #00ffcc;
-            border: 1px solid #00ffcc;
-            border-radius: 5px;
-            padding: 8px 12px;
-            cursor: pointer;
-            backdrop-filter: blur(5px);
-            transition: all 0.3s;
-        }
-
-        #video-control:hover {
-            background: rgba(0, 255, 204, 0.4);
-        }
-
-        #video-error {
-            display: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, #1a1a1a, #2a2a2a);
-            z-index: -1;
-        }
-
         @media (max-width: 768px) {
             #promo-display {
                 font-size: 2.5rem;
@@ -165,13 +99,6 @@
             .item-row {
                 font-size: 1rem;
             }
-
-            #video-control {
-                bottom: 10px;
-                right: 10px;
-                padding: 5px 8px;
-                font-size: 0.8rem;
-            }
         }
 
         /* Анимации */
@@ -186,16 +113,6 @@
     </style>
 </head>
 <body>
-    <!-- YouTube видео фон -->
-    <div id="video-background">
-        <div id="youtube-player"></div>
-        <div id="video-overlay"></div>
-        <div id="video-error"></div>
-    </div>
-    
-    <!-- Кнопка управления видео -->
-    <button id="video-control">Пауза</button>
-    
     <div id="promo-container">
         <div id="promo-display">Добро пожаловать!</div>
         <div id="amount">0 ₸</div>
@@ -209,8 +126,6 @@
         </div>
     </div>
 
-    <!-- YouTube IFrame API -->
-    <script src="https://www.youtube.com/iframe_api"></script>
     <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
     <script>
         // Элементы интерфейса
@@ -218,87 +133,7 @@
         const amountEl = document.getElementById("amount");
         const qrContainer = document.getElementById("qr-container");
         const itemsList = document.getElementById("items-list");
-        const videoControl = document.getElementById("video-control");
-        const videoError = document.getElementById("video-error");
-        let player;
         let wakeLock = null;
-        
-        // Состояние видео
-        let isVideoPlaying = true;
-        
-        // ID видео для демонстрации (замените на свой)
-        const VIDEO_ID = 'jNQXAC9IVRw'; // Пример ID - видео "Me at the zoo"
-        
-        // Инициализация YouTube плеера
-        function onYouTubeIframeAPIReady() {
-            try {
-                player = new YT.Player('youtube-player', {
-                    height: '100%',
-                    width: '100%',
-                    playerVars: {
-                        'autoplay': 1,
-                        'controls': 0,
-                        'disablekb': 1,
-                        'fs': 0,
-                        'loop': 1,
-                        'modestbranding': 1,
-                        'playsinline': 1,
-                        'rel': 0,
-                        'showinfo': 0,
-                        'mute': 1,
-                        'playlist': www.youtube.com/watch?v=5bUa1w24ASc&list=RD5bUa1w24ASc&start_radio=1&t=3489s // для loop работает только с playlist
-                    },
-                    videoId: www.youtube.com/watch?v=5bUa1w24ASc&list=RD5bUa1w24ASc&start_radio=1&t=3489s,
-                    events: {
-                        'onReady': onPlayerReady,
-                        'onStateChange': onPlayerStateChange,
-                        'onError': onPlayerError
-                    }
-                });
-            } catch (error) {
-                console.error("Ошибка инициализации YouTube плеера:", error);
-                showVideoError();
-            }
-        }
-        
-        function onPlayerReady(event) {
-            console.log("YouTube плеер готов");
-            event.target.playVideo();
-            isVideoPlaying = true;
-        }
-        
-        function onPlayerStateChange(event) {
-            // Состояния видео: -1 - не началось, 0 - закончилось, 1 - воспроизводится, 2 - пауза, 3 - буферизация
-            if (event.data === YT.PlayerState.PLAYING) {
-                isVideoPlaying = true;
-                videoControl.textContent = "Пауза";
-            } else if (event.data === YT.PlayerState.PAUSED) {
-                isVideoPlaying = false;
-                videoControl.textContent = "Воспроизвести";
-            } else if (event.data === YT.PlayerState.ENDED) {
-                // Перезапускаем видео, когда оно заканчивается
-                event.target.playVideo();
-            }
-        }
-        
-        function onPlayerError(event) {
-            console.error("Ошибка YouTube плеера:", event.data);
-            showVideoError();
-        }
-        
-        function showVideoError() {
-            videoError.style.display = 'block';
-            videoControl.style.display = 'none';
-        }
-        
-        // Управление видео через кнопку
-        videoControl.addEventListener('click', function() {
-            if (isVideoPlaying) {
-                player.pauseVideo();
-            } else {
-                player.playVideo();
-            }
-        });
         
         // Форматирование чисел
         function formatNumber(num) {
@@ -348,12 +183,6 @@
             
             // Меняем приветственное сообщение
             display.textContent = "К оплате:";
-            
-            // Останавливаем видео
-            if (isVideoPlaying && player) {
-                player.pauseVideo();
-                document.getElementById('video-background').style.opacity = "0.1";
-            }
         }
         
         // Очистка экрана
@@ -362,12 +191,6 @@
             amountEl.textContent = "0 ₸";
             qrContainer.style.display = 'none';
             itemsList.innerHTML = "";
-            
-            // Запускаем видео снова
-            if (!isVideoPlaying && player) {
-                player.playVideo();
-                document.getElementById('video-background').style.opacity = "0.3";
-            }
         }
         
         // ================== SOCKET.IO ================== //
@@ -384,7 +207,15 @@
         // Автоматическое обновление каждые 2 часа
         setTimeout(() => location.reload(), 7200000);
         
-        // Блокировка затемнения экрана
+        // Тестовые данные (можно удалить в продакшене)
+        window.testData = () => {
+            handlePaymentData({
+                total: 0,
+                items: [
+                    
+                ]
+            });
+        };
         async function enableWakeLock() {
             try {
               wakeLock = await navigator.wakeLock.request("screen");
@@ -398,20 +229,12 @@
             } catch (err) {
               console.error(`Ошибка блокировки: ${err.name}, ${err.message}`);
             }
-        }
+          }
         
-        // запускаем сразу при загрузке страницы
-        document.addEventListener("DOMContentLoaded", () => {
+          // запускаем сразу при загрузке страницы
+          document.addEventListener("DOMContentLoaded", () => {
             enableWakeLock();
-            
-            // Альтернативная инициализация, если YouTube API не загрузилось
-            setTimeout(() => {
-                if (typeof YT === 'undefined' || typeof YT.Player === 'undefined') {
-                    console.error("YouTube API не загрузилось");
-                    showVideoError();
-                }
-            }, 5000);
-        });
+          });
     </script>
 </body>
 </html>
