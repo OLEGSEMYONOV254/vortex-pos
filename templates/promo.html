@@ -113,6 +113,9 @@
     </style>
 </head>
 <body>
+    <div id="promo-video">
+        <div id="video-conteiner"></div>
+    </div>
     <div id="promo-container">
         <div id="promo-display">Добро пожаловать!</div>
         <div id="amount">0 ₸</div>
@@ -133,6 +136,7 @@
         const amountEl = document.getElementById("amount");
         const qrContainer = document.getElementById("qr-container");
         const itemsList = document.getElementById("items-list");
+        const videoConteiner = document.getElementById("video-conteiner")
         let wakeLock = null;
         
         // Форматирование чисел
