@@ -187,7 +187,7 @@
         // Переменные для управления видео
         let videoTimer = null;
         let paymentReceived = false;
-        const VIDEO_DELAY = 60000; // 3 минуты в миллисекундах (можно изменить на 120000 для 2 минут)
+        const VIDEO_DELAY = 10000; // 3 минуты в миллисекундах (можно изменить на 120000 для 2 минут)
         const YOUTUBE_VIDEO_ID = "https://www.youtube.com/watch?v=5bUa1w24ASc&list=RD5bUa1w24ASc&start_radio=1&t=8770s"; // Замените на ID вашего YouTube видео
         
         let wakeLock = null;
@@ -268,8 +268,37 @@
             }
         }
         
+        // Принудительно скрыть видео (без перезапуска таймера)
+        function forceHideVideo() {
+            // Останавливаем видео
+            youtubeVideo.src = '';
+            
+            // Скрываем контейнер
+            videoContainer.style.display = 'none';
+            
+            // Возобновляем блокировку экрана
+            enableWakeLock();
+            
+            // Останавливаем таймер
+            if (videoTimer) {
+                clearTimeout(videoTimer);
+                videoTimer = null;
+            }
+        }
+        
         // Обработка данных о платеже
         function handlePaymentData(data) {
+            // Скрываем видео, если оно показывается
+            if (videoContainer.style.display === 'flex') {
+                forceHideVideo();
+            } else {
+                // Останавливаем таймер, если он активен
+                if (videoTimer) {
+                    clearTimeout(videoTimer);
+                    videoTimer = null;
+                }
+            }
+            
             const total = Math.round(data.total);
             
             // Обновляем сумму
@@ -310,7 +339,7 @@
             
             // Скрываем видео, если оно показывается
             if (videoContainer.style.display === 'flex') {
-                hideVideo();
+                forceHideVideo();
             }
         }
         
@@ -338,6 +367,16 @@
                 items: [
                     {name: "Товар 1", total: 5000},
                     {name: "Товар 2", total: 10000}
+                ]
+            });
+        };
+        
+        window.testNewData = () => {
+            handlePaymentData({
+                total: 25000,
+                items: [
+                    {name: "Новый товар 1", total: 15000},
+                    {name: "Новый товар 2", total: 10000}
                 ]
             });
         };
