@@ -81,42 +81,6 @@
             border-bottom: 1px dashed rgba(0, 255, 204, 0.3);
         }
 
-        /* Стили для видео контейнера */
-        #video-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1000;
-            background-color: #1a1a1a;
-            display: none;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #youtube-video {
-            width: 80%;
-            height: 80%;
-            max-width: 1200px;
-            max-height: 675px;
-        }
-
-        #close-video {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            font-size: 20px;
-            cursor: pointer;
-            z-index: 1001;
-        }
-
         @media (max-width: 768px) {
             #promo-display {
                 font-size: 2.5rem;
@@ -135,11 +99,6 @@
             .item-row {
                 font-size: 1rem;
             }
-
-            #youtube-video {
-                width: 95%;
-                height: 50%;
-            }
         }
 
         /* Анимации */
@@ -154,12 +113,9 @@
     </style>
 </head>
 <body>
-    <!-- Контейнер для YouTube видео -->
-    <div id="video-container">
-        <button id="close-video">✕</button>
-        <iframe id="youtube-video" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <div id="promo-video">
+        <div id="video-conteiner"></div>
     </div>
-
     <div id="promo-container">
         <div id="promo-display">Добро пожаловать!</div>
         <div id="amount">0 ₸</div>
@@ -180,16 +136,7 @@
         const amountEl = document.getElementById("amount");
         const qrContainer = document.getElementById("qr-container");
         const itemsList = document.getElementById("items-list");
-        const videoContainer = document.getElementById("video-container");
-        const youtubeVideo = document.getElementById("youtube-video");
-        const closeVideoBtn = document.getElementById("close-video");
-        
-        // Переменные для управления видео
-        let videoTimer = null;
-        let paymentReceived = false;
-        const VIDEO_DELAY = 10000; // 3 минуты в миллисекундах (можно изменить на 120000 для 2 минут)
-        const YOUTUBE_VIDEO_ID = "https://www.youtube.com/watch?v=5bUa1w24ASc&list=RD5bUa1w24ASc&start_radio=1&t=8770s"; // Замените на ID вашего YouTube видео
-        
+        const videoConteiner = document.getElementById("video-conteiner")
         let wakeLock = null;
         
         // Форматирование чисел
@@ -224,81 +171,8 @@
             }
         }
         
-        // Запуск таймера для показа видео
-        function startVideoTimer() {
-            // Сбрасываем предыдущий таймер, если он был
-            if (videoTimer) {
-                clearTimeout(videoTimer);
-            }
-            
-            // Устанавливаем новый таймер
-            videoTimer = setTimeout(showVideo, VIDEO_DELAY);
-        }
-        
-        // Показать видео
-        function showVideo() {
-            // Устанавливаем источник видео
-            youtubeVideo.src = `https://www.youtube.com/embed/${YOUTUBE_VIDEO_ID}?autoplay=1`;
-            
-            // Показываем контейнер с видео
-            videoContainer.style.display = 'flex';
-            
-            // Останавливаем блокировку экрана при показе видео
-            if (wakeLock) {
-                wakeLock.release().then(() => {
-                    wakeLock = null;
-                });
-            }
-        }
-        
-        // Скрыть видео
-        function hideVideo() {
-            // Останавливаем видео
-            youtubeVideo.src = '';
-            
-            // Скрываем контейнер
-            videoContainer.style.display = 'none';
-            
-            // Возобновляем блокировку экрана
-            enableWakeLock();
-            
-            // Если оплата все еще отображается, перезапускаем таймер
-            if (paymentReceived) {
-                startVideoTimer();
-            }
-        }
-        
-        // Принудительно скрыть видео (без перезапуска таймера)
-        function forceHideVideo() {
-            // Останавливаем видео
-            youtubeVideo.src = '';
-            
-            // Скрываем контейнер
-            videoContainer.style.display = 'none';
-            
-            // Возобновляем блокировку экрана
-            enableWakeLock();
-            
-            // Останавливаем таймер
-            if (videoTimer) {
-                clearTimeout(videoTimer);
-                videoTimer = null;
-            }
-        }
-        
         // Обработка данных о платеже
         function handlePaymentData(data) {
-            // Скрываем видео, если оно показывается
-            if (videoContainer.style.display === 'flex') {
-                forceHideVideo();
-            } else {
-                // Останавливаем таймер, если он активен
-                if (videoTimer) {
-                    clearTimeout(videoTimer);
-                    videoTimer = null;
-                }
-            }
-            
             const total = Math.round(data.total);
             
             // Обновляем сумму
@@ -313,12 +187,6 @@
             
             // Меняем приветственное сообщение
             display.textContent = "К оплате:";
-            
-            // Устанавливаем флаг, что платеж получен
-            paymentReceived = true;
-            
-            // Запускаем таймер для показа видео
-            startVideoTimer();
         }
         
         // Очистка экрана
@@ -327,20 +195,6 @@
             amountEl.textContent = "0 ₸";
             qrContainer.style.display = 'none';
             itemsList.innerHTML = "";
-            
-            // Сбрасываем флаг платежа
-            paymentReceived = false;
-            
-            // Останавливаем таймер видео, если он активен
-            if (videoTimer) {
-                clearTimeout(videoTimer);
-                videoTimer = null;
-            }
-            
-            // Скрываем видео, если оно показывается
-            if (videoContainer.style.display === 'flex') {
-                forceHideVideo();
-            }
         }
         
         // ================== SOCKET.IO ================== //
@@ -354,33 +208,18 @@
         
         socket.on("clear_screen", clearScreen);
         
-        // Обработчик закрытия видео
-        closeVideoBtn.addEventListener('click', hideVideo);
-        
         // Автоматическое обновление каждые 2 часа
         setTimeout(() => location.reload(), 7200000);
         
         // Тестовые данные (можно удалить в продакшене)
         window.testData = () => {
             handlePaymentData({
-                total: 15000,
+                total: 0,
                 items: [
-                    {name: "Товар 1", total: 5000},
-                    {name: "Товар 2", total: 10000}
+                    
                 ]
             });
         };
-        
-        window.testNewData = () => {
-            handlePaymentData({
-                total: 25000,
-                items: [
-                    {name: "Новый товар 1", total: 15000},
-                    {name: "Новый товар 2", total: 10000}
-                ]
-            });
-        };
-        
         async function enableWakeLock() {
             try {
               wakeLock = await navigator.wakeLock.request("screen");
