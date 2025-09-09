@@ -15,22 +15,25 @@
       font-family: Arial, sans-serif;
     }
 
-    /* Видео фон */
+    /* Контейнер YouTube */
     #player {
       position: fixed;
-      top: 50%;
-      left: 50%;
-      width: 120vw;
-      height: 120vh;
-      transform: translate(-50%, -50%);
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
       z-index: 0;
       pointer-events: none;
+      overflow: hidden;
     }
 
     #player iframe {
-      width: 100vw !important;
-      height: 100vh !important;
-      object-fit: cover;   /* 🔥 растягивает видео как фон */
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      object-fit: cover;
       background: #000;
     }
 
@@ -136,6 +139,7 @@
   <script>
     let player;
 
+    // Создание плеера
     function onYouTubeIframeAPIReady() {
       player = new YT.Player('player', {
         videoId: 'ZMGwIj9DkYE',
@@ -147,11 +151,19 @@
           controls: 0,
           modestbranding: 1,
           fs: 0,
-          playsinline: 1,   // 🔥 фикс для ПК
+          playsinline: 1,
           rel: 0
         },
         events: {
-          onReady: e => e.target.playVideo()
+          onReady: e => {
+            e.target.mute();
+            e.target.playVideo();
+          },
+          onStateChange: e => {
+            if (e.data === YT.PlayerState.ENDED) {
+              e.target.playVideo();
+            }
+          }
         }
       });
     }
@@ -162,7 +174,8 @@
       if (player && player.unMute) {
         player.unMute();
         player.setVolume(100);
-        soundBtn.style.display = "none"; // прячем кнопку
+        player.playVideo(); // 🔥 запускаем принудительно
+        soundBtn.style.display = "none";
       }
     });
 
