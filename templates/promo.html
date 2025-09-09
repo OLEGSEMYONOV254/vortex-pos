@@ -16,7 +16,7 @@
     }
 
     /* Видео фон */
-    #player {
+    #video-bg {
       position: fixed;
       top: 0;
       left: 0;
@@ -27,28 +27,10 @@
       overflow: hidden;
     }
 
-    #player iframe {
+    #video-bg iframe {
       width: 100%;
       height: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-      background: #000;
-    }
-
-    /* Кнопка включения звука */
-    #sound-btn {
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
-      z-index: 10;
-      padding: 12px 20px;
-      background: #00ffcc;
       border: none;
-      border-radius: 10px;
-      color: #000;
-      font-size: 1.2rem;
-      cursor: pointer;
     }
 
     /* Оверлей */
@@ -114,11 +96,14 @@
   </style>
 </head>
 <body>
-  <!-- Видео -->
-  <div id="player"></div>
-
-  <!-- Кнопка включения звука -->
-  <button id="sound-btn">🔊 Включить звук</button>
+  <!-- Видео без API -->
+  <div id="video-bg">
+    <iframe 
+      src="https://www.youtube.com/embed/ZMGwIj9DkYE?autoplay=1&mute=1&loop=1&playlist=ZMGwIj9DkYE&controls=0&modestbranding=1&fs=0&playsinline=1&rel=0"
+      allow="autoplay; fullscreen"
+      frameborder="0">
+    </iframe>
+  </div>
 
   <!-- Оверлей -->
   <div id="overlay">
@@ -132,53 +117,7 @@
 
   <!-- Socket.IO -->
   <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
-  <!-- YouTube API -->
-  <script src="https://www.youtube.com/iframe_api"></script>
-
   <script>
-    let player;
-
-    function onYouTubeIframeAPIReady() {
-      player = new YT.Player('player', {
-        videoId: 'ZMGwIj9DkYE',
-        playerVars: {
-          autoplay: 1,
-          mute: 1,
-          loop: 1,
-          playlist: 'ZMGwIj9DkYE',
-          controls: 0,
-          modestbranding: 1,
-          fs: 0,
-          playsinline: 1,
-          rel: 0,
-          enablejsapi: 1
-        },
-        events: {
-          onReady: e => {
-            e.target.mute();
-            e.target.playVideo();
-          },
-          onStateChange: e => {
-            if (e.data === YT.PlayerState.ENDED) {
-              e.target.playVideo(); // 🔁 зацикливаем
-            }
-          }
-        }
-      });
-    }
-
-    // Кнопка включения звука
-    const soundBtn = document.getElementById("sound-btn");
-    soundBtn.addEventListener("click", () => {
-      if (player && player.unMute) {
-        player.unMute();
-        player.setVolume(100);
-        player.playVideo();
-        soundBtn.style.display = "none";
-      }
-    });
-
-    // ===== Логика кассы =====
     const display = document.getElementById("promo-display");
     const amountEl = document.getElementById("amount");
     const qrContainer = document.getElementById("qr-container");
@@ -210,7 +149,6 @@
       display.textContent = "К оплате:";
       qrContainer.style.display = "block";
       updateItemsList(data.items || []);
-      if (player?.pauseVideo) player.pauseVideo();
     }
 
     function clearScreen() {
@@ -218,7 +156,6 @@
       amountEl.textContent = "0 ₸";
       qrContainer.style.display = "none";
       itemsList.innerHTML = "";
-      if (player?.playVideo) player.playVideo();
     }
 
     // SOCKET.IO
@@ -226,9 +163,7 @@
     socket.on("show_total", handlePaymentData);
     socket.on("clear_screen", clearScreen);
 
-    // Автообновление каждые 2 часа
     setTimeout(() => location.reload(), 7200000);
   </script>
 </body>
 </html>
-
