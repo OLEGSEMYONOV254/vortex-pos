@@ -5,101 +5,101 @@
   <title>Промоэкран кассы</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body {
+    body, html {
       margin: 0;
-      background: #000;
-      font-family: Arial, sans-serif;
-      color: #00ffcc;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      height: 100vh;
+      padding: 0;
+      height: 100%;
       overflow: hidden;
+      font-family: Arial, sans-serif;
+      background: #000;
+      color: #fff;
     }
 
-    /* Видео */
-    #video-wrapper {
-      width: 100%;
-      max-width: 1280px;
-      aspect-ratio: 16/9;
-      border-bottom: 3px solid #00ffcc;
-      box-shadow: 0 0 20px rgba(0,255,204,0.5);
-    }
+    /* Видео как фон */
     #player {
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
+      z-index: 0;
+      pointer-events: none; /* чтобы нельзя было кликнуть */
     }
 
-    /* Контейнер инфо */
-    #info-container {
-      flex: 1;
+    /* Оверлей */
+    #overlay {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 20px;
+      background: rgba(0, 0, 0, 0.4);
     }
 
     #promo-display {
-      font-size: 2.5rem;
-      margin: 10px 0;
-      text-shadow: 0 0 10px #00ffcc;
+      font-size: 3rem;
+      text-shadow: 0 0 20px #00ffcc;
+      margin-bottom: 20px;
     }
 
     #amount {
-      font-size: 4rem;
+      font-size: 5rem;
       font-weight: bold;
-      margin: 20px 0;
-      color: #fff;
-      text-shadow: 0 0 20px #00ffcc;
+      text-shadow: 0 0 30px #ff00ff;
+      margin-bottom: 30px;
     }
 
     #qr-container {
       display: none;
-      margin: 20px 0;
+      margin-bottom: 30px;
     }
+
     #qr-container img {
       width: 220px;
       height: 220px;
-      border: 2px solid #00ffcc;
-      border-radius: 12px;
+      border: 3px solid #00ffcc;
+      border-radius: 15px;
       background: #fff;
       padding: 10px;
     }
 
-    .items-list {
-      margin-top: 20px;
-      max-height: 150px;
-      overflow-y: auto;
+    #items-list {
+      position: absolute;
+      bottom: 0;
       width: 100%;
-      max-width: 400px;
+      max-height: 200px;
+      overflow-y: auto;
+      background: rgba(0,0,0,0.6);
+      padding: 15px;
+      box-sizing: border-box;
       text-align: left;
     }
+
     .item-row {
       display: flex;
       justify-content: space-between;
+      border-bottom: 1px dashed rgba(255,255,255,0.3);
       padding: 5px 0;
-      border-bottom: 1px dashed rgba(0,255,204,0.4);
       font-size: 1.2rem;
     }
   </style>
 </head>
 <body>
-  <!-- Видео -->
-  <div id="video-wrapper">
-    <div id="player"></div>
-  </div>
+  <!-- Видео фон -->
+  <div id="player"></div>
 
-  <!-- Инфо-блок -->
-  <div id="info-container">
+  <!-- Оверлей -->
+  <div id="overlay">
     <div id="promo-display">Добро пожаловать!</div>
     <div id="amount">0 ₸</div>
     <div id="qr-container">
-      <img src="/static/qrАскадир.png" alt="QR-код для оплаты">
+      <img src="/static/qrАскадир.png" alt="QR">
     </div>
-    <div id="items-list" class="items-list"></div>
+    <div id="items-list"></div>
   </div>
 
   <!-- Socket.IO -->
@@ -110,24 +110,26 @@
   <script>
     let player;
 
-    // YouTube API загрузка
+    // Загружаем YouTube API
     function onYouTubeIframeAPIReady() {
       player = new YT.Player('player', {
-        videoId: 'm5QHYUt5Gd0&list=RDm5QHYUt5Gd0&start_radio=1', // 🔥 вставь сюда ID своего видео
+        videoId: 'https://www.youtube.com/watch?v=m5QHYUt5Gd0&list=RDm5QHYUt5Gd0&start_radio=1', // 🔥 ВСТАВЬ ID СВОЕГО ВИДЕО
         playerVars: {
           autoplay: 1,
+          mute: 1,
           loop: 1,
-          playlist: 'm5QHYUt5Gd0&list=RDm5QHYUt5Gd0&start_radio=1', // для зацикливания
+          playlist: 'https://www.youtube.com/watch?v=m5QHYUt5Gd0&list=RDm5QHYUt5Gd0&start_radio=1',
           controls: 0,
-          modestbranding: 1
+          modestbranding: 1,
+          fs: 0,
+          showinfo: 0
         },
         events: {
-          onReady: (event) => event.target.playVideo()
+          onReady: e => e.target.playVideo()
         }
       });
     }
 
-    // Элементы
     const display = document.getElementById("promo-display");
     const amountEl = document.getElementById("amount");
     const qrContainer = document.getElementById("qr-container");
@@ -141,10 +143,10 @@
       itemsList.innerHTML = "";
       if (!items || items.length === 0) return;
       items.slice(0, 5).forEach(item => {
-        const el = document.createElement("div");
-        el.className = "item-row";
-        el.innerHTML = `<span>${item.name}</span><span>${formatNumber(Math.round(item.total))} ₸</span>`;
-        itemsList.appendChild(el);
+        const row = document.createElement("div");
+        row.className = "item-row";
+        row.innerHTML = `<span>${item.name}</span><span>${formatNumber(Math.round(item.total))} ₸</span>`;
+        itemsList.appendChild(row);
       });
       if (items.length > 5) {
         const more = document.createElement("div");
@@ -154,22 +156,22 @@
       }
     }
 
-    // Когда приходит сумма
+    // Показ суммы
     function handlePaymentData(data) {
       amountEl.textContent = `${formatNumber(Math.round(data.total))} ₸`;
+      display.textContent = "К оплате:";
       qrContainer.style.display = "block";
       updateItemsList(data.items || []);
-      display.textContent = "К оплате:";
-      if (player && player.pauseVideo) player.pauseVideo();
+      if (player?.pauseVideo) player.pauseVideo();
     }
 
-    // Очистка (после оплаты)
+    // Очистка
     function clearScreen() {
-      display.textContent = "Ожидание следующего клиента";
+      display.textContent = "Добро пожаловать!";
       amountEl.textContent = "0 ₸";
       qrContainer.style.display = "none";
       itemsList.innerHTML = "";
-      if (player && player.playVideo) player.playVideo();
+      if (player?.playVideo) player.playVideo();
     }
 
     // SOCKET.IO
@@ -177,7 +179,7 @@
     socket.on("show_total", handlePaymentData);
     socket.on("clear_screen", clearScreen);
 
-    // автообновление страницы раз в 2 часа
+    // Автообновление каждые 2 часа
     setTimeout(() => location.reload(), 7200000);
   </script>
 </body>
