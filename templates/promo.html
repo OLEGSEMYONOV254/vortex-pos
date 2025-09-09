@@ -10,14 +10,14 @@
       margin: 0;
       padding: 0;
       height: 100%;
-      overflow: hidden;
       font-family: Arial, sans-serif;
       background: #000;
       color: #fff;
+      overflow: hidden;
     }
 
-    /* Видео YouTube */
-    #player iframe {
+    /* Контейнер видео */
+    #player {
       position: fixed;
       top: 50%;
       left: 50%;
@@ -40,7 +40,6 @@
       justify-content: center;
       text-align: center;
       background: rgba(0, 0, 0, 0.4);
-      cursor: pointer; /* подсказка что можно кликнуть */
     }
 
     #promo-display {
@@ -89,11 +88,30 @@
       padding: 5px 0;
       font-size: 1.2rem;
     }
+
+    /* Кнопка включения звука */
+    #sound-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 2;
+      padding: 10px 20px;
+      background: #00ffcc;
+      border: none;
+      border-radius: 8px;
+      color: #000;
+      font-size: 1rem;
+      cursor: pointer;
+      display: none;
+    }
   </style>
 </head>
 <body>
   <!-- Видео фон -->
   <div id="player"></div>
+
+  <!-- Кнопка включения звука -->
+  <button id="sound-btn">🔊 Включить звук</button>
 
   <!-- Оверлей -->
   <div id="overlay">
@@ -113,21 +131,23 @@
   <script>
     let player;
 
-    // Загружаем YouTube API
     function onYouTubeIframeAPIReady() {
       player = new YT.Player('player', {
-        videoId: 'm5QHYUt5Gd0', // твое видео
+        videoId: 'm5QHYUt5Gd0', // ID твоего видео
         playerVars: {
           autoplay: 1,
           mute: 1,
           loop: 1,
-          playlist: 'm5QHYUt5Gd0', // для зацикливания
+          playlist: 'm5QHYUt5Gd0',
           controls: 0,
           modestbranding: 1,
           fs: 0
         },
         events: {
-          onReady: e => e.target.playVideo()
+          onReady: e => {
+            e.target.playVideo();
+            document.getElementById("sound-btn").style.display = "block";
+          }
         }
       });
     }
@@ -136,13 +156,14 @@
     const amountEl = document.getElementById("amount");
     const qrContainer = document.getElementById("qr-container");
     const itemsList = document.getElementById("items-list");
-    const overlay = document.getElementById("overlay");
+    const soundBtn = document.getElementById("sound-btn");
 
-    // Клик для включения звука
-    overlay.addEventListener("click", () => {
+    // Включение звука по кнопке
+    soundBtn.addEventListener("click", () => {
       if (player && player.unMute) {
         player.unMute();
         player.setVolume(100);
+        soundBtn.style.display = "none"; // спрятать кнопку после включения
       }
     });
 
