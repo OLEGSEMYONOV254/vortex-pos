@@ -6,38 +6,45 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
-      background-color: #1a1a1a;
-      color: #00ffcc;
-      font-family: 'Arial', sans-serif;
       margin: 0;
-      padding: 0;
+      background: #000;
+      font-family: Arial, sans-serif;
+      color: #00ffcc;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
+      justify-content: flex-start;
       height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Видео */
+    #video-wrapper {
+      width: 100%;
+      max-width: 1280px;
+      aspect-ratio: 16/9;
+      border-bottom: 3px solid #00ffcc;
+      box-shadow: 0 0 20px rgba(0,255,204,0.5);
+    }
+    #player {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Контейнер инфо */
+    #info-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       text-align: center;
-      overflow: hidden;
-    }
-
-    #promo-video {
-      width: 90%;
-      max-width: 800px;
-      margin-bottom: 20px;
-      border: 3px solid #00ffcc;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-
-    #promo-container {
-      width: 90%;
-      max-width: 800px;
-      position: relative;
+      padding: 20px;
     }
 
     #promo-display {
-      font-size: 3rem;
-      margin-bottom: 20px;
+      font-size: 2.5rem;
+      margin: 10px 0;
       text-shadow: 0 0 10px #00ffcc;
     }
 
@@ -45,70 +52,53 @@
       font-size: 4rem;
       font-weight: bold;
       margin: 20px 0;
-      color: white;
-      text-shadow: 0 0 15px #00ffcc;
+      color: #fff;
+      text-shadow: 0 0 20px #00ffcc;
     }
 
     #qr-container {
-      margin: 20px auto;
+      display: none;
+      margin: 20px 0;
+    }
+    #qr-container img {
       width: 220px;
       height: 220px;
-      display: none;
-    }
-
-    #qr-image {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
       border: 2px solid #00ffcc;
-      border-radius: 10px;
-      background: white;
+      border-radius: 12px;
+      background: #fff;
       padding: 10px;
-      box-sizing: border-box;
     }
 
     .items-list {
-      max-height: 200px;
+      margin-top: 20px;
+      max-height: 150px;
       overflow-y: auto;
-      margin: 20px 0;
-      padding: 0 20px;
+      width: 100%;
+      max-width: 400px;
       text-align: left;
     }
-
     .item-row {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 8px;
-      font-size: 1.2rem;
       padding: 5px 0;
-      border-bottom: 1px dashed rgba(0, 255, 204, 0.3);
-    }
-
-    .fade-in {
-      animation: fadeIn 0.5s ease-out forwards;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      border-bottom: 1px dashed rgba(0,255,204,0.4);
+      font-size: 1.2rem;
     }
   </style>
 </head>
 <body>
   <!-- Видео -->
-  <div id="promo-video">
+  <div id="video-wrapper">
     <div id="player"></div>
   </div>
 
-  <!-- Основной контейнер -->
-  <div id="promo-container">
+  <!-- Инфо-блок -->
+  <div id="info-container">
     <div id="promo-display">Добро пожаловать!</div>
     <div id="amount">0 ₸</div>
-    
     <div id="qr-container">
-      <img id="qr-image" src="/static/qrАскадир.png" alt="QR-код для оплаты">
+      <img src="/static/qrАскадир.png" alt="QR-код для оплаты">
     </div>
-    
     <div id="items-list" class="items-list"></div>
   </div>
 
@@ -120,18 +110,15 @@
   <script>
     let player;
 
-    // Создание YouTube-плеера
+    // YouTube API загрузка
     function onYouTubeIframeAPIReady() {
       player = new YT.Player('player', {
-        height: '360',
-        width: '640',
-        videoId: 'm5QHYUt5Gd0&list=RDm5QHYUt5Gd0&start_radio=1', // ⬅️ сюда вставь ID своего видео (то, что после v=)
+        videoId: 'm5QHYUt5Gd0&list=RDm5QHYUt5Gd0&start_radio=1', // 🔥 вставь сюда ID своего видео
         playerVars: {
           autoplay: 1,
           loop: 1,
-          playlist: 'dQw4w9WgXcQ', // нужно для зацикливания
+          playlist: 'm5QHYUt5Gd0&list=RDm5QHYUt5Gd0&start_radio=1', // для зацикливания
           controls: 0,
-          showinfo: 0,
           modestbranding: 1
         },
         events: {
@@ -151,42 +138,37 @@
     }
 
     function updateItemsList(items) {
-      itemsList.innerHTML = '';
+      itemsList.innerHTML = "";
       if (!items || items.length === 0) return;
       items.slice(0, 5).forEach(item => {
-        const itemEl = document.createElement('div');
-        itemEl.className = 'item-row fade-in';
-        itemEl.innerHTML = `<span>${item.name}</span><span>${formatNumber(Math.round(item.total))} ₸</span>`;
-        itemsList.appendChild(itemEl);
+        const el = document.createElement("div");
+        el.className = "item-row";
+        el.innerHTML = `<span>${item.name}</span><span>${formatNumber(Math.round(item.total))} ₸</span>`;
+        itemsList.appendChild(el);
       });
       if (items.length > 5) {
-        const moreEl = document.createElement('div');
-        moreEl.className = 'item-row';
-        moreEl.innerHTML = `<span>+${items.length - 5} товаров</span>`;
-        itemsList.appendChild(moreEl);
+        const more = document.createElement("div");
+        more.className = "item-row";
+        more.innerHTML = `<span>+${items.length - 5} товаров</span>`;
+        itemsList.appendChild(more);
       }
     }
 
     // Когда приходит сумма
     function handlePaymentData(data) {
-      const total = Math.round(data.total);
-      amountEl.textContent = `${formatNumber(total)} ₸`;
-      qrContainer.style.display = 'block';
+      amountEl.textContent = `${formatNumber(Math.round(data.total))} ₸`;
+      qrContainer.style.display = "block";
       updateItemsList(data.items || []);
       display.textContent = "К оплате:";
-
-      // Останавливаем видео
       if (player && player.pauseVideo) player.pauseVideo();
     }
 
-    // После оплаты — очистка
+    // Очистка (после оплаты)
     function clearScreen() {
       display.textContent = "Ожидание следующего клиента";
       amountEl.textContent = "0 ₸";
-      qrContainer.style.display = 'none';
+      qrContainer.style.display = "none";
       itemsList.innerHTML = "";
-
-      // Возобновляем видео
       if (player && player.playVideo) player.playVideo();
     }
 
@@ -195,8 +177,9 @@
     socket.on("show_total", handlePaymentData);
     socket.on("clear_screen", clearScreen);
 
-    // Автообновление
+    // автообновление страницы раз в 2 часа
     setTimeout(() => location.reload(), 7200000);
   </script>
 </body>
 </html>
+
