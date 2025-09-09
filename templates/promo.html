@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Промоэкран кассы</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <style>
     body, html {
       margin: 0;
@@ -15,15 +16,16 @@
       color: #fff;
     }
 
-    /* Видео как фон */
-    #player {
+    /* Видео YouTube */
+    #player iframe {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 50%;
+      left: 50%;
+      width: 120vw;
+      height: 120vh;
+      transform: translate(-50%, -50%);
       z-index: 0;
-      pointer-events: none; /* чтобы нельзя было кликнуть */
+      pointer-events: none;
     }
 
     /* Оверлей */
@@ -38,6 +40,7 @@
       justify-content: center;
       text-align: center;
       background: rgba(0, 0, 0, 0.4);
+      cursor: pointer; /* подсказка что можно кликнуть */
     }
 
     #promo-display {
@@ -113,16 +116,15 @@
     // Загружаем YouTube API
     function onYouTubeIframeAPIReady() {
       player = new YT.Player('player', {
-        videoId: 'm5QHYUt5Gd0', // 🔥 ВСТАВЬ ID СВОЕГО ВИДЕО
+        videoId: 'm5QHYUt5Gd0', // твое видео
         playerVars: {
           autoplay: 1,
           mute: 1,
           loop: 1,
-          
+          playlist: 'm5QHYUt5Gd0', // для зацикливания
           controls: 0,
           modestbranding: 1,
-          fs: 0,
-          showinfo: 0
+          fs: 0
         },
         events: {
           onReady: e => e.target.playVideo()
@@ -134,6 +136,15 @@
     const amountEl = document.getElementById("amount");
     const qrContainer = document.getElementById("qr-container");
     const itemsList = document.getElementById("items-list");
+    const overlay = document.getElementById("overlay");
+
+    // Клик для включения звука
+    overlay.addEventListener("click", () => {
+      if (player && player.unMute) {
+        player.unMute();
+        player.setVolume(100);
+      }
+    });
 
     function formatNumber(num) {
       return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
@@ -184,4 +195,3 @@
   </script>
 </body>
 </html>
-
