@@ -27,6 +27,13 @@
       pointer-events: none;
     }
 
+    #player iframe {
+      width: 100vw !important;
+      height: 100vh !important;
+      object-fit: cover;   /* 🔥 растягивает видео как фон */
+      background: #000;
+    }
+
     /* Кнопка включения звука */
     #sound-btn {
       position: absolute;
@@ -131,15 +138,17 @@
 
     function onYouTubeIframeAPIReady() {
       player = new YT.Player('player', {
-        videoId: 'ZMGwIj9DkYE', // 🔥 ID твоего видео
+        videoId: 'ZMGwIj9DkYE',
         playerVars: {
           autoplay: 1,
-          mute: 1, // всегда стартует без звука
+          mute: 1,
           loop: 1,
           playlist: 'ZMGwIj9DkYE',
           controls: 0,
           modestbranding: 1,
-          fs: 0
+          fs: 0,
+          playsinline: 1,   // 🔥 фикс для ПК
+          rel: 0
         },
         events: {
           onReady: e => e.target.playVideo()
