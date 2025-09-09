@@ -15,7 +15,7 @@
       font-family: Arial, sans-serif;
     }
 
-    /* Контейнер YouTube */
+    /* Видео фон */
     #player {
       position: fixed;
       top: 0;
@@ -33,7 +33,6 @@
       position: absolute;
       top: 0;
       left: 0;
-      object-fit: cover;
       background: #000;
     }
 
@@ -139,7 +138,6 @@
   <script>
     let player;
 
-    // Создание плеера
     function onYouTubeIframeAPIReady() {
       player = new YT.Player('player', {
         videoId: 'ZMGwIj9DkYE',
@@ -152,7 +150,8 @@
           modestbranding: 1,
           fs: 0,
           playsinline: 1,
-          rel: 0
+          rel: 0,
+          enablejsapi: 1
         },
         events: {
           onReady: e => {
@@ -161,7 +160,7 @@
           },
           onStateChange: e => {
             if (e.data === YT.PlayerState.ENDED) {
-              e.target.playVideo();
+              e.target.playVideo(); // 🔁 зацикливаем
             }
           }
         }
@@ -174,7 +173,7 @@
       if (player && player.unMute) {
         player.unMute();
         player.setVolume(100);
-        player.playVideo(); // 🔥 запускаем принудительно
+        player.playVideo();
         soundBtn.style.display = "none";
       }
     });
@@ -232,3 +231,4 @@
   </script>
 </body>
 </html>
+
