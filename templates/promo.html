@@ -140,6 +140,21 @@
             background: rgba(0, 0, 0, 0.9);
         }
         
+        .video-placeholder {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #1a2a6c, #b21f1f, #fdbb2d);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            z-index: 0;
+        }
+        
         @media (max-width: 768px) {
             .amount {
                 font-size: 36px;
@@ -173,13 +188,16 @@
 <body>
     <div class="video-container">
         <!-- Замените VIDEO_ID на ID вашего YouTube видео -->
-        <iframe id="youtube-video" src="https://www.youtube.com/embed/VIDEO_ID?autoplay=1&mute=0&playsinline=1&controls=0&disablekb=1&modestbranding=1&rel=0&enablejsapi=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <iframe id="youtube-video" src="about:blank" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+    
+    <div class="video-placeholder" id="video-placeholder">
+        <div>Загрузка видео...<br><small>Вставьте ID YouTube видео в код</small></div>
     </div>
     
     <div id="payment-overlay" class="payment-overlay">
         <div class="amount">Сумма к оплате: <span id="amount-value">0</span> ₸</div>
         <div class="qr-code">
-            <!-- Замените путь на ваш реальный QR-код -->
             <img id="qr-image" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2ZmZiIvPjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGFsaWdubWVudC1iYXNlbGluZT0ibWlkZGxlIj5RUtCD0LrQvtC80LDQvdC00LA8L3RleHQ+PC9zdmc+" alt="QR-код для оплаты">
         </div>
     </div>
@@ -191,6 +209,7 @@
     <div class="test-buttons">
         <button class="test-btn" onclick="showPaymentInfo(5000)">Тест: Показать (5000₸)</button>
         <button class="test-btn" onclick="hidePaymentInfo()">Тест: Скрыть</button>
+        <button class="test-btn" onclick="loadVideo('dQw4w9WgXcQ')">Загрузить тестовое видео</button>
     </div>
     
     <div class="instructions">
@@ -201,6 +220,7 @@
         // Инициализация YouTube API
         let player;
         let isMuted = false;
+        let currentVideoId = '';
         
         // Загрузка YouTube IFrame API
         const tag = document.createElement('script');
@@ -208,57 +228,92 @@
         const firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
         
-        // Создание плеера
+        // Создание плеера после загрузки API
         function onYouTubeIframeAPIReady() {
-            player = new YT.Player('youtube-video', {
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange,
-                    'onError': onPlayerError
-                },
-                playerVars: {
-                    'autoplay': 1,
-                    'controls': 0,
-                    'disablekb': 1,
-                    'modestbranding': 1,
-                    'rel': 0,
-                    'playsinline': 1
-                }
-            });
+            console.log("YouTube API готов");
+            // Плеер будет создан при загрузке видео
+        }
+        
+        // Функция для загрузки видео
+        function loadVideo(videoId) {
+            currentVideoId = videoId;
+            document.getElementById('video-placeholder').style.display = 'none';
+            
+            if (player) {
+                player.loadVideoById(videoId);
+                player.unMute();
+                isMuted = false;
+                document.getElementById('mute-btn').textContent = '🔊';
+            } else {
+                player = new YT.Player('youtube-video', {
+                    videoId: videoId,
+                    playerVars: {
+                        'autoplay': 1,
+                        'controls': 0,
+                        'disablekb': 1,
+                        'modestbranding': 1,
+                        'rel': 0,
+                        'playsinline': 1,
+                        'enablejsapi': 1
+                    },
+                    events: {
+                        'onReady': onPlayerReady,
+                        'onStateChange': onPlayerStateChange,
+                        'onError': onPlayerError
+                    }
+                });
+            }
         }
         
         function onPlayerReady(event) {
             console.log("YouTube плеер готов");
             // Устанавливаем громкость на 70% при загрузке
             event.target.setVolume(70);
+            isMuted = false;
+            document.getElementById('mute-btn').textContent = '🔊';
         }
         
         function onPlayerStateChange(event) {
+            console.log("Состояние видео:", event.data);
+            
             // Если видео закончилось, перезапускаем его
             if (event.data === YT.PlayerState.ENDED) {
                 player.playVideo();
             }
-            // Если видео на паузе, возобновляем воспроизведение
+            // Если видео на паузе (кроме случая когда показывается платежная информация), возобновляем воспроизведение
             else if (event.data === YT.PlayerState.PAUSED) {
-                player.playVideo();
+                const paymentVisible = document.getElementById('payment-overlay').classList.contains('visible');
+                if (!paymentVisible) {
+                    setTimeout(() => {
+                        if (player.getPlayerState() === YT.PlayerState.PAUSED) {
+                            player.playVideo();
+                        }
+                    }, 100);
+                }
             }
         }
         
         function onPlayerError(event) {
             console.error("Ошибка видео: ", event.data);
+            // Показываем placeholder при ошибке
+            document.getElementById('video-placeholder').style.display = 'flex';
+            document.getElementById('video-placeholder').innerHTML = 
+                '<div>Ошибка загрузки видео<br><small>Проверьте ID видео</small></div>';
         }
         
         // Управление звуком
         const muteBtn = document.getElementById('mute-btn');
         muteBtn.addEventListener('click', () => {
-            if (isMuted) {
-                player.unMute();
-                muteBtn.textContent = '🔊';
-                isMuted = false;
-            } else {
-                player.mute();
-                muteBtn.textContent = '🔇';
-                isMuted = true;
+            if (player) {
+                if (isMuted) {
+                    player.unMute();
+                    muteBtn.textContent = '🔊';
+                    isMuted = false;
+                } else {
+                    player.mute();
+                    muteBtn.textContent = '🔇';
+                    isMuted = true;
+                }
             }
         });
         
@@ -298,7 +353,7 @@
             if (e.keyCode === 32 || e.key === ' ') {
                 e.preventDefault();
                 if (player && player.playVideo) {
-                    player.playVideo(); // Принудительно продолжаем воспроизведение
+                    player.playVideo();
                 }
             }
             // Блокируем K (пауза в YouTube)
@@ -312,13 +367,20 @@
         
         // Автоматическое возобновление видео, если оно было приостановлено
         setInterval(() => {
-            if (player && player.getPlayerState && player.getPlayerState() === YT.PlayerState.PAUSED) {
-                // Если видео на паузе и не отображается платежная информация
-                if (!document.getElementById('payment-overlay').classList.contains('visible')) {
+            if (player && player.getPlayerState) {
+                const playerState = player.getPlayerState();
+                const paymentVisible = document.getElementById('payment-overlay').classList.contains('visible');
+                
+                if (playerState === YT.PlayerState.PAUSED && !paymentVisible) {
                     player.playVideo();
                 }
             }
-        }, 1000);
+        }, 500);
+        
+        // Загружаем тестовое видео при загрузке страницы
+        window.addEventListener('load', () => {
+            // loadVideo('dQw4w9WgXcQ'); // Раскомментируйте для автоматической загрузки тестового видео
+        });
     </script>
 </body>
 </html>
