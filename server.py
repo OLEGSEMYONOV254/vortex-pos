@@ -24,6 +24,7 @@ tz = pytz.timezone("Asia/Almaty")  # или нужная тебе временн
 
 # Инициализация приложения
 app = Flask(__name__, template_folder='templates')
+app.config['SECRET_KEY'] = 'your-secret-key'
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
@@ -36,6 +37,19 @@ UPLOAD_FOLDER = DATA_DIR / 'uploads'
 UPLOAD_FOLDER.mkdir(exist_ok=True)
 app.config['UPLOAD_FOLDER'] = str(UPLOAD_FOLDER)
 # DB_PATH = DATA_DIR / "database.db"
+
+# Хранилище настроек
+promo_settings = {
+    'volume': 70,
+    'currentVideo': 'dQw4w9WgXcQ',
+    'playlist': ['dQw4w9WgXcQ'],
+    'playlistMode': 'single',
+    'defaultAmount': 5000,
+    'theme': 'default'
+}
+
+# Подключенные клиенты
+connected_clients = {}
 
 
 @app.before_request
@@ -308,6 +322,101 @@ def get_receipts():
 def settings():
     products = load_products()
     return render_template("settings.html", products=products)
+
+
+@socketio.on('connect')
+def handle_connect():
+    connected_clients[request.sid] = {
+        'connected_at': datetime.now(),
+        'type': 'settings' if 'settings' in request.referrer else 'promo'
+    }
+    print(f'Client connected: {request.sid}')
+    emit('settings_update', promo_settings)
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    if request.sid in connected_clients:
+        del connected_clients[request.sid]
+    print(f'Client disconnected: {request.sid}')
+
+@socketio.on('get_settings')
+def handle_get_settings():
+    emit('settings_update', promo_settings)
+
+@socketio.on('set_volume')
+def handle_set_volume(data):
+    promo_settings['volume'] = data['volume']
+    # Отправляем всем промо-клиентам
+    for sid, client in connected_clients.items():
+        if client['type'] == 'promo':
+            emit('volume_changed', data, room=sid)
+    emit('command_result', {'success': True, 'message': 'Volume updated'})
+
+@socketio.on('change_video')
+def handle_change_video(data):
+    promo_settings['currentVideo'] = data['videoId']
+    for sid, client in connected_clients.items():
+        if client['type'] == 'promo':
+            emit('video_changed', data, room=sid)
+    emit('command_result', {'success': True, 'message': 'Video changed'})
+
+@socketio.on('update_playlist')
+def handle_update_playlist(data):
+    promo_settings['playlist'] = data['playlist']
+    for sid, client in connected_clients.items():
+        if client['type'] == 'promo':
+            emit('playlist_updated', data, room=sid)
+    emit('command_result', {'success': True, 'message': 'Playlist updated'})
+
+@socketio.on('show_payment')
+def handle_show_payment(data):
+    for sid, client in connected_clients.items():
+        if client['type'] == 'promo':
+            emit('show_payment', data, room=sid)
+    emit('command_result', {'success': True, 'message': 'Payment shown'})
+
+@socketio.on('hide_payment')
+def handle_hide_payment():
+    for sid, client in connected_clients.items():
+        if client['type'] == 'promo':
+            emit('hide_payment', {}, room=sid)
+    emit('command_result', {'success': True, 'message': 'Payment hidden'})
+
+@socketio.on('control_command')
+def handle_control_command(data):
+    for sid, client in connected_clients.items():
+        if client['type'] == 'promo':
+            emit('control_command', data, room=sid)
+    emit('command_result', {'success': True, 'message': 'Command sent'})
+
+@socketio.on('set_theme')
+def handle_set_theme(data):
+    promo_settings['theme'] = data['theme']
+    for sid, client in connected_clients.items():
+        if client['type'] == 'promo':
+            emit('theme_changed', data, room=sid)
+    emit('command_result', {'success': True, 'message': 'Theme changed'})
+
+@socketio.on('save_settings')
+def handle_save_settings(data):
+    # Здесь можно сохранить настройки в базу данных
+    emit('command_result', {'success': True, 'message': 'Settings saved'})
+
+@socketio.on('reset_settings')
+def handle_reset_settings():
+    global promo_settings
+    promo_settings = {
+        'volume': 70,
+        'currentVideo': 'dQw4w9WgXcQ',
+        'playlist': ['dQw4w9WgXcQ'],
+        'playlistMode': 'single',
+        'defaultAmount': 5000,
+        'theme': 'default'
+    }
+    for sid, client in connected_clients.items():
+        if client['type'] == 'promo':
+            emit('settings_update', promo_settings, room=sid)
+    emit('command_result', {'success': True, 'message': 'Settings reset'})
 
 
 @app.route("/check_counterparties")
@@ -1197,6 +1306,7 @@ if __name__ == '__main__':
         socketio.run(app, host='0.0.0.0', port=8080, debug=True)
     except Exception as e:
         print(f"[ОШИБКА] При запуске сервера: {e}")
+
 
 
 
