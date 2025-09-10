@@ -304,10 +304,10 @@ def get_receipts():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-#@app.route("/kassa2")
-#def kassa2():
- #   products = load_products()
-  #  return render_template("kassa2.html", products=products)
+@app.route("/settings")
+def settings():
+    products = load_products()
+    return render_template("settings.html", products=products)
 
 
 @app.route("/check_counterparties")
@@ -1197,6 +1197,7 @@ if __name__ == '__main__':
         socketio.run(app, host='0.0.0.0', port=8080, debug=True)
     except Exception as e:
         print(f"[ОШИБКА] При запуске сервера: {e}")
+
 
 
 
