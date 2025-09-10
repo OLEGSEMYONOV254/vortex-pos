@@ -210,7 +210,7 @@
         
         .playlist-item {
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: center;
             padding: 10px;
             background: #f8f9fa;
@@ -316,42 +316,9 @@
                     <label for="default-amount">Сумма по умолчанию (₸):</label>
                     <input type="number" id="default-amount" value="5000" min="0">
                 </div>
-                <div class="form-group">
-                    <label for="qr-image">QR-код (URL или файл):</label>
-                    <input type="file" id="qr-image" accept="image/*">
-                </div>
                 <div class="button-group">
                     <button class="btn-success" onclick="testPayment()">Тест: Показать оплату</button>
                     <button class="btn-danger" onclick="hidePayment()">Тест: Скрыть оплату</button>
-                </div>
-            </div>
-            
-            <!-- Управление плейлистом -->
-            <div class="setting-card">
-                <h3><i>📋</i> Плейлист видео</h3>
-                <div class="form-group">
-                    <label for="playlist-input">Добавить ID видео:</label>
-                    <div class="button-group">
-                        <input type="text" id="playlist-input" placeholder="ID YouTube видео">
-                        <button class="btn-success" onclick="addToPlaylist()">Добавить</button>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Текущий плейлист:</label>
-                    <div id="playlist-container">
-                        <div class="playlist-item">
-                            <span>dQw4w9WgXcQ</span>
-                            <button class="btn-danger" onclick="removeFromPlaylist('dQw4w9WgXcQ')">×</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="playlist-mode">Режим плейлиста:</label>
-                    <select id="playlist-mode">
-                        <option value="sequential">По порядку</option>
-                        <option value="random">Случайный</option>
-                        <option value="single">Одно видео</option>
-                    </select>
                 </div>
             </div>
             
@@ -361,43 +328,18 @@
                 <div class="form-group">
                     <label>Быстрые действия:</label>
                     <div class="button-group">
-                        <button class="btn-primary" onclick="playVideo()">▶️ Воспроизвести</button>
-                        <button class="btn-secondary" onclick="pauseVideo()">⏸️ Пауза</button>
+                        <button class="btn-primary" onclick="sendCommand('play')">▶️ Воспроизвести</button>
+                        <button class="btn-secondary" onclick="sendCommand('pause')">⏸️ Пауза</button>
                     </div>
                 </div>
                 <div class="form-group">
                     <label>Тестовые платежи:</label>
                     <div class="button-group">
-                        <button class="btn-success" onclick="simulatePayment(1000)">1000₸</button>
-                        <button class="btn-success" onclick="simulatePayment(5000)">5000₸</button>
-                        <button class="btn-success" onclick="simulatePayment(10000)">10000₸</button>
+                        <button class="btn-success" onclick="sendPayment(1000)">1000₸</button>
+                        <button class="btn-success" onclick="sendPayment(5000)">5000₸</button>
+                        <button class="btn-success" onclick="sendPayment(10000)">10000₸</button>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Настройки внешнего вида -->
-            <div class="setting-card">
-                <h3><i>🎨</i> Внешний вид</h3>
-                <div class="form-group">
-                    <label for="theme">Цветовая тема:</label>
-                    <select id="theme">
-                        <option value="default">Стандартная</option>
-                        <option value="dark">Темная</option>
-                        <option value="light">Светлая</option>
-                        <option value="blue">Синяя</option>
-                        <option value="red">Красная</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="font-size">Размер шрифта:</label>
-                    <select id="font-size">
-                        <option value="small">Маленький</option>
-                        <option value="medium" selected>Средний</option>
-                        <option value="large">Большой</option>
-                        <option value="x-large">Очень большой</option>
-                    </select>
-                </div>
-                <button class="btn-primary" onclick="applyAppearance()">Применить настройки</button>
             </div>
         </div>
         
@@ -412,7 +354,7 @@
             </div>
             <div id="status" style="margin-top: 15px;">
                 <span class="status-indicator status-online"></span>
-                <span>Промо-экран активен</span>
+                <span>Готово к работе</span>
             </div>
         </div>
         
@@ -426,11 +368,7 @@
         let settings = {
             volume: 70,
             currentVideo: 'dQw4w9WgXcQ',
-            playlist: ['dQw4w9WgXcQ'],
-            playlistMode: 'sequential',
-            defaultAmount: 5000,
-            theme: 'default',
-            fontSize: 'medium'
+            defaultAmount: 5000
         };
         
         // Загрузка сохраненных настроек
@@ -446,6 +384,9 @@
         function saveSettings() {
             localStorage.setItem('promoSettings', JSON.stringify(settings));
             alert('Настройки сохранены!');
+            
+            // Отправляем обновленные настройки на промо-страницу
+            sendCommand('updateSettings', settings);
         }
         
         // Применение настроек к UI
@@ -454,19 +395,19 @@
             document.getElementById('volume-value').textContent = settings.volume + '%';
             document.getElementById('default-amount').value = settings.defaultAmount;
             document.getElementById('video-url').value = settings.currentVideo;
-            document.getElementById('playlist-mode').value = settings.playlistMode;
-            document.getElementById('theme').value = settings.theme;
-            document.getElementById('font-size').value = settings.fontSize;
             
-            // Обновляем плейлист
-            updatePlaylistDisplay();
+            // Обновляем превью видео
+            document.querySelector('.video-preview iframe').src = 
+                `https://www.youtube.com/embed/${settings.currentVideo}?autoplay=0&controls=0&modestbranding=1`;
         }
         
         // Обновление громкости
         function updateVolume(volume) {
             settings.volume = volume;
             document.getElementById('volume-value').textContent = volume + '%';
-            // Здесь будет отправка команды на промо-страницу
+            
+            // Отправляем команду на промо-страницу
+            sendCommand('setVolume', volume);
         }
         
         function setVolume(volume) {
@@ -479,77 +420,51 @@
             const videoId = document.getElementById('video-url').value.trim();
             if (videoId) {
                 settings.currentVideo = videoId;
+                
                 // Обновляем превью
                 document.querySelector('.video-preview iframe').src = 
                     `https://www.youtube.com/embed/${videoId}?autoplay=0&controls=0&modestbranding=1`;
+                
+                // Отправляем команду на промо-страницу
+                sendCommand('changeVideo', videoId);
+                
                 alert('Видео обновлено!');
             }
-        }
-        
-        // Управление плейлистом
-        function addToPlaylist() {
-            const videoId = document.getElementById('playlist-input').value.trim();
-            if (videoId && !settings.playlist.includes(videoId)) {
-                settings.playlist.push(videoId);
-                updatePlaylistDisplay();
-                document.getElementById('playlist-input').value = '';
-            }
-        }
-        
-        function removeFromPlaylist(videoId) {
-            settings.playlist = settings.playlist.filter(id => id !== videoId);
-            updatePlaylistDisplay();
-        }
-        
-        function updatePlaylistDisplay() {
-            const container = document.getElementById('playlist-container');
-            container.innerHTML = '';
-            settings.playlist.forEach(videoId => {
-                const item = document.createElement('div');
-                item.className = 'playlist-item';
-                item.innerHTML = `
-                    <span>${videoId}</span>
-                    <button class="btn-danger" onclick="removeFromPlaylist('${videoId}')">×</button>
-                `;
-                container.appendChild(item);
-            });
         }
         
         // Тестирование платежей
         function testPayment() {
             const amount = document.getElementById('default-amount').value;
-            simulatePayment(amount);
+            sendPayment(amount);
         }
         
-        function simulatePayment(amount) {
-            alert(`Тестовый платеж: ${amount}₸\nЭта команда отправится на промо-страницу`);
-            // Здесь будет отправка команды на промо-страницу
+        function sendPayment(amount) {
+            sendCommand('showPayment', parseInt(amount));
+            alert(`Отправлен платеж: ${amount}₸`);
         }
         
         function hidePayment() {
-            alert('Скрытие платежной информации\nЭта команда отправится на промо-страницу');
-            // Здесь будет отправка команды на промо-страницу
+            sendCommand('hidePayment');
+            alert('Команда "Скрыть оплату" отправлена');
         }
         
-        // Ручное управление видео
-        function playVideo() {
-            alert('Воспроизведение видео\nЭта команда отправится на промо-страницу');
-        }
-        
-        function pauseVideo() {
-            alert('Пауза видео\nЭта команда отправится на промо-страницу');
-        }
-        
-        // Внешний вид
-        function applyAppearance() {
-            settings.theme = document.getElementById('theme').value;
-            settings.fontSize = document.getElementById('font-size').value;
-            alert('Настройки внешнего вида применены!');
+        // Отправка команд на промо-страницу
+        function sendCommand(command, data = null) {
+            const message = {
+                command: command,
+                data: data,
+                timestamp: Date.now()
+            };
+            
+            // Сохраняем команду в localStorage
+            localStorage.setItem('promoCommand', JSON.stringify(message));
+            
+            console.log('Команда отправлена:', message);
         }
         
         // Открытие промо-страницы
         function openPromoPage() {
-            window.open('/promo', '_blank');
+            window.open('promo.html', '_blank');
         }
         
         // Сброс настроек
@@ -559,11 +474,7 @@
                 settings = {
                     volume: 70,
                     currentVideo: 'dQw4w9WgXcQ',
-                    playlist: ['dQw4w9WgXcQ'],
-                    playlistMode: 'sequential',
-                    defaultAmount: 5000,
-                    theme: 'default',
-                    fontSize: 'medium'
+                    defaultAmount: 5000
                 };
                 applySettings();
                 alert('Настройки сброшены!');
@@ -573,6 +484,7 @@
         // Инициализация при загрузке
         window.addEventListener('load', function() {
             loadSettings();
+            console.log('Страница настроек загружена');
         });
     </script>
 </body>
