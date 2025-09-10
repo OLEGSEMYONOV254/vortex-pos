@@ -239,6 +239,26 @@
     </div>
 
     <script>
+        // Пример общения через localStorage
+        function sendCommandToPromo(command, data) {
+            const message = {
+                command: command,
+                data: data,
+                timestamp: Date.now()
+            };
+            localStorage.setItem('promoCommand', JSON.stringify(message));
+        }
+        
+        // На промо-странице добавьте:
+        setInterval(() => {
+            const command = localStorage.getItem('promoCommand');
+            if (command) {
+                const message = JSON.parse(command);
+                executeCommand(message);
+                localStorage.removeItem('promoCommand');
+            }
+        }, 1000);
+        
         // Инициализация переменных
         let player;
         let isMuted = false;
