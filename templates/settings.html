@@ -142,6 +142,7 @@
             display: flex;
             gap: 10px;
             margin-top: 10px;
+            flex-wrap: wrap;
         }
         
         button {
@@ -238,6 +239,21 @@
             background: #dc3545;
         }
         
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
         .test-area {
             background: #f8f9fa;
             padding: 20px;
@@ -267,10 +283,23 @@
             .button-group {
                 flex-direction: column;
             }
+            
+            .connection-status {
+                top: 10px;
+                right: 10px;
+                font-size: 12px;
+            }
         }
     </style>
+    <!-- Socket.io клиент -->
+    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
 </head>
 <body>
+    <div class="connection-status" id="connection-status">
+        <div class="status-indicator" id="status-indicator"></div>
+        <span id="status-text">Подключение...</span>
+    </div>
+
     <div class="container">
         <header>
             <h1>⚙️ Настройки промо-экрана</h1>
@@ -284,13 +313,15 @@
                 <h3><i>🎬</i> Настройки видео</h3>
                 <div class="form-group">
                     <label for="video-url">ID YouTube видео:</label>
-                    <input type="text" id="video-url" placeholder="Например: dQw4w9WgXcQ" value="dQw4w9WgXcQ">
+                    <input type="text" id="video-url" placeholder="Например: dQw4w9WgXcQ">
                 </div>
                 <div class="form-group">
-                    <label>Предпросмотр:</label>
-                    <div class="video-preview">
-                        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=0&controls=0&modestbranding=1" frameborder="0" allowfullscreen></iframe>
-                    </div>
+                    <label for="playlist-mode">Режим воспроизведения:</label>
+                    <select id="playlist-mode">
+                        <option value="single">Одно видео</option>
+                        <option value="playlist">Плейлист</option>
+                        <option value="random">Случайный порядок</option>
+                    </select>
                 </div>
                 <button class="btn-primary" onclick="updateVideo()">Обновить видео</button>
             </div>
@@ -304,8 +335,8 @@
                 </div>
                 <div class="button-group">
                     <button class="btn-secondary" onclick="setVolume(0)">Выкл звук</button>
-                    <button class="btn-primary" onclick="setVolume(70)">70% громкости</button>
-                    <button class="btn-success" onclick="setVolume(100)">Макс громкость</button>
+                    <button class="btn-primary" onclick="setVolume(50)">50%</button>
+                    <button class="btn-success" onclick="setVolume(100)">100%</button>
                 </div>
             </div>
             
@@ -317,8 +348,26 @@
                     <input type="number" id="default-amount" value="5000" min="0">
                 </div>
                 <div class="button-group">
-                    <button class="btn-success" onclick="testPayment()">Тест: Показать оплату</button>
-                    <button class="btn-danger" onclick="hidePayment()">Тест: Скрыть оплату</button>
+                    <button class="btn-success" onclick="sendPayment()">Показать оплату</button>
+                    <button class="btn-danger" onclick="hidePayment()">Скрыть оплату</button>
+                </div>
+            </div>
+            
+            <!-- Управление плейлистом -->
+            <div class="setting-card">
+                <h3><i>📋</i> Плейлист видео</h3>
+                <div class="form-group">
+                    <label for="playlist-input">Добавить видео в плейлист:</label>
+                    <div class="button-group">
+                        <input type="text" id="playlist-input" placeholder="ID YouTube видео">
+                        <button class="btn-success" onclick="addToPlaylist()">Добавить</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Текущий плейлист:</label>
+                    <div id="playlist-container" style="max-height: 200px; overflow-y: auto;">
+                        <!-- Плейлист будет добавляться здесь -->
+                    </div>
                 </div>
             </div>
             
@@ -326,88 +375,136 @@
             <div class="setting-card">
                 <h3><i>🎮</i> Ручное управление</h3>
                 <div class="form-group">
-                    <label>Быстрые действия:</label>
+                    <label>Управление видео:</label>
                     <div class="button-group">
-                        <button class="btn-primary" onclick="sendCommand('play')">▶️ Воспроизвести</button>
+                        <button class="btn-success" onclick="sendCommand('play')">▶️ Воспроизвести</button>
                         <button class="btn-secondary" onclick="sendCommand('pause')">⏸️ Пауза</button>
+                        <button class="btn-danger" onclick="sendCommand('stop')">⏹️ Стоп</button>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Тестовые платежи:</label>
+                    <label>Быстрые команды:</label>
                     <div class="button-group">
-                        <button class="btn-success" onclick="sendPayment(1000)">1000₸</button>
-                        <button class="btn-success" onclick="sendPayment(5000)">5000₸</button>
-                        <button class="btn-success" onclick="sendPayment(10000)">10000₸</button>
+                        <button class="btn-primary" onclick="sendPayment(1000)">1000₸</button>
+                        <button class="btn-primary" onclick="sendPayment(5000)">5000₸</button>
+                        <button class="btn-primary" onclick="sendPayment(10000)">10000₸</button>
                     </div>
                 </div>
+            </div>
+            
+            <!-- Настройки внешнего вида -->
+            <div class="setting-card">
+                <h3><i>🎨</i> Внешний вид</h3>
+                <div class="form-group">
+                    <label for="theme">Цветовая тема:</label>
+                    <select id="theme">
+                        <option value="default">Стандартная</option>
+                        <option value="dark">Темная</option>
+                        <option value="light">Светлая</option>
+                        <option value="blue">Синяя</option>
+                    </select>
+                </div>
+                <button class="btn-primary" onclick="applyTheme()">Применить тему</button>
             </div>
         </div>
         
         <!-- Тестовая область -->
         <div class="test-area">
             <h3>🧪 Тестирование настроек</h3>
-            <p>Проверьте работу промо-экрана с текущими настройками:</p>
+            <p>ID подключения: <strong id="connection-id">-</strong></p>
             <div class="button-group">
                 <button class="btn-success" onclick="openPromoPage()">Открыть промо-страницу</button>
-                <button class="btn-primary" onclick="saveSettings()">Сохранить все настройки</button>
+                <button class="btn-primary" onclick="saveSettings()">Сохранить настройки</button>
                 <button class="btn-secondary" onclick="resetSettings()">Сбросить настройки</button>
-            </div>
-            <div id="status" style="margin-top: 15px;">
-                <span class="status-indicator status-online"></span>
-                <span>Готово к работе</span>
             </div>
         </div>
         
         <footer>
-            <p>Система управления промо-экраном | Версия 1.0</p>
+            <p>Система управления промо-экраном | Socket.io + Flask | Версия 1.0</p>
         </footer>
     </div>
 
     <script>
+        // Socket.io соединение
+        const socket = io('https://your-render-app.onrender.com', {
+            transports: ['websocket', 'polling']
+        });
+        
         // Текущие настройки
         let settings = {
             volume: 70,
-            currentVideo: 'dQw4w9WgXcQ',
-            defaultAmount: 5000
+            currentVideo: '',
+            playlist: [],
+            playlistMode: 'single',
+            defaultAmount: 5000,
+            theme: 'default'
         };
         
-        // Загрузка сохраненных настроек
-        function loadSettings() {
-            const saved = localStorage.getItem('promoSettings');
-            if (saved) {
-                settings = JSON.parse(saved);
-                applySettings();
+        // Инициализация Socket.io
+        socket.on('connect', () => {
+            updateStatus('connected', 'Подключено к серверу');
+            document.getElementById('connection-id').textContent = socket.id;
+            console.log('Connected to server with ID:', socket.id);
+            
+            // Запрашиваем текущие настройки при подключении
+            socket.emit('get_settings');
+        });
+        
+        socket.on('disconnect', () => {
+            updateStatus('disconnected', 'Отключено от сервера');
+        });
+        
+        socket.on('connect_error', (error) => {
+            updateStatus('error', 'Ошибка подключения: ' + error.message);
+            console.error('Connection error:', error);
+        });
+        
+        socket.on('settings_update', (data) => {
+            console.log('Received settings:', data);
+            settings = { ...settings, ...data };
+            applySettings();
+        });
+        
+        socket.on('command_result', (data) => {
+            console.log('Command result:', data);
+            if (data.success) {
+                showNotification('Команда выполнена успешно');
+            } else {
+                showNotification('Ошибка: ' + data.message, 'error');
             }
-        }
+        });
         
-        // Сохранение настроек
-        function saveSettings() {
-            localStorage.setItem('promoSettings', JSON.stringify(settings));
-            alert('Настройки сохранены!');
+        // Функции управления статусом
+        function updateStatus(status, text) {
+            const indicator = document.getElementById('status-indicator');
+            const statusText = document.getElementById('status-text');
             
-            // Отправляем обновленные настройки на промо-страницу
-            sendCommand('updateSettings', settings);
-        }
-        
-        // Применение настроек к UI
-        function applySettings() {
-            document.getElementById('volume').value = settings.volume;
-            document.getElementById('volume-value').textContent = settings.volume + '%';
-            document.getElementById('default-amount').value = settings.defaultAmount;
-            document.getElementById('video-url').value = settings.currentVideo;
+            indicator.className = 'status-indicator';
+            switch(status) {
+                case 'connected':
+                    indicator.classList.add('status-online');
+                    break;
+                case 'disconnected':
+                    indicator.classList.add('status-offline');
+                    break;
+                case 'error':
+                    indicator.style.backgroundColor = '#ff9800';
+                    break;
+            }
             
-            // Обновляем превью видео
-            document.querySelector('.video-preview iframe').src = 
-                `https://www.youtube.com/embed/${settings.currentVideo}?autoplay=0&controls=0&modestbranding=1`;
+            statusText.textContent = text;
         }
         
-        // Обновление громкости
+        function showNotification(message, type = 'success') {
+            // Здесь можно добавить красивые уведомления
+            alert(message);
+        }
+        
+        // Функции управления настройками
         function updateVolume(volume) {
             settings.volume = volume;
             document.getElementById('volume-value').textContent = volume + '%';
-            
-            // Отправляем команду на промо-страницу
-            sendCommand('setVolume', volume);
+            socket.emit('set_volume', { volume: volume });
         }
         
         function setVolume(volume) {
@@ -415,76 +512,115 @@
             updateVolume(volume);
         }
         
-        // Обновление видео
         function updateVideo() {
             const videoId = document.getElementById('video-url').value.trim();
             if (videoId) {
                 settings.currentVideo = videoId;
-                
-                // Обновляем превью
-                document.querySelector('.video-preview iframe').src = 
-                    `https://www.youtube.com/embed/${videoId}?autoplay=0&controls=0&modestbranding=1`;
-                
-                // Отправляем команду на промо-страницу
-                sendCommand('changeVideo', videoId);
-                
-                alert('Видео обновлено!');
+                socket.emit('change_video', { videoId: videoId });
+                showNotification('Видео обновлено');
             }
         }
         
-        // Тестирование платежей
-        function testPayment() {
-            const amount = document.getElementById('default-amount').value;
-            sendPayment(amount);
+        function addToPlaylist() {
+            const videoId = document.getElementById('playlist-input').value.trim();
+            if (videoId && !settings.playlist.includes(videoId)) {
+                settings.playlist.push(videoId);
+                updatePlaylistDisplay();
+                socket.emit('update_playlist', { playlist: settings.playlist });
+                document.getElementById('playlist-input').value = '';
+            }
         }
         
-        function sendPayment(amount) {
-            sendCommand('showPayment', parseInt(amount));
-            alert(`Отправлен платеж: ${amount}₸`);
+        function updatePlaylistDisplay() {
+            const container = document.getElementById('playlist-container');
+            container.innerHTML = '';
+            
+            settings.playlist.forEach((videoId, index) => {
+                const item = document.createElement('div');
+                item.className = 'playlist-item';
+                item.innerHTML = `
+                    <span>${index + 1}. ${videoId}</span>
+                    <button class="btn-danger" onclick="removeFromPlaylist('${videoId}')">×</button>
+                `;
+                container.appendChild(item);
+            });
+        }
+        
+        function removeFromPlaylist(videoId) {
+            settings.playlist = settings.playlist.filter(id => id !== videoId);
+            updatePlaylistDisplay();
+            socket.emit('update_playlist', { playlist: settings.playlist });
+        }
+        
+        function sendPayment(amount = null) {
+            const paymentAmount = amount || document.getElementById('default-amount').value;
+            socket.emit('show_payment', { 
+                amount: parseInt(paymentAmount),
+                timestamp: Date.now()
+            });
         }
         
         function hidePayment() {
-            sendCommand('hidePayment');
-            alert('Команда "Скрыть оплату" отправлена');
+            socket.emit('hide_payment');
         }
         
-        // Отправка команд на промо-страницу
-        function sendCommand(command, data = null) {
-            const message = {
-                command: command,
-                data: data,
-                timestamp: Date.now()
-            };
-            
-            // Сохраняем команду в localStorage
-            localStorage.setItem('promoCommand', JSON.stringify(message));
-            
-            console.log('Команда отправлена:', message);
+        function sendCommand(command) {
+            socket.emit('control_command', { command: command });
         }
         
-        // Открытие промо-страницы
-        function openPromoPage() {
-            window.open('promo.html', '_blank');
+        function applyTheme() {
+            const theme = document.getElementById('theme').value;
+            socket.emit('set_theme', { theme: theme });
         }
         
-        // Сброс настроек
+        function saveSettings() {
+            socket.emit('save_settings', { settings: settings });
+            showNotification('Настройки сохранены на сервере');
+        }
+        
         function resetSettings() {
-            if (confirm('Вы уверены, что хотите сбросить все настройки?')) {
-                localStorage.removeItem('promoSettings');
-                settings = {
-                    volume: 70,
-                    currentVideo: 'dQw4w9WgXcQ',
-                    defaultAmount: 5000
-                };
-                applySettings();
-                alert('Настройки сброшены!');
+            if (confirm('Вы уверены, что хотите сбросить настройки?')) {
+                socket.emit('reset_settings');
             }
         }
         
-        // Инициализация при загрузке
+        function openPromoPage() {
+            window.open('/promo', '_blank');
+        }
+        
+        function applySettings() {
+            // Применяем настройки к UI
+            if (settings.volume !== undefined) {
+                document.getElementById('volume').value = settings.volume;
+                document.getElementById('volume-value').textContent = settings.volume + '%';
+            }
+            
+            if (settings.currentVideo) {
+                document.getElementById('video-url').value = settings.currentVideo;
+            }
+            
+            if (settings.defaultAmount !== undefined) {
+                document.getElementById('default-amount').value = settings.defaultAmount;
+            }
+            
+            if (settings.playlist) {
+                updatePlaylistDisplay();
+            }
+            
+            if (settings.playlistMode) {
+                document.getElementById('playlist-mode').value = settings.playlistMode;
+            }
+            
+            if (settings.theme) {
+                document.getElementById('theme').value = settings.theme;
+            }
+        }
+        
+        // Инициализация
         window.addEventListener('load', function() {
-            loadSettings();
-            console.log('Страница настроек загружена');
+            console.log('Settings page loaded');
+            // Загружаем настройки при загрузке
+            socket.emit('get_settings');
         });
     </script>
 </body>
