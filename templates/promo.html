@@ -31,7 +31,6 @@
             width: 100%;
             height: 100%;
             border: none;
-            pointer-events: none; /* Запрещаем взаимодействие с видео */
         }
         
         .payment-overlay {
@@ -108,35 +107,6 @@
             background: rgba(0, 0, 0, 0.9);
         }
         
-        .connection-status {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.7);
-            color: #fff;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-        }
-        
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 8px;
-        }
-        
-        .status-dot.connected {
-            background-color: #4CAF50;
-        }
-        
-        .status-dot.disconnected {
-            background-color: #F44336;
-        }
-        
         .instructions {
             position: fixed;
             bottom: 20px;
@@ -145,6 +115,29 @@
             font-size: 14px;
             z-index: 3;
             max-width: 300px;
+        }
+        
+        .test-buttons {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .test-btn {
+            padding: 8px 15px;
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .test-btn:hover {
+            background: rgba(0, 0, 0, 0.9);
         }
         
         @media (max-width: 768px) {
@@ -168,73 +161,52 @@
                 bottom: 70px;
                 font-size: 12px;
             }
+            
+            .test-buttons {
+                top: 10px;
+                left: 10px;
+                flex-direction: column;
+            }
         }
     </style>
-    <!-- Socket.io клиентская библиотека -->
-    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
 </head>
 <body>
     <div class="video-container">
-        <iframe id="youtube-video" src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=0&enablejsapi=1&loop=1&playlist=dQw4w9WgXcQ" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <!-- Замените VIDEO_ID на ID вашего YouTube видео -->
+        <iframe id="youtube-video" src="https://www.youtube.com/embed/VIDEO_ID?autoplay=1&mute=0&playsinline=1&controls=0&disablekb=1&modestbranding=1&rel=0&enablejsapi=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
     </div>
     
     <div id="payment-overlay" class="payment-overlay">
         <div class="amount">Сумма к оплате: <span id="amount-value">0</span> ₸</div>
         <div class="qr-code">
-            <img id="qr-image" src="qr-code.png" alt="QR-код для оплаты">
+            <!-- Замените путь на ваш реальный QR-код -->
+            <img id="qr-image" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2ZmZiIvPjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGFsaWdubWVudC1iYXNlbGluZT0ibWlkZGxlIj5RUtCD0LrQvtC80LDQvdC00LA8L3RleHQ+PC9zdmc+" alt="QR-код для оплаты">
         </div>
-    </div>
-    
-    <div class="connection-status">
-        <div id="status-dot" class="status-dot disconnected"></div>
-        <span id="status-text">Не подключено</span>
     </div>
     
     <div class="controls">
         <button id="mute-btn" class="sound-btn">🔊</button>
     </div>
     
+    <div class="test-buttons">
+        <button class="test-btn" onclick="showPaymentInfo(5000)">Тест: Показать (5000₸)</button>
+        <button class="test-btn" onclick="hidePaymentInfo()">Тест: Скрыть</button>
+    </div>
+    
     <div class="instructions">
-        Видео нельзя поставить на паузу | Звук можно включить/выключить кнопкой справа | При нажатии в кассе отобразится сумма и QR-код
+        Видео нельзя поставить на паузу | Звук можно включить/выключить кнопкой справа
     </div>
 
     <script>
         // Инициализация YouTube API
         let player;
         let isMuted = false;
+        
+        // Загрузка YouTube IFrame API
         const tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         const firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-        
-        // Инициализация Socket.io
-        // ЗАМЕНИТЕ 'http://localhost:3000' на адрес вашего сервера Socket.io
-        const socket = io('http://localhost:3000');
-        const statusDot = document.getElementById('status-dot');
-        const statusText = document.getElementById('status-text');
-        const muteBtn = document.getElementById('mute-btn');
-        
-        // Обработчики событий Socket.io
-        socket.on('connect', () => {
-            statusDot.classList.remove('disconnected');
-            statusDot.classList.add('connected');
-            statusText.textContent = 'Подключено к кассе';
-        });
-        
-        socket.on('disconnect', () => {
-            statusDot.classList.remove('connected');
-            statusDot.classList.add('disconnected');
-            statusText.textContent = 'Не подключено';
-        });
-        
-        // Получение сообщения от кассы
-        socket.on('paymentEvent', (data) => {
-            if (data.action === 'showPayment') {
-                showPaymentInfo(data.amount);
-            } else if (data.action === 'hidePayment') {
-                hidePaymentInfo();
-            }
-        });
         
         // Создание плеера
         function onYouTubeIframeAPIReady() {
@@ -246,27 +218,28 @@
                 },
                 playerVars: {
                     'autoplay': 1,
-                    'controls': 0, // Скрываем элементы управления YouTube
-                    'disablekb': 1, // Отключаем управление с клавиатуры
+                    'controls': 0,
+                    'disablekb': 1,
                     'modestbranding': 1,
-                    'loop': 1, // Зацикливаем видео
-                    'playlist': 'dQw4w9WgXcQ' // ID видео для зацикливания
+                    'rel': 0,
+                    'playsinline': 1
                 }
             });
         }
         
         function onPlayerReady(event) {
             console.log("YouTube плеер готов");
-            // Автоматически воспроизводим видео
-            event.target.playVideo();
-            
             // Устанавливаем громкость на 70% при загрузке
             event.target.setVolume(70);
         }
         
         function onPlayerStateChange(event) {
-            // Если видео закончилось или приостановлено, автоматически перезапускаем
-            if (event.data === YT.PlayerState.ENDED || event.data === YT.PlayerState.PAUSED) {
+            // Если видео закончилось, перезапускаем его
+            if (event.data === YT.PlayerState.ENDED) {
+                player.playVideo();
+            }
+            // Если видео на паузе, возобновляем воспроизведение
+            else if (event.data === YT.PlayerState.PAUSED) {
                 player.playVideo();
             }
         }
@@ -276,12 +249,13 @@
         }
         
         // Управление звуком
+        const muteBtn = document.getElementById('mute-btn');
         muteBtn.addEventListener('click', () => {
-            if (player && player.isMuted) {
+            if (isMuted) {
                 player.unMute();
                 muteBtn.textContent = '🔊';
                 isMuted = false;
-            } else if (player) {
+            } else {
                 player.mute();
                 muteBtn.textContent = '🔇';
                 isMuted = true;
@@ -295,38 +269,56 @@
             
             amountValue.textContent = amount.toLocaleString();
             paymentOverlay.classList.add('visible');
+            
+            // Приостанавливаем видео
+            if (player && player.pauseVideo) {
+                player.pauseVideo();
+            }
         }
         
         // Функция для скрытия платежной информации
         function hidePaymentInfo() {
             const paymentOverlay = document.getElementById('payment-overlay');
             paymentOverlay.classList.remove('visible');
+            
+            // Возобновляем воспроизведение видео
+            if (player && player.playVideo) {
+                player.playVideo();
+            }
         }
         
-        // Запрещаем контекстное меню и другие действия
+        // Запрещаем контекстное меню
         document.addEventListener('contextmenu', (e) => {
             e.preventDefault();
-            return false;
         });
         
-        // Блокируем различные комбинации клавиш
+        // Блокируем различные комбинации клавиш для паузы
         document.addEventListener('keydown', (e) => {
             // Блокируем пробел (пауза)
-            if (e.keyCode === 32) {
+            if (e.keyCode === 32 || e.key === ' ') {
                 e.preventDefault();
+                if (player && player.playVideo) {
+                    player.playVideo(); // Принудительно продолжаем воспроизведение
+                }
             }
             // Блокируем K (пауза в YouTube)
-            if (e.keyCode === 75) {
+            if (e.keyCode === 75 || e.key === 'k' || e.key === 'к') {
                 e.preventDefault();
-            }
-            
-            // Для тестирования без кассы (можно удалить в продакшене)
-            if (e.key === '1') {
-                showPaymentInfo(5000); // Тестовая сумма 5000 тенге
-            } else if (e.key === '2') {
-                hidePaymentInfo();
+                if (player && player.playVideo) {
+                    player.playVideo();
+                }
             }
         });
+        
+        // Автоматическое возобновление видео, если оно было приостановлено
+        setInterval(() => {
+            if (player && player.getPlayerState && player.getPlayerState() === YT.PlayerState.PAUSED) {
+                // Если видео на паузе и не отображается платежная информация
+                if (!document.getElementById('payment-overlay').classList.contains('visible')) {
+                    player.playVideo();
+                }
+            }
+        }, 1000);
     </script>
 </body>
 </html>
