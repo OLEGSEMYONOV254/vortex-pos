@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Настройки промо-экрана</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        h1 {
+            color: #1a2a6c;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #1a2a6c;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        
+        .back-button:hover {
+            background: #2a3a8c;
+        }
+        
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .setting-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #1a2a6c;
+        }
+        
+        .setting-card h3 {
+            color: #1a2a6c;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .setting-card h3 i {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .slider {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 8px;
+            background: #ddd;
+            border-radius: 5px;
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #1a2a6c;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .volume-value {
+            min-width: 40px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #1a2a6c;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2a3a8c;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .video-preview {
+            width: 100%;
+            height: 200px;
+            background: #000;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            overflow: hidden;
+        }
+        
+        .video-preview iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .playlist-item {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .playlist-item span {
+            flex: 1;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-online {
+            background: #28a745;
+        }
+        
+        .status-offline {
+            background: #dc3545;
+        }
+        
+        .test-area {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .test-area h3 {
+            color: #28a745;
+            margin-bottom: 15px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #6c757d;
+        }
+        
+        @media (max-width: 768px) {
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚙️ Настройки промо-экрана</h1>
+            <p>Управление видео, звуком и отображением платежной информации</p>
+            <a href="/" class="back-button">← Вернуться на главную</a>
+        </header>
+        
+        <div class="settings-grid">
+            <!-- Настройки видео -->
+            <div class="setting-card">
+                <h3><i>🎬</i> Настройки видео</h3>
+                <div class="form-group">
+                    <label for="video-url">ID YouTube видео:</label>
+                    <input type="text" id="video-url" placeholder="Например: dQw4w9WgXcQ" value="dQw4w9WgXcQ">
+                </div>
+                <div class="form-group">
+                    <label>Предпросмотр:</label>
+                    <div class="video-preview">
+                        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=0&controls=0&modestbranding=1" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="updateVideo()">Обновить видео</button>
+            </div>
+            
+            <!-- Настройки звука -->
+            <div class="setting-card">
+                <h3><i>🔊</i> Настройки звука</h3>
+                <div class="form-group">
+                    <label for="volume">Громкость: <span id="volume-value" class="volume-value">70%</span></label>
+                    <input type="range" id="volume" class="slider" min="0" max="100" value="70" oninput="updateVolume(this.value)">
+                </div>
+                <div class="button-group">
+                    <button class="btn-secondary" onclick="setVolume(0)">Выкл звук</button>
+                    <button class="btn-primary" onclick="setVolume(70)">70% громкости</button>
+                    <button class="btn-success" onclick="setVolume(100)">Макс громкость</button>
+                </div>
+            </div>
+            
+            <!-- Настройки платежной информации -->
+            <div class="setting-card">
+                <h3><i>💳</i> Платежная информация</h3>
+                <div class="form-group">
+                    <label for="default-amount">Сумма по умолчанию (₸):</label>
+                    <input type="number" id="default-amount" value="5000" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="qr-image">QR-код (URL или файл):</label>
+                    <input type="file" id="qr-image" accept="image/*">
+                </div>
+                <div class="button-group">
+                    <button class="btn-success" onclick="testPayment()">Тест: Показать оплату</button>
+                    <button class="btn-danger" onclick="hidePayment()">Тест: Скрыть оплату</button>
+                </div>
+            </div>
+            
+            <!-- Управление плейлистом -->
+            <div class="setting-card">
+                <h3><i>📋</i> Плейлист видео</h3>
+                <div class="form-group">
+                    <label for="playlist-input">Добавить ID видео:</label>
+                    <div class="button-group">
+                        <input type="text" id="playlist-input" placeholder="ID YouTube видео">
+                        <button class="btn-success" onclick="addToPlaylist()">Добавить</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Текущий плейлист:</label>
+                    <div id="playlist-container">
+                        <div class="playlist-item">
+                            <span>dQw4w9WgXcQ</span>
+                            <button class="btn-danger" onclick="removeFromPlaylist('dQw4w9WgXcQ')">×</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="playlist-mode">Режим плейлиста:</label>
+                    <select id="playlist-mode">
+                        <option value="sequential">По порядку</option>
+                        <option value="random">Случайный</option>
+                        <option value="single">Одно видео</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Ручное управление -->
+            <div class="setting-card">
+                <h3><i>🎮</i> Ручное управление</h3>
+                <div class="form-group">
+                    <label>Быстрые действия:</label>
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="playVideo()">▶️ Воспроизвести</button>
+                        <button class="btn-secondary" onclick="pauseVideo()">⏸️ Пауза</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Тестовые платежи:</label>
+                    <div class="button-group">
+                        <button class="btn-success" onclick="simulatePayment(1000)">1000₸</button>
+                        <button class="btn-success" onclick="simulatePayment(5000)">5000₸</button>
+                        <button class="btn-success" onclick="simulatePayment(10000)">10000₸</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Настройки внешнего вида -->
+            <div class="setting-card">
+                <h3><i>🎨</i> Внешний вид</h3>
+                <div class="form-group">
+                    <label for="theme">Цветовая тема:</label>
+                    <select id="theme">
+                        <option value="default">Стандартная</option>
+                        <option value="dark">Темная</option>
+                        <option value="light">Светлая</option>
+                        <option value="blue">Синяя</option>
+                        <option value="red">Красная</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="font-size">Размер шрифта:</label>
+                    <select id="font-size">
+                        <option value="small">Маленький</option>
+                        <option value="medium" selected>Средний</option>
+                        <option value="large">Большой</option>
+                        <option value="x-large">Очень большой</option>
+                    </select>
+                </div>
+                <button class="btn-primary" onclick="applyAppearance()">Применить настройки</button>
+            </div>
+        </div>
+        
+        <!-- Тестовая область -->
+        <div class="test-area">
+            <h3>🧪 Тестирование настроек</h3>
+            <p>Проверьте работу промо-экрана с текущими настройками:</p>
+            <div class="button-group">
+                <button class="btn-success" onclick="openPromoPage()">Открыть промо-страницу</button>
+                <button class="btn-primary" onclick="saveSettings()">Сохранить все настройки</button>
+                <button class="btn-secondary" onclick="resetSettings()">Сбросить настройки</button>
+            </div>
+            <div id="status" style="margin-top: 15px;">
+                <span class="status-indicator status-online"></span>
+                <span>Промо-экран активен</span>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Система управления промо-экраном | Версия 1.0</p>
+        </footer>
+    </div>
+
+    <script>
+        // Текущие настройки
+        let settings = {
+            volume: 70,
+            currentVideo: 'dQw4w9WgXcQ',
+            playlist: ['dQw4w9WgXcQ'],
+            playlistMode: 'sequential',
+            defaultAmount: 5000,
+            theme: 'default',
+            fontSize: 'medium'
+        };
+        
+        // Загрузка сохраненных настроек
+        function loadSettings() {
+            const saved = localStorage.getItem('promoSettings');
+            if (saved) {
+                settings = JSON.parse(saved);
+                applySettings();
+            }
+        }
+        
+        // Сохранение настроек
+        function saveSettings() {
+            localStorage.setItem('promoSettings', JSON.stringify(settings));
+            alert('Настройки сохранены!');
+        }
+        
+        // Применение настроек к UI
+        function applySettings() {
+            document.getElementById('volume').value = settings.volume;
+            document.getElementById('volume-value').textContent = settings.volume + '%';
+            document.getElementById('default-amount').value = settings.defaultAmount;
+            document.getElementById('video-url').value = settings.currentVideo;
+            document.getElementById('playlist-mode').value = settings.playlistMode;
+            document.getElementById('theme').value = settings.theme;
+            document.getElementById('font-size').value = settings.fontSize;
+            
+            // Обновляем плейлист
+            updatePlaylistDisplay();
+        }
+        
+        // Обновление громкости
+        function updateVolume(volume) {
+            settings.volume = volume;
+            document.getElementById('volume-value').textContent = volume + '%';
+            // Здесь будет отправка команды на промо-страницу
+        }
+        
+        function setVolume(volume) {
+            document.getElementById('volume').value = volume;
+            updateVolume(volume);
+        }
+        
+        // Обновление видео
+        function updateVideo() {
+            const videoId = document.getElementById('video-url').value.trim();
+            if (videoId) {
+                settings.currentVideo = videoId;
+                // Обновляем превью
+                document.querySelector('.video-preview iframe').src = 
+                    `https://www.youtube.com/embed/${videoId}?autoplay=0&controls=0&modestbranding=1`;
+                alert('Видео обновлено!');
+            }
+        }
+        
+        // Управление плейлистом
+        function addToPlaylist() {
+            const videoId = document.getElementById('playlist-input').value.trim();
+            if (videoId && !settings.playlist.includes(videoId)) {
+                settings.playlist.push(videoId);
+                updatePlaylistDisplay();
+                document.getElementById('playlist-input').value = '';
+            }
+        }
+        
+        function removeFromPlaylist(videoId) {
+            settings.playlist = settings.playlist.filter(id => id !== videoId);
+            updatePlaylistDisplay();
+        }
+        
+        function updatePlaylistDisplay() {
+            const container = document.getElementById('playlist-container');
+            container.innerHTML = '';
+            settings.playlist.forEach(videoId => {
+                const item = document.createElement('div');
+                item.className = 'playlist-item';
+                item.innerHTML = `
+                    <span>${videoId}</span>
+                    <button class="btn-danger" onclick="removeFromPlaylist('${videoId}')">×</button>
+                `;
+                container.appendChild(item);
+            });
+        }
+        
+        // Тестирование платежей
+        function testPayment() {
+            const amount = document.getElementById('default-amount').value;
+            simulatePayment(amount);
+        }
+        
+        function simulatePayment(amount) {
+            alert(`Тестовый платеж: ${amount}₸\nЭта команда отправится на промо-страницу`);
+            // Здесь будет отправка команды на промо-страницу
+        }
+        
+        function hidePayment() {
+            alert('Скрытие платежной информации\nЭта команда отправится на промо-страницу');
+            // Здесь будет отправка команды на промо-страницу
+        }
+        
+        // Ручное управление видео
+        function playVideo() {
+            alert('Воспроизведение видео\nЭта команда отправится на промо-страницу');
+        }
+        
+        function pauseVideo() {
+            alert('Пауза видео\nЭта команда отправится на промо-страницу');
+        }
+        
+        // Внешний вид
+        function applyAppearance() {
+            settings.theme = document.getElementById('theme').value;
+            settings.fontSize = document.getElementById('font-size').value;
+            alert('Настройки внешнего вида применены!');
+        }
+        
+        // Открытие промо-страницы
+        function openPromoPage() {
+            window.open('/promo.html', '_blank');
+        }
+        
+        // Сброс настроек
+        function resetSettings() {
+            if (confirm('Вы уверены, что хотите сбросить все настройки?')) {
+                localStorage.removeItem('promoSettings');
+                settings = {
+                    volume: 70,
+                    currentVideo: 'dQw4w9WgXcQ',
+                    playlist: ['dQw4w9WgXcQ'],
+                    playlistMode: 'sequential',
+                    defaultAmount: 5000,
+                    theme: 'default',
+                    fontSize: 'medium'
+                };
+                applySettings();
+                alert('Настройки сброшены!');
+            }
+        }
+        
+        // Инициализация при загрузке
+        window.addEventListener('load', function() {
+            loadSettings();
+        });
+    </script>
+</body>
+</html>
