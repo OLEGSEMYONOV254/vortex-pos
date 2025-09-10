@@ -31,6 +31,7 @@
             width: 100%;
             height: 100%;
             border: none;
+            pointer-events: none; /* Запрещаем взаимодействие с видео */
         }
         
         .payment-overlay {
@@ -39,7 +40,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
+            background-color: rgba(0, 0, 0, 0.9);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -79,16 +80,32 @@
             object-fit: contain;
         }
         
-        .instructions {
+        .controls {
             position: fixed;
             bottom: 20px;
-            left: 0;
-            width: 100%;
-            text-align: center;
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 14px;
-            z-index: 3;
-            padding: 0 20px;
+            right: 20px;
+            z-index: 10;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .sound-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+        
+        .sound-btn:hover {
+            background: rgba(0, 0, 0, 0.9);
         }
         
         .connection-status {
@@ -120,6 +137,16 @@
             background-color: #F44336;
         }
         
+        .instructions {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            z-index: 3;
+            max-width: 300px;
+        }
+        
         @media (max-width: 768px) {
             .amount {
                 font-size: 36px;
@@ -129,6 +156,18 @@
                 width: 200px;
                 height: 200px;
             }
+            
+            .sound-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+            
+            .instructions {
+                left: 10px;
+                bottom: 70px;
+                font-size: 12px;
+            }
         }
     </style>
     <!-- Socket.io клиентская библиотека -->
@@ -136,7 +175,7 @@
 </head>
 <body>
     <div class="video-container">
-        <iframe id="youtube-video" src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=0&enablejsapi=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <iframe id="youtube-video" src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=0&enablejsapi=1&loop=1&playlist=dQw4w9WgXcQ" allow="autoplay; encrypted-media" allowfullscreen></iframe>
     </div>
     
     <div id="payment-overlay" class="payment-overlay">
@@ -151,13 +190,18 @@
         <span id="status-text">Не подключено</span>
     </div>
     
+    <div class="controls">
+        <button id="mute-btn" class="sound-btn">🔊</button>
+    </div>
+    
     <div class="instructions">
-        Связь с кассой через Socket.io | При нажатии в кассе здесь отобразится сумма и QR-код
+        Видео нельзя поставить на паузу | Звук можно включить/выключить кнопкой справа | При нажатии в кассе отобразится сумма и QR-код
     </div>
 
     <script>
         // Инициализация YouTube API
         let player;
+        let isMuted = false;
         const tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         const firstScriptTag = document.getElementsByTagName('script')[0];
@@ -168,6 +212,7 @@
         const socket = io('http://localhost:3000');
         const statusDot = document.getElementById('status-dot');
         const statusText = document.getElementById('status-text');
+        const muteBtn = document.getElementById('mute-btn');
         
         // Обработчики событий Socket.io
         socket.on('connect', () => {
@@ -196,31 +241,52 @@
             player = new YT.Player('youtube-video', {
                 events: {
                     'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
+                    'onStateChange': onPlayerStateChange,
+                    'onError': onPlayerError
+                },
+                playerVars: {
+                    'autoplay': 1,
+                    'controls': 0, // Скрываем элементы управления YouTube
+                    'disablekb': 1, // Отключаем управление с клавиатуры
+                    'modestbranding': 1,
+                    'loop': 1, // Зацикливаем видео
+                    'playlist': 'dQw4w9WgXcQ' // ID видео для зацикливания
                 }
             });
         }
         
         function onPlayerReady(event) {
             console.log("YouTube плеер готов");
+            // Автоматически воспроизводим видео
+            event.target.playVideo();
+            
+            // Устанавливаем громкость на 70% при загрузке
+            event.target.setVolume(70);
         }
         
         function onPlayerStateChange(event) {
-            // Можно добавить логику при изменении состояния видео
-        }
-        
-        // Функции управления видео
-        function pauseVideo() {
-            if (player && player.pauseVideo) {
-                player.pauseVideo();
-            }
-        }
-        
-        function playVideo() {
-            if (player && player.playVideo) {
+            // Если видео закончилось или приостановлено, автоматически перезапускаем
+            if (event.data === YT.PlayerState.ENDED || event.data === YT.PlayerState.PAUSED) {
                 player.playVideo();
             }
         }
+        
+        function onPlayerError(event) {
+            console.error("Ошибка видео: ", event.data);
+        }
+        
+        // Управление звуком
+        muteBtn.addEventListener('click', () => {
+            if (player && player.isMuted) {
+                player.unMute();
+                muteBtn.textContent = '🔊';
+                isMuted = false;
+            } else if (player) {
+                player.mute();
+                muteBtn.textContent = '🔇';
+                isMuted = true;
+            }
+        });
         
         // Функция для показа платежной информации
         function showPaymentInfo(amount) {
@@ -229,18 +295,32 @@
             
             amountValue.textContent = amount.toLocaleString();
             paymentOverlay.classList.add('visible');
-            pauseVideo();
         }
         
         // Функция для скрытия платежной информации
         function hidePaymentInfo() {
             const paymentOverlay = document.getElementById('payment-overlay');
             paymentOverlay.classList.remove('visible');
-            playVideo();
         }
         
-        // Для тестирования без кассы (можно удалить в продакшене)
+        // Запрещаем контекстное меню и другие действия
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            return false;
+        });
+        
+        // Блокируем различные комбинации клавиш
         document.addEventListener('keydown', (e) => {
+            // Блокируем пробел (пауза)
+            if (e.keyCode === 32) {
+                e.preventDefault();
+            }
+            // Блокируем K (пауза в YouTube)
+            if (e.keyCode === 75) {
+                e.preventDefault();
+            }
+            
+            // Для тестирования без кассы (можно удалить в продакшене)
             if (e.key === '1') {
                 showPaymentInfo(5000); // Тестовая сумма 5000 тенге
             } else if (e.key === '2') {
