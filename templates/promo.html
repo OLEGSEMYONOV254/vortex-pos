@@ -173,6 +173,34 @@
     </div>
 
     <script>
+        // В промо-странице добавьте:
+        const socket = io();
+        
+        socket.on('volume_changed', (data) => {
+            console.log('Volume changed:', data.volume);
+            // Реализуйте изменение громкости видео
+        });
+        
+        socket.on('video_changed', (data) => {
+            console.log('Video changed:', data.videoId);
+            // Реализуйте смену видео
+        });
+        
+        socket.on('show_payment', (data) => {
+            console.log('Show payment:', data.amount);
+            // Покажите платежную информацию
+        });
+        
+        socket.on('hide_payment', () => {
+            console.log('Hide payment');
+            // Скрыйте платежную информацию
+        });
+        
+        socket.on('control_command', (data) => {
+            console.log('Control command:', data.command);
+            // Обработайте команды управления
+        });
+        
         let isMuted = false;
         const videoIframe = document.getElementById('youtube-video');
         const muteBtn = document.getElementById('mute-btn');
