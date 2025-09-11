@@ -345,6 +345,60 @@ def settings():
     products = load_products()
     return render_template("settings.html", products=products)
 
+@app.route('/socketio-test')
+def socketio_test():
+    """Страница для тестирования Socket.io подключения"""
+    return '''
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Socket.io Test</title>
+        <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
+    </head>
+    <body>
+        <h1>Socket.io Test Page</h1>
+        <div id="status">Connecting...</div>
+        <div id="log"></div>
+        
+        <script>
+            const socket = io('https://vortex-pos.onrender.com', {
+                transports: ['polling', 'websocket'],
+                path: '/socket.io/'
+            });
+            
+            function log(message) {
+                document.getElementById('log').innerHTML += '<div>' + new Date().toLocaleTimeString() + ' - ' + message + '</div>';
+            }
+            
+            socket.on('connect', () => {
+                document.getElementById('status').textContent = 'Connected!';
+                log('Connected to server');
+                socket.emit('test_connection', { message: 'Test from client' });
+            });
+            
+            socket.on('disconnect', () => {
+                document.getElementById('status').textContent = 'Disconnected';
+                log('Disconnected from server');
+            });
+            
+            socket.on('connect_error', (error) => {
+                document.getElementById('status').textContent = 'Connection Error';
+                log('Error: ' + error.message);
+            });
+            
+            socket.on('command_result', (data) => {
+                log('Server response: ' + data.message);
+            });
+        </script>
+    </body>
+    </html>
+    '''
+
+@socketio.on('test_connection')
+def handle_test_connection(data):
+    print(f'Test connection from {request.sid}: {data}')
+    emit('command_result', {'success': True, 'message': 'Test successful!'})
+
 
 @socketio.on('connect')
 def handle_connect():
@@ -1328,6 +1382,7 @@ if __name__ == '__main__':
         socketio.run(app, host='0.0.0.0', port=8080, debug=True)
     except Exception as e:
         print(f"[ОШИБКА] При запуске сервера: {e}")
+
 
 
 
