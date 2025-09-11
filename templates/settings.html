@@ -210,6 +210,15 @@
             background: #ff9800;
         }
         
+        .debug-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
         @media (max-width: 768px) {
             .settings-grid {
                 grid-template-columns: 1fr;
@@ -248,7 +257,7 @@
                 <h3>🎬 Настройки видео</h3>
                 <div class="form-group">
                     <label for="video-url">ID YouTube видео:</label>
-                    <input type="text" id="video-url" placeholder="Например: dQw4w9WgXcQ">
+                    <input type="text" id="video-url" placeholder="Например: dQw4w9WgXcQ" value="dQw4w9WgXcQ">
                 </div>
                 <button class="btn-primary" onclick="updateVideo()">Обновить видео</button>
             </div>
@@ -300,6 +309,12 @@
                 </div>
             </div>
         </div>
+
+        <!-- Debug информация -->
+        <div class="debug-info">
+            <h4>Информация о подключении:</h4>
+            <div id="debug-output">Загрузка...</div>
+        </div>
     </div>
 
     <script>
@@ -312,48 +327,72 @@
             const serverUrl = window.location.origin;
             
             updateStatus('connecting', 'Подключение к серверу...');
+            debugLog(`Пытаемся подключиться к: ${serverUrl}`);
             
             try {
-                // Подключаемся к серверу
+                // Подключаемся к серверу с правильными параметрами
                 socket = io(serverUrl, {
                     transports: ['websocket', 'polling'],
-                    timeout: 10000
+                    timeout: 10000,
+                    reconnection: true,
+                    reconnectionAttempts: 5,
+                    reconnectionDelay: 1000
                 });
                 
                 // Обработчики событий
                 socket.on('connect', () => {
                     isConnected = true;
                     updateStatus('connected', 'Подключено к серверу');
+                    debugLog('✅ Успешно подключено к серверу');
                     console.log('Connected to server:', serverUrl);
                     
                     // Запрашиваем текущие настройки при подключении
                     socket.emit('get_settings');
                 });
                 
-                socket.on('disconnect', () => {
+                socket.on('disconnect', (reason) => {
                     isConnected = false;
-                    updateStatus('disconnected', 'Отключено от сервера');
-                    console.log('Disconnected from server');
+                    updateStatus('disconnected', 'Отключено от сервера: ' + reason);
+                    debugLog('❌ Отключено от сервера: ' + reason);
+                    console.log('Disconnected from server:', reason);
                 });
                 
                 socket.on('connect_error', (error) => {
                     isConnected = false;
                     updateStatus('error', 'Ошибка подключения: ' + error.message);
+                    debugLog('❌ Ошибка подключения: ' + error.message);
                     console.error('Connection error:', error);
                 });
                 
                 socket.on('settings_update', (data) => {
+                    debugLog('✅ Получены настройки с сервера');
                     console.log('Received settings:', data);
                     updateSettings(data);
                 });
                 
                 socket.on('command_result', (data) => {
+                    debugLog('📨 Ответ от сервера: ' + data.message);
                     console.log('Command result:', data);
                     showNotification(data.message, data.success ? 'success' : 'error');
+                });
+
+                socket.on('reconnect_attempt', (attemptNumber) => {
+                    debugLog(`🔄 Попытка переподключения #${attemptNumber}`);
+                });
+
+                socket.on('reconnect', (attemptNumber) => {
+                    debugLog('✅ Успешно переподключено');
+                    isConnected = true;
+                    updateStatus('connected', 'Переподключено к серверу');
+                });
+
+                socket.on('reconnect_error', (error) => {
+                    debugLog('❌ Ошибка переподключения: ' + error.message);
                 });
                 
             } catch (error) {
                 updateStatus('error', 'Ошибка: ' + error.message);
+                debugLog('❌ Критическая ошибка: ' + error.message);
                 console.error('Connection failed:', error);
             }
         }
@@ -382,6 +421,13 @@
             statusText.textContent = text;
         }
         
+        function debugLog(message) {
+            const debugOutput = document.getElementById('debug-output');
+            const timestamp = new Date().toLocaleTimeString();
+            debugOutput.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+            debugOutput.scrollTop = debugOutput.scrollHeight;
+        }
+        
         function showNotification(message, type = 'success') {
             alert(type.toUpperCase() + ': ' + message);
         }
@@ -392,8 +438,10 @@
             
             if (isConnected && socket) {
                 socket.emit('set_volume', { volume: volume });
+                debugLog(`🔊 Отправлена команда изменения громкости: ${volume}%`);
             } else {
                 showNotification('Нет подключения к серверу', 'error');
+                debugLog('❌ Не удалось отправить команду: нет подключения');
             }
         }
         
@@ -407,9 +455,11 @@
             if (videoId) {
                 if (isConnected && socket) {
                     socket.emit('change_video', { videoId: videoId });
+                    debugLog(`🎬 Отправлена команда смены видео: ${videoId}`);
                     showNotification('Видео обновлено');
                 } else {
                     showNotification('Нет подключения к серверу', 'error');
+                    debugLog('❌ Не удалось отправить команду: нет подключения');
                 }
             }
         }
@@ -422,24 +472,30 @@
                     amount: parseInt(paymentAmount),
                     timestamp: Date.now()
                 });
+                debugLog(`💳 Отправлена команда показа оплаты: ${paymentAmount}₸`);
             } else {
                 showNotification('Нет подключения к серверу', 'error');
+                debugLog('❌ Не удалось отправить команду: нет подключения');
             }
         }
         
         function hidePayment() {
             if (isConnected && socket) {
                 socket.emit('hide_payment');
+                debugLog('👻 Отправлена команда скрытия оплаты');
             } else {
                 showNotification('Нет подключения к серверу', 'error');
+                debugLog('❌ Не удалось отправить команду: нет подключения');
             }
         }
         
         function sendCommand(command) {
             if (isConnected && socket) {
                 socket.emit('control_command', { command: command });
+                debugLog(`🎮 Отправлена команда управления: ${command}`);
             } else {
                 showNotification('Нет подключения к серверу', 'error');
+                debugLog('❌ Не удалось отправить команду: нет подключения');
             }
         }
         
@@ -461,8 +517,18 @@
         // Инициализация
         window.addEventListener('load', function() {
             console.log('Settings page loaded');
+            debugLog('🚀 Страница настроек загружена');
+            
             // Автоматически подключаемся к серверу при загрузке
             connectToServer();
+            
+            // Периодическая проверка соединения
+            setInterval(() => {
+                if (!isConnected) {
+                    debugLog('🔄 Попытка переподключения...');
+                    connectToServer();
+                }
+            }, 5000);
         });
     </script>
 </body>
