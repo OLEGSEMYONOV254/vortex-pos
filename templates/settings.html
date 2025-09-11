@@ -210,19 +210,6 @@
             background: #ff9800;
         }
         
-        .server-config {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-            border-left: 4px solid #17a2b8;
-        }
-        
-        .server-config h3 {
-            color: #17a2b8;
-            margin-bottom: 15px;
-        }
-        
         @media (max-width: 768px) {
             .settings-grid {
                 grid-template-columns: 1fr;
@@ -313,23 +300,6 @@
                 </div>
             </div>
         </div>
-        
-        <!-- Конфигурация сервера -->
-        <div class="server-config">
-            <h3>🔧 Конфигурация сервера</h3>
-            <div class="form-group">
-                <label for="server-url">URL Socket.io сервера:</label>
-                <input type="text" id="server-url" placeholder="https://ваш-сервер.onrender.com" value="">
-            </div>
-            <div class="button-group">
-                <button class="btn-success" onclick="connectToServer()">Подключиться</button>
-                <button class="btn-secondary" onclick="disconnectFromServer()">Отключиться</button>
-                <button class="btn-primary" onclick="testConnection()">Тест подключения</button>
-            </div>
-            <div id="connection-info" style="margin-top: 15px; font-size: 14px;">
-                Статус: <span id="connection-state">Не подключено</span>
-            </div>
-        </div>
     </div>
 
     <script>
@@ -338,17 +308,8 @@
         
         // Функция подключения к серверу
         function connectToServer() {
-            const serverUrl = document.getElementById('server-url').value.trim();
-            
-            if (!serverUrl) {
-                alert('Пожалуйста, введите URL сервера');
-                return;
-            }
-            
-            // Отключаем предыдущее соединение если есть
-            if (socket) {
-                socket.disconnect();
-            }
+            // Используем тот же домен, на котором работает страница
+            const serverUrl = window.location.origin;
             
             updateStatus('connecting', 'Подключение к серверу...');
             
@@ -364,6 +325,9 @@
                     isConnected = true;
                     updateStatus('connected', 'Подключено к серверу');
                     console.log('Connected to server:', serverUrl);
+                    
+                    // Запрашиваем текущие настройки при подключении
+                    socket.emit('get_settings');
                 });
                 
                 socket.on('disconnect', () => {
@@ -394,29 +358,10 @@
             }
         }
         
-        function disconnectFromServer() {
-            if (socket) {
-                socket.disconnect();
-                socket = null;
-                isConnected = false;
-                updateStatus('disconnected', 'Отключено вручную');
-            }
-        }
-        
-        function testConnection() {
-            if (isConnected && socket) {
-                socket.emit('test_connection', { message: 'Test from settings' });
-                showNotification('Тестовое сообщение отправлено', 'success');
-            } else {
-                showNotification('Нет подключения к серверу', 'error');
-            }
-        }
-        
         // Функции управления статусом
         function updateStatus(status, text) {
             const indicator = document.getElementById('status-indicator');
             const statusText = document.getElementById('status-text');
-            const connectionState = document.getElementById('connection-state');
             
             indicator.className = 'status-indicator';
             switch(status) {
@@ -435,7 +380,6 @@
             }
             
             statusText.textContent = text;
-            connectionState.textContent = text;
         }
         
         function showNotification(message, type = 'success') {
@@ -517,11 +461,8 @@
         // Инициализация
         window.addEventListener('load', function() {
             console.log('Settings page loaded');
-            // Можно добавить автоматическую загрузку URL сервера из localStorage
-            const savedUrl = localStorage.getItem('server_url');
-            if (savedUrl) {
-                document.getElementById('server-url').value = savedUrl;
-            }
+            // Автоматически подключаемся к серверу при загрузке
+            connectToServer();
         });
     </script>
 </body>
