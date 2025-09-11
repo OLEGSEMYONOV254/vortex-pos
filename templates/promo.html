@@ -146,6 +146,8 @@
             }
         }
     </style>
+    <!-- Socket.io клиентская библиотека -->
+    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
 </head>
 <body>
     <div class="video-container">
@@ -159,7 +161,7 @@
     <div id="payment-overlay" class="payment-overlay">
         <div class="amount">Сумма к оплате: <span id="amount-value">0</span> ₸</div>
         <div class="qr-code">
-            <img id="qr-image" src="/static/qrАскадир.png" alt="QR"
+            <img id="qr-image" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2ZmZiIvPjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGFsaWdubWVudC1iYXNlbGluZT0ibWlkZGxlIj5RUtCD0LrQvtC80LDQvdC00LA8L3RleHQ+PC9zdmc+" alt="QR-код для оплаты">
         </div>
     </div>
     
@@ -173,79 +175,84 @@
     </div>
 
     <script>
-        // В промо-странице добавьте:
-        const socket = io();
-        
-        socket.on('volume_changed', (data) => {
-            console.log('Volume changed:', data.volume);
-            // Реализуйте изменение громкости видео
-        });
-        
-        socket.on('video_changed', (data) => {
-            console.log('Video changed:', data.videoId);
-            // Реализуйте смену видео
-        });
-        
-        socket.on('show_payment', (data) => {
-            console.log('Show payment:', data.amount);
-            // Покажите платежную информацию
-        });
-        
-        socket.on('hide_payment', () => {
-            console.log('Hide payment');
-            // Скрыйте платежную информацию
-        });
-        
-        socket.on('control_command', (data) => {
-            console.log('Control command:', data.command);
-            // Обработайте команды управления
-        });
-        
         let isMuted = false;
         const videoIframe = document.getElementById('youtube-video');
         const muteBtn = document.getElementById('mute-btn');
 
-        // Функция для обработки команд из настроек
-        function checkForCommands() {
-            const commandData = localStorage.getItem('promoCommand');
-            if (commandData) {
-                try {
-                    const message = JSON.parse(commandData);
-                    executeCommand(message);
-                    localStorage.removeItem('promoCommand');
-                } catch (e) {
-                    console.error('Ошибка обработки команды:', e);
-                }
+        // Инициализация Socket.io
+        const socket = io();
+
+        // Обработчики Socket.io событий
+        socket.on('connect', () => {
+            console.log('Connected to server');
+            updateStatus('connected', 'Подключено к серверу');
+        });
+
+        socket.on('disconnect', () => {
+            console.log('Disconnected from server');
+            updateStatus('disconnected', 'Отключено от сервера');
+        });
+
+        socket.on('volume_changed', (data) => {
+            console.log('Volume changed:', data.volume);
+            setVolume(data.volume);
+        });
+
+        socket.on('video_changed', (data) => {
+            console.log('Video changed:', data.videoId);
+            changeVideo(data.videoId);
+        });
+
+        socket.on('show_payment', (data) => {
+            console.log('Show payment:', data.amount);
+            showPaymentInfo(data.amount);
+        });
+
+        socket.on('hide_payment', () => {
+            console.log('Hide payment');
+            hidePaymentInfo();
+        });
+
+        socket.on('control_command', (data) => {
+            console.log('Control command:', data.command);
+            handleControlCommand(data.command);
+        });
+
+        socket.on('settings_update', (data) => {
+            console.log('Settings updated:', data);
+            // Можно применить настройки если нужно
+        });
+
+        // Функция для обновления статуса
+        function updateStatus(status, text) {
+            const statusElement = document.querySelector('.status');
+            const dotElement = document.querySelector('.status-dot');
+            
+            if (statusElement && dotElement) {
+                statusElement.querySelector('span').textContent = text;
+                dotElement.style.backgroundColor = status === 'connected' ? '#4CAF50' : '#F44336';
             }
         }
 
-        // Выполнение команд
-        function executeCommand(message) {
-            console.log('Выполняем команду:', message);
-            
-            switch(message.command) {
-                case 'setVolume':
-                    setVolume(message.data);
-                    break;
-                case 'changeVideo':
-                    changeVideo(message.data);
-                    break;
-                case 'showPayment':
-                    showPaymentInfo(message.data);
-                    break;
-                case 'hidePayment':
-                    hidePaymentInfo();
-                    break;
+        // Функция для обработки команд управления
+        function handleControlCommand(command) {
+            switch(command) {
                 case 'play':
                     playVideo();
                     break;
                 case 'pause':
                     pauseVideo();
                     break;
-                case 'updateSettings':
-                    updateSettings(message.data);
+                case 'stop':
+                    stopVideo();
                     break;
             }
+        }
+
+        // Функции управления видео
+        function changeVideo(videoId) {
+            const newSrc = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&controls=0&disablekb=1&modestbranding=1&rel=0&playsinline=1&loop=1&playlist=${videoId}`;
+            videoIframe.src = newSrc;
         }
 
         function setVolume(volume) {
@@ -260,11 +267,20 @@
             }
         }
 
-        function changeVideo(videoId) {
-            const newSrc = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&controls=0&disablekb=1&modestbranding=1&rel=0&playsinline=1&loop=1&playlist=${videoId}`;
-            videoIframe.src = newSrc;
+        function playVideo() {
+            videoIframe.src = videoIframe.src.replace('autoplay=0', 'autoplay=1');
         }
 
+        function pauseVideo() {
+            videoIframe.src = videoIframe.src.replace('autoplay=1', 'autoplay=0');
+        }
+
+        function stopVideo() {
+            pauseVideo();
+            // Дополнительная логика остановки если нужна
+        }
+
+        // Функция для показа платежной информации
         function showPaymentInfo(amount) {
             const paymentOverlay = document.getElementById('payment-overlay');
             const amountValue = document.getElementById('amount-value');
@@ -276,28 +292,13 @@
             videoIframe.src = videoIframe.src.replace('autoplay=1', 'autoplay=0');
         }
 
+        // Функция для скрытия платежной информации
         function hidePaymentInfo() {
             const paymentOverlay = document.getElementById('payment-overlay');
             paymentOverlay.classList.remove('visible');
             
             // Возобновляем воспроизведение
             videoIframe.src = videoIframe.src.replace('autoplay=0', 'autoplay=1');
-        }
-
-        function playVideo() {
-            videoIframe.src = videoIframe.src.replace('autoplay=0', 'autoplay=1');
-        }
-
-        function pauseVideo() {
-            videoIframe.src = videoIframe.src.replace('autoplay=1', 'autoplay=0');
-        }
-
-        function updateSettings(newSettings) {
-            // Применяем новые настройки
-            if (newSettings.volume !== undefined) {
-                setVolume(newSettings.volume);
-            }
-            // Можно добавить обработку других настроек
         }
 
         // Управление звуком
@@ -308,9 +309,6 @@
                 setVolume(0);
             }
         });
-
-        // Проверяем команды каждую секунду
-        setInterval(checkForCommands, 1000);
 
         // Защита от паузы
         document.addEventListener('keydown', (e) => {
