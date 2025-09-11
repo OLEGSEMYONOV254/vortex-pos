@@ -323,20 +323,21 @@
         
         // Функция подключения к серверу
         function connectToServer() {
-            // Используем тот же домен, на котором работает страница
-            const serverUrl = window.location.origin;
+            const serverUrl = 'https://vortex-pos.onrender.com';
             
             updateStatus('connecting', 'Подключение к серверу...');
             debugLog(`Пытаемся подключиться к: ${serverUrl}`);
             
             try {
-                // Подключаемся к серверу с правильными параметрами
+                // Подключаемся к серверу с правильными параметрами для Render
                 socket = io(serverUrl, {
-                    transports: ['websocket', 'polling'],
+                    transports: ['polling', 'websocket'], // Важен порядок!
                     timeout: 10000,
                     reconnection: true,
-                    reconnectionAttempts: 5,
-                    reconnectionDelay: 1000
+                    reconnectionAttempts: 10,
+                    reconnectionDelay: 2000,
+                    forceNew: true,
+                    path: '/socket.io/' // Явно указываем путь
                 });
                 
                 // Обработчики событий
@@ -352,16 +353,22 @@
                 
                 socket.on('disconnect', (reason) => {
                     isConnected = false;
-                    updateStatus('disconnected', 'Отключено от сервера: ' + reason);
+                    updateStatus('disconnected', 'Отключено от сервера');
                     debugLog('❌ Отключено от сервера: ' + reason);
                     console.log('Disconnected from server:', reason);
                 });
                 
                 socket.on('connect_error', (error) => {
                     isConnected = false;
-                    updateStatus('error', 'Ошибка подключения: ' + error.message);
+                    updateStatus('error', 'Ошибка подключения');
                     debugLog('❌ Ошибка подключения: ' + error.message);
                     console.error('Connection error:', error);
+                    
+                    // Пробуем альтернативный транспорт
+                    setTimeout(() => {
+                        debugLog('🔄 Пробуем переподключиться с polling...');
+                        connectWithPolling();
+                    }, 2000);
                 });
                 
                 socket.on('settings_update', (data) => {
@@ -375,26 +382,38 @@
                     console.log('Command result:', data);
                     showNotification(data.message, data.success ? 'success' : 'error');
                 });
-
-                socket.on('reconnect_attempt', (attemptNumber) => {
-                    debugLog(`🔄 Попытка переподключения #${attemptNumber}`);
-                });
-
-                socket.on('reconnect', (attemptNumber) => {
-                    debugLog('✅ Успешно переподключено');
-                    isConnected = true;
-                    updateStatus('connected', 'Переподключено к серверу');
-                });
-
-                socket.on('reconnect_error', (error) => {
-                    debugLog('❌ Ошибка переподключения: ' + error.message);
-                });
-                
+    
             } catch (error) {
                 updateStatus('error', 'Ошибка: ' + error.message);
                 debugLog('❌ Критическая ошибка: ' + error.message);
                 console.error('Connection failed:', error);
             }
+        }
+
+        // Альтернативное подключение только через polling
+        function connectWithPolling() {
+            const serverUrl = 'https://vortex-pos.onrender.com';
+            
+            debugLog('🔄 Попытка подключения через polling...');
+            
+            socket = io(serverUrl, {
+                transports: ['polling'], // Только polling
+                timeout: 15000,
+                forceNew: true,
+                path: '/socket.io/'
+            });
+            
+            // Те же обработчики событий...
+            socket.on('connect', () => {
+                isConnected = true;
+                updateStatus('connected', 'Подключено через polling');
+                debugLog('✅ Успешно подключено через polling');
+                socket.emit('get_settings');
+            });
+            
+            socket.on('connect_error', (error) => {
+                debugLog('❌ Ошибка polling подключения: ' + error.message);
+            });
         }
         
         // Функции управления статусом
