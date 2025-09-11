@@ -1,5 +1,6 @@
 from flask import Flask, render_template, send_from_directory, request, redirect, url_for, jsonify
 from flask_socketio import SocketIO, emit
+import eventlet
 from flask_cors import CORS
 import psycopg2
 from psycopg2.extras import DictCursor
@@ -18,6 +19,8 @@ import math  # добавь вверху, если ещё нет
 from db import get_db
 #from socketio_server import socketio
 
+eventlet.monkey_patch()
+
 tz = pytz.timezone("Asia/Almaty")  # или нужная тебе временная зона
 
 
@@ -26,7 +29,11 @@ tz = pytz.timezone("Asia/Almaty")  # или нужная тебе временн
 app = Flask(__name__, template_folder='templates')
 app.config['SECRET_KEY'] = 'your-secret-key'
 CORS(app)
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, 
+                   cors_allowed_origins="*",
+                   async_mode='eventlet',
+                   logger=True,
+                   engineio_logger=True)
 
 # Настройка путей
 DATA_DIR = Path("data")
@@ -1306,6 +1313,7 @@ if __name__ == '__main__':
         socketio.run(app, host='0.0.0.0', port=8080, debug=True)
     except Exception as e:
         print(f"[ОШИБКА] При запуске сервера: {e}")
+
 
 
 
