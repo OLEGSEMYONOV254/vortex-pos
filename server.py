@@ -299,6 +299,21 @@ def trigger_import():
     except Exception as e:
         return f"Ошибка: {str(e)}"
 
+@socketio.on('connect')
+def handle_connect():
+    print(f'✅ Client connected: {request.sid}')
+    print(f'📋 Referrer: {request.referrer}')
+    print(f'🌐 Headers: {dict(request.headers)}')
+    
+    client_type = 'settings' if 'settings' in (request.referrer or '') else 'promo'
+    connected_clients[request.sid] = {
+        'connected_at': datetime.now(),
+        'type': client_type
+    }
+    
+    print(f'👤 Client type: {client_type}')
+    emit('settings_update', promo_settings)
+
 # Маршруты приложения
 @app.route("/")
 def home():
@@ -1313,6 +1328,7 @@ if __name__ == '__main__':
         socketio.run(app, host='0.0.0.0', port=8080, debug=True)
     except Exception as e:
         print(f"[ОШИБКА] При запуске сервера: {e}")
+
 
 
 
