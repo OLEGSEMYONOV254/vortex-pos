@@ -28,9 +28,9 @@ tz = pytz.timezone("Asia/Almaty")  # или нужная тебе временн
 # Инициализация приложения
 app = Flask(__name__, template_folder='templates')
 app.config['SECRET_KEY'] = 'your-secret-key'
-CORS(app)
+CORS(app, origins=["https://vortex-pos.onrender.com", "http://localhost:8080"])
 socketio = SocketIO(app, 
-                   cors_allowed_origins="*",
+                   cors_allowed_origins=["https://vortex-pos.onrender.com", "http://localhost:8080"],
                    async_mode='eventlet',
                    logger=True,
                    engineio_logger=True)
@@ -1328,6 +1328,7 @@ if __name__ == '__main__':
         socketio.run(app, host='0.0.0.0', port=8080, debug=True)
     except Exception as e:
         print(f"[ОШИБКА] При запуске сервера: {e}")
+
 
 
 
