@@ -885,8 +885,8 @@
     function sendToPromo(command) {
         kassaSocket.emit('kassa_command', {
             command: command
-        }
-    });
+        });
+    }
 
     function updateCartCounter() {
       const customer = getCurrentCustomer();
@@ -1755,6 +1755,7 @@
   </script>
 </body>
 </html>
+
 
 
 
