@@ -344,6 +344,74 @@ def handle_client_ready():
             'message': f'{client_type.capitalize()} client registered'
         })
 
+# Добавьте эти обработчики Socket.io в server.py
+
+@socketio.on('kassa_connect')
+def handle_kassa_connect():
+    """Подключение кассового клиента"""
+    client_sid = request.sid
+    connected_clients[client_sid] = {
+        'connected_at': datetime.now(),
+        'type': 'kassa',
+        'sid': client_sid
+    }
+    print(f'💰 Касса подключена: {client_sid}')
+    emit('command_result', {'success': True, 'message': 'Касса подключена'})
+
+@socketio.on('show_total_on_screen')
+def handle_show_total(data):
+    """Показать сумму на промо-экране"""
+    try:
+        amount = data.get('amount', 0)
+        customer_name = data.get('customer_name', '')
+        
+        print(f'📺 Показываем сумму на экране: {amount}₸ для {customer_name}')
+        
+        # Отправляем всем промо-клиентам
+        for sid, client in connected_clients.items():
+            if client['type'] == 'promo':
+                emit('show_payment', {
+                    'amount': amount,
+                    'customer_name': customer_name,
+                    'timestamp': datetime.now().strftime("%H:%M:%S")
+                }, room=sid)
+        
+        emit('command_result', {'success': True, 'message': f'Сумма {amount}₸ показана на экране'})
+        
+    except Exception as e:
+        print(f'❌ Ошибка показа суммы: {e}')
+        emit('command_result', {'success': False, 'message': f'Ошибка: {str(e)}'})
+
+@socketio.on('hide_total_on_screen')
+def handle_hide_total():
+    """Скрыть сумму на промо-экране"""
+    try:
+        print(f'📺 Скрываем сумму с экрана')
+        
+        # Отправляем всем промо-клиентам
+        for sid, client in connected_clients.items():
+            if client['type'] == 'promo':
+                emit('hide_payment', room=sid)
+        
+        emit('command_result', {'success': True, 'message': 'Сумма скрыта с экрана'})
+        
+    except Exception as e:
+        print(f'❌ Ошибка скрытия суммы: {e}')
+        emit('command_result', {'success': False, 'message': f'Ошибка: {str(e)}'})
+
+@socketio.on('kassa_command')
+def handle_kassa_command(data):
+    """Обработка команд от кассы"""
+    command = data.get('command', '')
+    print(f'🎮 Команда от кассы: {command}')
+    
+    # Отправляем команду всем промо-клиентам
+    for sid, client in connected_clients.items():
+        if client['type'] == 'promo':
+            emit('control_command', {'command': command}, room=sid)
+    
+    emit('command_result', {'success': True, 'message': f'Команда {command} выполнена'})
+
 # Маршруты приложения
 @app.route("/")
 def home():
@@ -1441,6 +1509,7 @@ if __name__ == '__main__':
         socketio.run(app, host='0.0.0.0', port=8080, debug=True)
     except Exception as e:
         print(f"[ОШИБКА] При запуске сервера: {e}")
+
 
 
 
