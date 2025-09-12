@@ -633,6 +633,25 @@
     .mobile-cart-toggle.added {
       animation: bounce 0.5s;
     }
+
+    /* Стили для уведомлений */
+    .notification {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--primary);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        z-index: 10000;
+        animation: slideDown 0.3s ease;
+    }
+    
+    @keyframes slideDown {
+        from { transform: translate(-50%, -100%); opacity: 0; }
+        to { transform: translate(-50%, 0); opacity: 1; }
+    }
   </style>
 </head>
 <body>
@@ -675,6 +694,12 @@
         <button class="btn btn-discount" onclick="showDiscountModal()">🎯 Скидка/Наценка (F4)</button>
         <button class="btn btn-danger" onclick="clearCart()">🧹 Очистить (F3)</button>
         <button class="btn btn-pay" onclick="processPayment()">💰 Оплатить (F2)</button>
+
+         <div style="display: flex; gap: 5px; margin-top: 10px;">
+              <button class="btn" onclick="sendToPromo('play')" title="Возобновить видео">▶️ Воспр.</button>
+              <button class="btn" onclick="sendToPromo('pause')" title="Приостановить видео">⏸️ Пауза</button>
+              <button class="btn btn-danger" onclick="hideTotalOnScreen()" title="Скрыть сумму">👻 Скрыть</button>
+          </div>
       </div>
     </div>
     
@@ -1579,6 +1604,34 @@
       }
     }
 
+
+    // Функция показа уведомлений
+    function showNotification(message, type = 'success') {
+        // Создаем элемент уведомления
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: ${type === 'success' ? 'var(--primary)' : 'var(--danger)'};
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 10000;
+            animation: slideDown 0.3s ease;
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Удаляем уведомление через 3 секунды
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+
     // ================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ================== //
     
     // Обновите функцию showTotal() для интеграции
@@ -1698,5 +1751,6 @@
   </script>
 </body>
 </html>
+
 
 
