@@ -129,6 +129,18 @@
             background: #4CAF50;
         }
 
+        .connection-info {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            z-index: 10;
+        }
+
         @media (max-width: 768px) {
             .amount {
                 font-size: 36px;
@@ -144,9 +156,14 @@
                 height: 40px;
                 font-size: 16px;
             }
+            
+            .connection-info {
+                top: 60px;
+                left: 10px;
+                font-size: 10px;
+            }
         }
     </style>
-    <!-- Socket.io клиентская библиотека -->
     <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
 </head>
 <body>
@@ -161,7 +178,7 @@
     <div id="payment-overlay" class="payment-overlay">
         <div class="amount">Сумма к оплате: <span id="amount-value">0</span> ₸</div>
         <div class="qr-code">
-            <img id="qr-image" src="/static/qrАскадир.png" alt="QR-код для оплаты">
+            <img id="qr-image" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaTD0iMjAwIiBmaWxsPSIjZmZmIi8+PHRleHQgeD0iMTAwIiB5PSIxMDAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgYWxpZ25tZW50LWJhc2VsaW5lPSJtaWRkbGUiPlFL0IPQutC+0LzQsNC90LTQsDwvdGV4dD48L3N2Zz4=" alt="QR-код для оплаты">
         </div>
     </div>
     
@@ -170,8 +187,12 @@
     </div>
 
     <div class="status">
-        <div class="status-dot"></div>
-        <span>Онлайн</span>
+        <div class="status-dot" id="status-dot"></div>
+        <span id="status-text">Подключение...</span>
+    </div>
+
+    <div class="connection-info">
+        ID: <span id="connection-id">-</span>
     </div>
 
     <script>
@@ -180,17 +201,24 @@
         const muteBtn = document.getElementById('mute-btn');
 
         // Инициализация Socket.io
-        const socket = io();
+        const socket = io({
+            transports: ['polling', 'websocket'],
+            timeout: 10000
+        });
 
         // Обработчики Socket.io событий
         socket.on('connect', () => {
-            console.log('Connected to server');
             updateStatus('connected', 'Подключено к серверу');
+            document.getElementById('connection-id').textContent = socket.id;
+            console.log('Connected to server with ID:', socket.id);
+            
+            // Сообщаем серверу что мы промо-клиент
+            socket.emit('client_ready');
         });
 
         socket.on('disconnect', () => {
-            console.log('Disconnected from server');
             updateStatus('disconnected', 'Отключено от сервера');
+            console.log('Disconnected from server');
         });
 
         socket.on('volume_changed', (data) => {
@@ -218,18 +246,17 @@
             handleControlCommand(data.command);
         });
 
-        socket.on('settings_update', (data) => {
-            console.log('Settings updated:', data);
-            // Можно применить настройки если нужно
+        socket.on('command_result', (data) => {
+            console.log('Server response:', data.message);
         });
 
         // Функция для обновления статуса
         function updateStatus(status, text) {
-            const statusElement = document.querySelector('.status');
-            const dotElement = document.querySelector('.status-dot');
+            const statusElement = document.getElementById('status-text');
+            const dotElement = document.getElementById('status-dot');
             
             if (statusElement && dotElement) {
-                statusElement.querySelector('span').textContent = text;
+                statusElement.textContent = text;
                 dotElement.style.backgroundColor = status === 'connected' ? '#4CAF50' : '#F44336';
             }
         }
@@ -277,7 +304,6 @@
 
         function stopVideo() {
             pauseVideo();
-            // Дополнительная логика остановки если нужна
         }
 
         // Функция для показа платежной информации
@@ -289,7 +315,7 @@
             paymentOverlay.classList.add('visible');
             
             // Пауза видео
-            videoIframe.src = videoIframe.src.replace('autoplay=1', 'autoplay=0');
+            pauseVideo();
         }
 
         // Функция для скрытия платежной информации
@@ -298,7 +324,7 @@
             paymentOverlay.classList.remove('visible');
             
             // Возобновляем воспроизведение
-            videoIframe.src = videoIframe.src.replace('autoplay=0', 'autoplay=1');
+            playVideo();
         }
 
         // Управление звуком
