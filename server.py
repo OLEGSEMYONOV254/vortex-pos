@@ -299,20 +299,50 @@ def trigger_import():
     except Exception as e:
         return f"Ошибка: {str(e)}"
 
+
+
 @socketio.on('connect')
 def handle_connect():
     print(f'✅ Client connected: {request.sid}')
     print(f'📋 Referrer: {request.referrer}')
-    print(f'🌐 Headers: {dict(request.headers)}')
     
-    client_type = 'settings' if 'settings' in (request.referrer or '') else 'promo'
+    # Определяем тип клиента по referrer
+    client_type = 'unknown'
+    if request.referrer:
+        if 'settings' in request.referrer:
+            client_type = 'settings'
+        elif 'promo' in request.referrer:
+            client_type = 'promo'
+    
     connected_clients[request.sid] = {
         'connected_at': datetime.now(),
-        'type': client_type
+        'type': client_type,
+        'sid': request.sid
     }
     
     print(f'👤 Client type: {client_type}')
+    
+    # Отправляем текущие настройки
     emit('settings_update', promo_settings)
+    
+    # Отправляем подтверждение подключения
+    emit('command_result', {
+        'success': True, 
+        'message': f'Connected as {client_type} client'
+    })
+
+# Добавьте этот хендлер для обработки команд от настроек
+@socketio.on('client_ready')
+def handle_client_ready():
+    """Клиент сообщает что готов принимать команды"""
+    client_sid = request.sid
+    if client_sid in connected_clients:
+        client_type = connected_clients[client_sid]['type']
+        print(f'📢 {client_type.capitalize()} client ready: {client_sid}')
+        emit('command_result', {
+            'success': True, 
+            'message': f'{client_type.capitalize()} client registered'
+        })
 
 # Маршруты приложения
 @app.route("/")
@@ -419,14 +449,43 @@ def handle_disconnect():
 def handle_get_settings():
     emit('settings_update', promo_settings)
 
+# Улучшенный обработчик для настроек
 @socketio.on('set_volume')
 def handle_set_volume(data):
-    promo_settings['volume'] = data['volume']
-    # Отправляем всем промо-клиентам
-    for sid, client in connected_clients.items():
-        if client['type'] == 'promo':
-            emit('volume_changed', data, room=sid)
-    emit('command_result', {'success': True, 'message': 'Volume updated'})
+    try:
+        volume = int(data['volume'])
+        if 0 <= volume <= 100:
+            promo_settings['volume'] = volume
+            
+            # Отправляем всем промо-клиентам
+            for sid, client in connected_clients.items():
+                if client['type'] == 'promo':
+                    emit('volume_changed', {'volume': volume}, room=sid)
+            
+            emit('command_result', {
+                'success': True, 
+                'message': f'Volume set to {volume}%'
+            })
+        else:
+            emit('command_result', {
+                'success': False, 
+                'message': 'Volume must be between 0-100'
+            })
+    except (ValueError, KeyError):
+        emit('command_result', {
+            'success': False, 
+            'message': 'Invalid volume value'
+        })
+
+# Добавьте быстрый тестовый эндпоинт
+@app.route('/api/socket-test')
+def socket_test():
+    """Быстрая проверка работы socket.io"""
+    return jsonify({
+        'status': 'success',
+        'connected_clients': len(connected_clients),
+        'clients': list(connected_clients.values())
+    })
 
 @socketio.on('change_video')
 def handle_change_video(data):
@@ -1382,6 +1441,7 @@ if __name__ == '__main__':
         socketio.run(app, host='0.0.0.0', port=8080, debug=True)
     except Exception as e:
         print(f"[ОШИБКА] При запуске сервера: {e}")
+
 
 
 
