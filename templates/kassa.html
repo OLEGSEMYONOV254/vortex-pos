@@ -1362,6 +1362,10 @@
     function renderProducts(products) {
       const container = document.getElementById('productGrid');
       if (!container) return;
+
+      console.log('🔄 Рендеринг товаров:', products.length);
+
+      
       
       container.innerHTML = '';
       
@@ -1751,6 +1755,7 @@
   </script>
 </body>
 </html>
+
 
 
 
