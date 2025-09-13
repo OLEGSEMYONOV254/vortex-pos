@@ -439,6 +439,17 @@
             pauseVideo();
         }
 
+        // Добавьте в промо-страницу
+        document.getElementById('ticker-container')?.addEventListener('click', function() {
+            // При клике на бегущую строку можно выполнить действие
+            console.log('Бегущая строка кликнута:', currentTickerText);
+            
+            // Например, показать дополнительную информацию
+            if (currentTickerText.includes('скидк') || currentTickerText.includes('акци')) {
+                showPaymentInfo(5000); // Показать акционную цену
+            }
+        });
+
         // Функция для скрытия платежной информации
         function hidePaymentInfo() {
             const paymentOverlay = document.getElementById('payment-overlay');
