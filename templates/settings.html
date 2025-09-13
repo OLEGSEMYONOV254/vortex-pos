@@ -320,10 +320,12 @@
                          rows="3" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;"></textarea>
             </div>
             <div class="form-group">
-                <label for="ticker-speed">Скорость (1-медленно, 10-быстро):</label>
+                <label for="ticker-speed">Скорость: 
+                    <span id="speed-value">5</span> 
+                    (<span id="speed-desc">средняя</span>)
+                </label>
                 <input type="range" id="ticker-speed" class="slider" min="1" max="10" value="5" 
-                       oninput="document.getElementById('speed-value').textContent = this.value + ' ур.'">
-                <div>Скорость: <span id="speed-value">5 ур.</span></div>
+                       oninput="updateSpeedDisplay(this.value)">
             </div>
             <div class="button-group">
                 <button class="btn-success" onclick="showTicker()">▶️ Показать</button>
@@ -334,6 +336,7 @@
                 <button class="btn-primary" onclick="sendTicker('🔥 Специальное предложение! Скидки до 50%! 🔥')">Акция</button>
                 <button class="btn-primary" onclick="sendTicker('🚚 Бесплатная доставка при заказе от 10000₸! 🚚')">Доставка</button>
                 <button class="btn-primary" onclick="sendTicker('⏰ Работаем круглосуточно! Звоните! ⏰')">Часы работы</button>
+                <button class="btn" onclick="testSpeed()">🎯 Тест скорости</button>
             </div>
         </div>
     </div>
@@ -401,10 +404,27 @@
             }
         }
 
+        // Функция для обновления отображения скорости
+        function updateSpeedDisplay(speed) {
+            const speedValue = document.getElementById('speed-value');
+            const speedDesc = document.getElementById('speed-desc');
+            
+            speedValue.textContent = speed;
+            
+            // Описания для разных значений скорости
+            const descriptions = {
+                1: 'очень медленно', 2: 'медленно', 3: 'медленно', 
+                4: 'средне-медленно', 5: 'средняя', 6: 'средне-быстро',
+                7: 'быстро', 8: 'быстро', 9: 'очень быстро', 10: 'максимальная'
+            };
+            
+            speedDesc.textContent = descriptions[speed] || 'средняя';
+        }
+        
         // Функции управления бегущей строкой
         function showTicker() {
             const text = document.getElementById('ticker-text').value.trim();
-            const speed = document.getElementById('ticker-speed').value;
+            const speed = parseInt(document.getElementById('ticker-speed').value);
             
             if (!text) {
                 showNotification('Введите текст для бегущей строки', false);
@@ -414,9 +434,9 @@
             if (isConnected && socket) {
                 socket.emit('show_ticker', {
                     text: text,
-                    speed: speed * 2 // Умножаем для соответствия скорости анимации
+                    speed: speed // Отправляем скорость как есть (1-10)
                 });
-                showNotification('Бегущая строка показана');
+                showNotification(`Бегущая строка показана (скорость: ${speed})`);
             } else {
                 showNotification('Нет подключения к серверу', false);
             }
@@ -433,7 +453,7 @@
         
         function updateTicker() {
             const text = document.getElementById('ticker-text').value.trim();
-            const speed = document.getElementById('ticker-speed').value;
+            const speed = parseInt(document.getElementById('ticker-speed').value);
             
             if (!text) {
                 showNotification('Введите текст для бегущей строки', false);
@@ -443,9 +463,9 @@
             if (isConnected && socket) {
                 socket.emit('update_ticker', {
                     text: text,
-                    speed: speed * 2
+                    speed: speed
                 });
-                showNotification('Бегущая строка обновлена');
+                showNotification(`Бегущая строка обновлена (скорость: ${speed})`);
             } else {
                 showNotification('Нет подключения к серверу', false);
             }
@@ -455,6 +475,12 @@
             document.getElementById('ticker-text').value = predefinedText;
             showTicker();
         }
+        
+        // Инициализация отображения скорости при загрузке
+        window.addEventListener('load', function() {
+            // ... существующий код ...
+            updateSpeedDisplay(5); // Инициализируем отображение скорости
+        });
         
         // Попытка переподключения
         function tryReconnect() {
@@ -565,6 +591,28 @@
             // Автоматически подключаемся к серверу при загрузке
             connectToServer();
         });
+
+        function testSpeed() {
+            const speed = parseInt(document.getElementById('ticker-speed').value);
+            const testText = `Тест скорости: ${speed} (${document.getElementById('speed-desc').textContent})`;
+            
+            document.getElementById('ticker-text').value = testText;
+            
+            if (isConnected && socket) {
+                socket.emit('show_ticker', {
+                    text: testText,
+                    speed: speed
+                });
+                showNotification(`Тест скорости: ${speed}`);
+                
+                // Автоматически скрыть через 5 секунд
+                setTimeout(() => {
+                    if (isConnected && socket) {
+                        socket.emit('hide_ticker');
+                    }
+                }, 5000);
+            }
+        }
 
         // В settings.html добавьте
         function saveTickerSettings() {
