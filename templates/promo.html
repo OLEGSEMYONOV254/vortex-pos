@@ -199,17 +199,24 @@
         }
     
         /* Анимация с переменной скоростью */
-        .ticker-scrolling {
-            animation: ticker-scroll linear infinite;
-        }
-    
         @keyframes ticker-scroll {
             0% {
-                transform: translateX(0%);
+                transform: translateX(100%);
+            }
+            5% {
+                transform: translateX(100%);
+            }
+            95% {
+                transform: translateX(-100%);
             }
             100% {
                 transform: translateX(-100%);
             }
+        }
+        
+        .ticker-scrolling {
+            animation: ticker-scroll linear infinite;
+            animation-timing-function: linear;
         }
     </style>
     <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
