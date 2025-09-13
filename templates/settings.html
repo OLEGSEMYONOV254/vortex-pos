@@ -210,15 +210,18 @@
             background: #ff9800;
         }
         
-        .debug-info {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            font-family: monospace;
+        .simple-status {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 15px;
             font-size: 12px;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
         }
-        
+
         @media (max-width: 768px) {
             .settings-grid {
                 grid-template-columns: 1fr;
@@ -228,20 +231,18 @@
                 flex-direction: column;
             }
             
-            .connection-status {
+            .simple-status {
                 top: 10px;
                 right: 10px;
-                font-size: 12px;
+                font-size: 11px;
             }
         }
     </style>
-    <!-- Socket.io клиент -->
     <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
 </head>
 <body>
-    <div class="connection-status" id="connection-status">
-        <div class="status-indicator" id="status-indicator"></div>
-        <span id="status-text">Подключение...</span>
+    <div class="simple-status" id="simpleStatus">
+        🔄 Подключение...
     </div>
 
     <div class="container">
@@ -309,146 +310,100 @@
                 </div>
             </div>
         </div>
-
-        <!-- Debug информация -->
-        <div class="debug-info">
-            <h4>Информация о подключении:</h4>
-            <div id="debug-output">Загрузка...</div>
-        </div>
     </div>
 
     <script>
         let socket = null;
         let isConnected = false;
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 3;
         
         // Функция подключения к серверу
         function connectToServer() {
-            const serverUrl = 'https://vortex-pos.onrender.com';
+            // Используем тот же домен, на котором работает страница
+            const serverUrl = window.location.origin;
             
-            updateStatus('connecting', 'Подключение к серверу...');
-            debugLog(`Пытаемся подключиться к: ${serverUrl}`);
+            updateStatus('Подключение...');
             
             try {
-                // Подключаемся к серверу с правильными параметрами для Render
+                // Подключаемся к серверу
                 socket = io(serverUrl, {
-                    transports: ['polling', 'websocket'], // Важен порядок!
+                    transports: ['polling', 'websocket'],
                     timeout: 10000,
-                    reconnection: true,
-                    reconnectionAttempts: 10,
-                    reconnectionDelay: 2000,
-                    forceNew: true,
-                    path: '/socket.io/' // Явно указываем путь
+                    reconnection: false // Отключаем автоматическое переподключение
                 });
                 
                 // Обработчики событий
                 socket.on('connect', () => {
                     isConnected = true;
-                    updateStatus('connected', 'Подключено к серверу');
-                    debugLog('✅ Успешно подключено к серверу');
+                    reconnectAttempts = 0;
+                    updateStatus('✅ Подключено');
                     console.log('Connected to server:', serverUrl);
                     
                     // Запрашиваем текущие настройки при подключении
                     socket.emit('get_settings');
                 });
                 
-                socket.on('disconnect', (reason) => {
+                socket.on('disconnect', () => {
                     isConnected = false;
-                    updateStatus('disconnected', 'Отключено от сервера');
-                    debugLog('❌ Отключено от сервера: ' + reason);
-                    console.log('Disconnected from server:', reason);
+                    updateStatus('❌ Отключено');
+                    console.log('Disconnected from server');
+                    tryReconnect();
                 });
                 
                 socket.on('connect_error', (error) => {
                     isConnected = false;
-                    updateStatus('error', 'Ошибка подключения');
-                    debugLog('❌ Ошибка подключения: ' + error.message);
+                    updateStatus('❌ Ошибка подключения');
                     console.error('Connection error:', error);
-                    
-                    // Пробуем альтернативный транспорт
-                    setTimeout(() => {
-                        debugLog('🔄 Пробуем переподключиться с polling...');
-                        connectWithPolling();
-                    }, 2000);
+                    tryReconnect();
                 });
                 
                 socket.on('settings_update', (data) => {
-                    debugLog('✅ Получены настройки с сервера');
                     console.log('Received settings:', data);
                     updateSettings(data);
                 });
                 
                 socket.on('command_result', (data) => {
-                    debugLog('📨 Ответ от сервера: ' + data.message);
                     console.log('Command result:', data);
-                    showNotification(data.message, data.success ? 'success' : 'error');
+                    showNotification(data.message, data.success);
                 });
-    
+                
             } catch (error) {
-                updateStatus('error', 'Ошибка: ' + error.message);
-                debugLog('❌ Критическая ошибка: ' + error.message);
+                updateStatus('❌ Ошибка подключения');
                 console.error('Connection failed:', error);
+                tryReconnect();
             }
         }
-
-        // Альтернативное подключение только через polling
-        function connectWithPolling() {
-            const serverUrl = 'https://vortex-pos.onrender.com';
-            
-            debugLog('🔄 Попытка подключения через polling...');
-            
-            socket = io(serverUrl, {
-                transports: ['polling'], // Только polling
-                timeout: 15000,
-                forceNew: true,
-                path: '/socket.io/'
-            });
-            
-            // Те же обработчики событий...
-            socket.on('connect', () => {
-                isConnected = true;
-                updateStatus('connected', 'Подключено через polling');
-                debugLog('✅ Успешно подключено через polling');
-                socket.emit('get_settings');
-            });
-            
-            socket.on('connect_error', (error) => {
-                debugLog('❌ Ошибка polling подключения: ' + error.message);
-            });
+        
+        // Попытка переподключения
+        function tryReconnect() {
+            if (reconnectAttempts < maxReconnectAttempts) {
+                reconnectAttempts++;
+                setTimeout(() => {
+                    updateStatus(`🔄 Попытка ${reconnectAttempts}/${maxReconnectAttempts}`);
+                    connectToServer();
+                }, 2000);
+            } else {
+                updateStatus('❌ Нет подключения');
+                showNotification('Не удалось подключиться к серверу', false);
+            }
         }
         
         // Функции управления статусом
-        function updateStatus(status, text) {
-            const indicator = document.getElementById('status-indicator');
-            const statusText = document.getElementById('status-text');
-            
-            indicator.className = 'status-indicator';
-            switch(status) {
-                case 'connected':
-                    indicator.classList.add('status-online');
-                    break;
-                case 'disconnected':
-                    indicator.classList.add('status-offline');
-                    break;
-                case 'connecting':
-                    indicator.classList.add('status-connecting');
-                    break;
-                case 'error':
-                    indicator.style.backgroundColor = '#ff9800';
-                    break;
+        function updateStatus(text) {
+            const statusElement = document.getElementById('simpleStatus');
+            if (statusElement) {
+                statusElement.textContent = text;
             }
-            
-            statusText.textContent = text;
         }
         
-        function debugLog(message) {
-            const debugOutput = document.getElementById('debug-output');
-            const timestamp = new Date().toLocaleTimeString();
-            debugOutput.innerHTML += `<div>[${timestamp}] ${message}</div>`;
-            debugOutput.scrollTop = debugOutput.scrollHeight;
-        }
-        
-        function showNotification(message, type = 'success') {
-            alert(type.toUpperCase() + ': ' + message);
+        function showNotification(message, isSuccess = true) {
+            // Простые уведомления через alert
+            if (isSuccess) {
+                alert('✅ ' + message);
+            } else {
+                alert('❌ ' + message);
+            }
         }
         
         // Функции управления
@@ -457,10 +412,8 @@
             
             if (isConnected && socket) {
                 socket.emit('set_volume', { volume: volume });
-                debugLog(`🔊 Отправлена команда изменения громкости: ${volume}%`);
             } else {
-                showNotification('Нет подключения к серверу', 'error');
-                debugLog('❌ Не удалось отправить команду: нет подключения');
+                showNotification('Нет подключения к серверу', false);
             }
         }
         
@@ -474,11 +427,9 @@
             if (videoId) {
                 if (isConnected && socket) {
                     socket.emit('change_video', { videoId: videoId });
-                    debugLog(`🎬 Отправлена команда смены видео: ${videoId}`);
                     showNotification('Видео обновлено');
                 } else {
-                    showNotification('Нет подключения к серверу', 'error');
-                    debugLog('❌ Не удалось отправить команду: нет подключения');
+                    showNotification('Нет подключения к серверу', false);
                 }
             }
         }
@@ -491,30 +442,24 @@
                     amount: parseInt(paymentAmount),
                     timestamp: Date.now()
                 });
-                debugLog(`💳 Отправлена команда показа оплаты: ${paymentAmount}₸`);
             } else {
-                showNotification('Нет подключения к серверу', 'error');
-                debugLog('❌ Не удалось отправить команду: нет подключения');
+                showNotification('Нет подключения к серверу', false);
             }
         }
         
         function hidePayment() {
             if (isConnected && socket) {
                 socket.emit('hide_payment');
-                debugLog('👻 Отправлена команда скрытия оплаты');
             } else {
-                showNotification('Нет подключения к серверу', 'error');
-                debugLog('❌ Не удалось отправить команду: нет подключения');
+                showNotification('Нет подключения к серверу', false);
             }
         }
         
         function sendCommand(command) {
             if (isConnected && socket) {
                 socket.emit('control_command', { command: command });
-                debugLog(`🎮 Отправлена команда управления: ${command}`);
             } else {
-                showNotification('Нет подключения к серверу', 'error');
-                debugLog('❌ Не удалось отправить команду: нет подключения');
+                showNotification('Нет подключения к серверу', false);
             }
         }
         
@@ -536,18 +481,8 @@
         // Инициализация
         window.addEventListener('load', function() {
             console.log('Settings page loaded');
-            debugLog('🚀 Страница настроек загружена');
-            
             // Автоматически подключаемся к серверу при загрузке
             connectToServer();
-            
-            // Периодическая проверка соединения
-            setInterval(() => {
-                if (!isConnected) {
-                    debugLog('🔄 Попытка переподключения...');
-                    connectToServer();
-                }
-            }, 5000);
         });
     </script>
 </body>
