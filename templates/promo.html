@@ -163,6 +163,28 @@
                 font-size: 10px;
             }
         }
+
+        /* Стили для бегущей строки */
+        .ticker-visible {
+            display: flex !important;
+        }
+        
+        .ticker-hidden {
+            display: none !important;
+        }
+        
+        @keyframes ticker-scroll {
+            0% {
+                transform: translateX(100%);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+        
+        .ticker-scrolling {
+            animation: ticker-scroll 20s linear infinite;
+        }
     </style>
     <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
 </head>
@@ -195,7 +217,34 @@
         ID: <span id="connection-id">-</span>
     </div>
 
+    <!-- Бегущая строка -->
+    <div id="ticker-container" style="
+        position: fixed;
+        bottom: 50px;
+        left: 0;
+        width: 100%;
+        height: 40px;
+        background: linear-gradient(90deg, rgba(0,0,0,0.8), rgba(255,0,0,0.3), rgba(0,0,0,0.8));
+        color: white;
+        display: none;
+        align-items: center;
+        overflow: hidden;
+        z-index: 5;
+        border-top: 2px solid #ff0000;
+        border-bottom: 2px solid #ff0000;
+    ">
+        <div id="ticker-text" style="
+            white-space: nowrap;
+            padding-left: 100%;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        "></div>
+    </div>
+
     <script>
+        let tickerInterval = null;
+        let currentTickerText = '';
         let isMuted = false;
         const videoIframe = document.getElementById('youtube-video');
         const muteBtn = document.getElementById('mute-btn');
@@ -248,6 +297,78 @@
 
         socket.on('command_result', (data) => {
             console.log('Server response:', data.message);
+        });
+
+        // Обработчики для бегущей строки
+        socket.on('show_ticker', (data) => {
+            console.log('Show ticker:', data);
+            showTicker(data.text, data.speed);
+        });
+        
+        socket.on('hide_ticker', () => {
+            console.log('Hide ticker');
+            hideTicker();
+        });
+        
+        socket.on('update_ticker', (data) => {
+            console.log('Update ticker:', data);
+            updateTicker(data.text, data.speed);
+        });
+        
+        // Функции управления бегущей строкой
+        function showTicker(text = '', speed = 20) {
+            const tickerContainer = document.getElementById('ticker-container');
+            const tickerText = document.getElementById('ticker-text');
+            
+            if (text) {
+                currentTickerText = text;
+                tickerText.textContent = text;
+            }
+            
+            tickerContainer.classList.remove('ticker-hidden');
+            tickerContainer.classList.add('ticker-visible');
+            
+            // Устанавливаем скорость анимации
+            const animationSpeed = Math.max(10, Math.min(100, speed)); // Ограничиваем скорость 10-100
+            tickerText.style.animationDuration = `${animationSpeed}s`;
+            tickerText.classList.add('ticker-scrolling');
+        }
+        
+        function hideTicker() {
+            const tickerContainer = document.getElementById('ticker-container');
+            const tickerText = document.getElementById('ticker-text');
+            
+            tickerText.classList.remove('ticker-scrolling');
+            tickerContainer.classList.remove('ticker-visible');
+            tickerContainer.classList.add('ticker-hidden');
+        }
+        
+        function updateTicker(text, speed = 20) {
+            const tickerText = document.getElementById('ticker-text');
+            
+            if (text) {
+                currentTickerText = text;
+                tickerText.textContent = text;
+            }
+            
+            // Обновляем скорость
+            const animationSpeed = Math.max(10, Math.min(100, speed));
+            tickerText.style.animationDuration = `${animationSpeed}s`;
+            
+            // Перезапускаем анимацию
+            tickerText.classList.remove('ticker-scrolling');
+            setTimeout(() => {
+                tickerText.classList.add('ticker-scrolling');
+            }, 10);
+        }
+        
+        // Пауза/возобновление при наведении
+        document.getElementById('ticker-container')?.addEventListener('mouseenter', function() {
+            this.querySelector('#ticker-text').style.animationPlayState = 'paused';
+        });
+        
+        document.getElementById('ticker-container')?.addEventListener('mouseleave', function() {
+            this.querySelector('#ticker-text').style.animationPlayState = 'running';
         });
 
         // Функция для обновления статуса
