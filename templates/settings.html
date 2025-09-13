@@ -565,6 +565,58 @@
             // Автоматически подключаемся к серверу при загрузке
             connectToServer();
         });
+
+        // В settings.html добавьте
+        function saveTickerSettings() {
+            const text = document.getElementById('ticker-text').value;
+            const speed = document.getElementById('ticker-speed').value;
+            
+            localStorage.setItem('ticker_settings', JSON.stringify({
+                text: text,
+                speed: speed
+            }));
+            
+            showNotification('Настройки бегущей строки сохранены');
+        }
+        
+        function loadTickerSettings() {
+            const saved = localStorage.getItem('ticker_settings');
+            if (saved) {
+                const settings = JSON.parse(saved);
+                document.getElementById('ticker-text').value = settings.text || '';
+                document.getElementById('ticker-speed').value = settings.speed || 5;
+                document.getElementById('speed-value').textContent = (settings.speed || 5) + ' ур.';
+            }
+        }
+        
+        // Обновите функции управления
+        function showTicker() {
+            const text = document.getElementById('ticker-text').value.trim();
+            const speed = document.getElementById('ticker-speed').value;
+            
+            if (!text) {
+                showNotification('Введите текст для бегущей строки', false);
+                return;
+            }
+            
+            saveTickerSettings(); // Сохраняем настройки
+            
+            if (isConnected && socket) {
+                socket.emit('show_ticker', {
+                    text: text,
+                    speed: speed * 2
+                });
+                showNotification('Бегущая строка показана');
+            } else {
+                showNotification('Нет подключения к серверу', false);
+            }
+        }
+        
+        // Загружаем настройки при загрузке страницы
+        window.addEventListener('load', function() {
+            // ... существующий код ...
+            loadTickerSettings();
+        });
     </script>
 </body>
 </html>
