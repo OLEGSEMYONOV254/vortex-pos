@@ -856,6 +856,70 @@ def upload_excel():
 def promo():
     return render_template("promo.html")
 
+# Обработчики для бегущей строки
+@socketio.on('show_ticker')
+def handle_show_ticker(data):
+    """Показать бегущую строку на промо-экране"""
+    try:
+        text = data.get('text', '')
+        speed = data.get('speed', 20)
+        
+        print(f'📺 Показываем бегущую строку: "{text}" (скорость: {speed})')
+        
+        # Отправляем всем промо-клиентам
+        for sid, client in connected_clients.items():
+            if client['type'] == 'promo':
+                emit('show_ticker', {
+                    'text': text,
+                    'speed': speed
+                }, room=sid)
+        
+        emit('command_result', {'success': True, 'message': f'Бегущая строка показана: {text}'})
+        
+    except Exception as e:
+        print(f'❌ Ошибка показа бегущей строки: {e}')
+        emit('command_result', {'success': False, 'message': f'Ошибка: {str(e)}'})
+
+@socketio.on('hide_ticker')
+def handle_hide_ticker():
+    """Скрыть бегущую строку на промо-экране"""
+    try:
+        print(f'📺 Скрываем бегущую строку')
+        
+        # Отправляем всем промо-клиентам
+        for sid, client in connected_clients.items():
+            if client['type'] == 'promo':
+                emit('hide_ticker', room=sid)
+        
+        emit('command_result', {'success': True, 'message': 'Бегущая строка скрыта'})
+        
+    except Exception as e:
+        print(f'❌ Ошибка скрытия бегущей строки: {e}')
+        emit('command_result', {'success': False, 'message': f'Ошибка: {str(e)}'})
+
+@socketio.on('update_ticker')
+def handle_update_ticker(data):
+    """Обновить бегущую строку на промо-экране"""
+    try:
+        text = data.get('text', '')
+        speed = data.get('speed', 20)
+        
+        print(f'📺 Обновляем бегущую строку: "{text}" (скорость: {speed})')
+        
+        # Отправляем всем промо-клиентам
+        for sid, client in connected_clients.items():
+            if client['type'] == 'promo':
+                emit('update_ticker', {
+                    'text': text,
+                    'speed': speed
+                }, room=sid)
+        
+        emit('command_result', {'success': True, 'message': f'Бегущая строка обновлена: {text}'})
+        
+    except Exception as e:
+        print(f'❌ Ошибка обновления бегущей строки: {e}')
+        emit('command_result', {'success': False, 'message': f'Ошибка: {str(e)}'})
+
 
 @app.route("/1Cweb")
 def Cwebs():
@@ -1509,6 +1573,7 @@ if __name__ == '__main__':
         socketio.run(app, host='0.0.0.0', port=8080, debug=True)
     except Exception as e:
         print(f"[ОШИБКА] При запуске сервера: {e}")
+
 
 
 
