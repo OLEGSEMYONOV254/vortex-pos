@@ -140,6 +140,56 @@
             font-size: 12px;
             z-index: 10;
         }
+        
+        .reconnect-info {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            z-index: 10;
+            display: none;
+        }
+
+        .connection-problem {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            z-index: 15;
+            display: none;
+            max-width: 80%;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.3);
+            border: 2px solid #ff0000;
+        }
+        
+        .connection-problem h3 {
+            margin-bottom: 15px;
+            color: #ff4444;
+        }
+        
+        .connection-problem button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .connection-problem button:hover {
+            background: #3e8e41;
+        }
 
         @media (max-width: 768px) {
             .amount {
@@ -161,6 +211,11 @@
                 top: 60px;
                 left: 10px;
                 font-size: 10px;
+            }
+            
+            .connection-problem {
+                padding: 20px;
+                width: 90%;
             }
         }
 
@@ -218,19 +273,6 @@
             animation: ticker-scroll linear infinite;
             animation-timing-function: linear;
         }
-        
-        /* Стили для счетчика переподключений */
-        .reconnect-counter {
-            position: fixed;
-            bottom: 100px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 10px;
-            font-size: 12px;
-            z-index: 10;
-        }
     </style>
     <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
 </head>
@@ -263,8 +305,14 @@
         ID: <span id="connection-id">-</span>
     </div>
     
-    <div class="reconnect-counter" id="reconnect-counter" style="display: none;">
+    <div class="reconnect-info" id="reconnect-info">
         Переподключений: <span id="reconnect-count">0</span>
+    </div>
+    
+    <div class="connection-problem" id="connection-problem">
+        <h3>Проблемы с подключением</h3>
+        <p>Не удается установить соединение с сервером. Пожалуйста, проверьте подключение к интернету.</p>
+        <button id="retry-connection">Повторить попытку</button>
     </div>
 
     <!-- Бегущая строка -->
@@ -278,13 +326,15 @@
         let currentTickerSpeed = 20;
         let isMuted = false;
         let reconnectAttempts = 0;
+        let connectionProblemTimeout = null;
         const videoIframe = document.getElementById('youtube-video');
         const muteBtn = document.getElementById('mute-btn');
-        
+        let socket = null;
+
         // Функция для обновления счетчика переподключений
         function updateReconnectCounter() {
             reconnectAttempts++;
-            const counterElement = document.getElementById('reconnect-counter');
+            const counterElement = document.getElementById('reconnect-info');
             const countElement = document.getElementById('reconnect-count');
             
             if (counterElement && countElement) {
@@ -298,102 +348,129 @@
             }
         }
 
-        // Инициализация Socket.io с улучшенными параметрами
-        const socket = io({
-            transports: ['websocket', 'polling'],
-            upgrade: true,
-            timeout: 10000,
-            reconnection: true,
-            reconnectionAttempts: Infinity,
-            reconnectionDelay: 1000,
-            reconnectionDelayMax: 5000,
-            randomizationFactor: 0.5
-        });
-
-        // Обработчики Socket.io событий
-        socket.on('connect', () => {
-            updateStatus('connected', 'Подключено к серверу');
-            document.getElementById('connection-id').textContent = socket.id;
-            console.log('Connected to server with ID:', socket.id);
-            
-            // Сообщаем серверу что мы промо-клиент
-            socket.emit('client_ready', { type: 'promo' });
-        });
-
-        socket.on('disconnect', (reason) => {
-            updateStatus('disconnected', `Отключено: ${reason}`);
-            console.log('Disconnected from server:', reason);
-            
-            if (reason === 'io server disconnect') {
-                // Сервер принудительно отключил клиента
-                socket.connect();
+        // Функция для показа проблемы с подключением
+        function showConnectionProblem() {
+            const problemElement = document.getElementById('connection-problem');
+            if (problemElement) {
+                problemElement.style.display = 'block';
             }
-        });
+        }
 
-        socket.on('reconnect', (attemptNumber) => {
-            console.log('Reconnected after', attemptNumber, 'attempts');
-            updateReconnectCounter();
-        });
+        // Функция для скрытия проблемы с подключением
+        function hideConnectionProblem() {
+            const problemElement = document.getElementById('connection-problem');
+            if (problemElement) {
+                problemElement.style.display = 'none';
+            }
+        }
 
-        socket.on('reconnect_attempt', (attemptNumber) => {
-            console.log('Reconnection attempt', attemptNumber);
-            updateStatus('disconnected', `Попытка подключения ${attemptNumber}...`);
-        });
+        // Инициализация Socket.io
+        function initSocket() {
+            // Закрываем предыдущее соединение, если оно существует
+            if (socket) {
+                socket.close();
+            }
+            
+            socket = io({
+                transports: ['websocket', 'polling'],
+                upgrade: true,
+                timeout: 10000,
+                reconnection: true,
+                reconnectionAttempts: Infinity,
+                reconnectionDelay: 1000,
+                reconnectionDelayMax: 10000,
+                randomizationFactor: 0.5
+            });
 
-        socket.on('reconnect_error', (error) => {
-            console.log('Reconnection error:', error);
-        });
+            // Обработчики Socket.io событий
+            socket.on('connect', () => {
+                updateStatus('connected', 'Подключено к серверу');
+                document.getElementById('connection-id').textContent = socket.id;
+                console.log('Connected to server with ID:', socket.id);
+                hideConnectionProblem();
+                
+                // Сообщаем серверу что мы промо-клиент
+                socket.emit('client_ready', { type: 'promo' });
+            });
 
-        socket.on('reconnect_failed', () => {
-            console.log('Reconnection failed');
-            updateStatus('disconnected', 'Не удалось подключиться к серверу');
-        });
+            socket.on('disconnect', (reason) => {
+                updateStatus('disconnected', `Отключено: ${reason}`);
+                console.log('Disconnected from server:', reason);
+                
+                if (reason === 'io server disconnect') {
+                    // Сервер принудительно отключил клиента
+                    socket.connect();
+                }
+            });
 
-        socket.on('volume_changed', (data) => {
-            console.log('Volume changed:', data.volume);
-            setVolume(data.volume);
-        });
+            socket.on('reconnect', (attemptNumber) => {
+                console.log('Reconnected after', attemptNumber, 'attempts');
+                updateStatus('connected', 'Подключено к серверу');
+                updateReconnectCounter();
+                hideConnectionProblem();
+            });
 
-        socket.on('video_changed', (data) => {
-            console.log('Video changed:', data.videoId);
-            changeVideo(data.videoId);
-        });
+            socket.on('reconnect_attempt', (attemptNumber) => {
+                console.log('Reconnection attempt', attemptNumber);
+                updateStatus('disconnected', `Попытка подключения ${attemptNumber}...`);
+            });
 
-        socket.on('show_payment', (data) => {
-            console.log('Show payment:', data.amount);
-            showPaymentInfo(data.amount);
-        });
+            socket.on('reconnect_error', (error) => {
+                console.log('Reconnection error:', error);
+            });
 
-        socket.on('hide_payment', () => {
-            console.log('Hide payment');
-            hidePaymentInfo();
-        });
+            socket.on('reconnect_failed', () => {
+                console.log('Reconnection failed');
+                updateStatus('disconnected', 'Не удалось подключиться к серверу');
+                showConnectionProblem();
+            });
 
-        socket.on('control_command', (data) => {
-            console.log('Control command:', data.command);
-            handleControlCommand(data.command);
-        });
+            socket.on('volume_changed', (data) => {
+                console.log('Volume changed:', data.volume);
+                setVolume(data.volume);
+            });
 
-        socket.on('command_result', (data) => {
-            console.log('Server response:', data.message);
-        });
+            socket.on('video_changed', (data) => {
+                console.log('Video changed:', data.videoId);
+                changeVideo(data.videoId);
+            });
 
-        // Обработчики для бегущей строки
-        socket.on('show_ticker', (data) => {
-            console.log('Show ticker:', data);
-            showTicker(data.text, data.speed);
-        });
-        
-        socket.on('hide_ticker', () => {
-            console.log('Hide ticker');
-            hideTicker();
-        });
-        
-        socket.on('update_ticker', (data) => {
-            console.log('Update ticker:', data);
-            updateTicker(data.text, data.speed);
-        });
-        
+            socket.on('show_payment', (data) => {
+                console.log('Show payment:', data.amount);
+                showPaymentInfo(data.amount);
+            });
+
+            socket.on('hide_payment', () => {
+                console.log('Hide payment');
+                hidePaymentInfo();
+            });
+
+            socket.on('control_command', (data) => {
+                console.log('Control command:', data.command);
+                handleControlCommand(data.command);
+            });
+
+            socket.on('command_result', (data) => {
+                console.log('Server response:', data.message);
+            });
+
+            // Обработчики для бегущей строки
+            socket.on('show_ticker', (data) => {
+                console.log('Show ticker:', data);
+                showTicker(data.text, data.speed);
+            });
+            
+            socket.on('hide_ticker', () => {
+                console.log('Hide ticker');
+                hideTicker();
+            });
+            
+            socket.on('update_ticker', (data) => {
+                console.log('Update ticker:', data);
+                updateTicker(data.text, data.speed);
+            });
+        }
+
         // Функции управления бегущей строкой
         function showTicker(text = '', speed = 20) {
             const tickerContainer = document.getElementById('ticker-container');
@@ -575,11 +652,18 @@
         muteBtn.addEventListener('click', function() {
             if (isMuted) {
                 setVolume(70);
-                socket.emit('volume_change', { volume: 70 });
+                if (socket) socket.emit('volume_change', { volume: 70 });
             } else {
                 setVolume(0);
-                socket.emit('volume_change', { volume: 0 });
+                if (socket) socket.emit('volume_change', { volume: 0 });
             }
+        });
+
+        // Кнопка повторного подключения
+        document.getElementById('retry-connection').addEventListener('click', function() {
+            hideConnectionProblem();
+            updateStatus('disconnected', 'Попытка подключения...');
+            initSocket();
         });
 
         // Защита от паузы
@@ -601,11 +685,24 @@
         
         // Периодическая проверка соединения
         setInterval(() => {
-            if (!socket.connected) {
+            if (socket && !socket.connected) {
                 updateStatus('disconnected', 'Нет соединения с сервером');
+                
+                // Показываем сообщение о проблеме, если соединение отсутствует долгое время
+                if (!connectionProblemTimeout) {
+                    connectionProblemTimeout = setTimeout(() => {
+                        showConnectionProblem();
+                    }, 10000);
+                }
+            } else if (connectionProblemTimeout) {
+                clearTimeout(connectionProblemTimeout);
+                connectionProblemTimeout = null;
             }
-        }, 10000);
+        }, 5000);
 
+        // Инициализируем соединение при загрузке
+        initSocket();
+        
         console.log("Промо-страница загружена и готова к командам");
     </script>
 </body>
