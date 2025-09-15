@@ -218,6 +218,19 @@
             animation: ticker-scroll linear infinite;
             animation-timing-function: linear;
         }
+        
+        /* Стили для счетчика переподключений */
+        .reconnect-counter {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            z-index: 10;
+        }
     </style>
     <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
 </head>
@@ -249,30 +262,14 @@
     <div class="connection-info">
         ID: <span id="connection-id">-</span>
     </div>
+    
+    <div class="reconnect-counter" id="reconnect-counter" style="display: none;">
+        Переподключений: <span id="reconnect-count">0</span>
+    </div>
 
     <!-- Бегущая строка -->
-    <div id="ticker-container" style="
-        position: fixed;
-        bottom: 50px;
-        left: 0;
-        width: 100%;
-        height: 40px;
-        background: linear-gradient(90deg, rgba(0,0,0,0.8), rgba(255,0,0,0.3), rgba(0,0,0,0.8));
-        color: white;
-        display: none;
-        align-items: center;
-        overflow: hidden;
-        z-index: 5;
-        border-top: 2px solid #ff0000;
-        border-bottom: 2px solid #ff0000;
-    ">
-        <div id="ticker-text" style="
-            white-space: nowrap;
-            padding-left: 100%;
-            font-size: 18px;
-            font-weight: bold;
-            text-shadow: 0 0 10px rgba(255,255,255,0.5);
-        "></div>
+    <div id="ticker-container">
+        <div id="ticker-text"></div>
     </div>
 
     <script>
@@ -280,13 +277,37 @@
         let currentTickerText = '';
         let currentTickerSpeed = 20;
         let isMuted = false;
+        let reconnectAttempts = 0;
         const videoIframe = document.getElementById('youtube-video');
         const muteBtn = document.getElementById('mute-btn');
+        
+        // Функция для обновления счетчика переподключений
+        function updateReconnectCounter() {
+            reconnectAttempts++;
+            const counterElement = document.getElementById('reconnect-counter');
+            const countElement = document.getElementById('reconnect-count');
+            
+            if (counterElement && countElement) {
+                countElement.textContent = reconnectAttempts;
+                counterElement.style.display = 'block';
+                
+                // Скрываем счетчик через 5 секунд
+                setTimeout(() => {
+                    counterElement.style.display = 'none';
+                }, 5000);
+            }
+        }
 
-        // Инициализация Socket.io
+        // Инициализация Socket.io с улучшенными параметрами
         const socket = io({
-            transports: ['polling', 'websocket'],
-            timeout: 10000
+            transports: ['websocket', 'polling'],
+            upgrade: true,
+            timeout: 10000,
+            reconnection: true,
+            reconnectionAttempts: Infinity,
+            reconnectionDelay: 1000,
+            reconnectionDelayMax: 5000,
+            randomizationFactor: 0.5
         });
 
         // Обработчики Socket.io событий
@@ -296,12 +317,36 @@
             console.log('Connected to server with ID:', socket.id);
             
             // Сообщаем серверу что мы промо-клиент
-            socket.emit('client_ready');
+            socket.emit('client_ready', { type: 'promo' });
         });
 
-        socket.on('disconnect', () => {
-            updateStatus('disconnected', 'Отключено от сервера');
-            console.log('Disconnected from server');
+        socket.on('disconnect', (reason) => {
+            updateStatus('disconnected', `Отключено: ${reason}`);
+            console.log('Disconnected from server:', reason);
+            
+            if (reason === 'io server disconnect') {
+                // Сервер принудительно отключил клиента
+                socket.connect();
+            }
+        });
+
+        socket.on('reconnect', (attemptNumber) => {
+            console.log('Reconnected after', attemptNumber, 'attempts');
+            updateReconnectCounter();
+        });
+
+        socket.on('reconnect_attempt', (attemptNumber) => {
+            console.log('Reconnection attempt', attemptNumber);
+            updateStatus('disconnected', `Попытка подключения ${attemptNumber}...`);
+        });
+
+        socket.on('reconnect_error', (error) => {
+            console.log('Reconnection error:', error);
+        });
+
+        socket.on('reconnect_failed', () => {
+            console.log('Reconnection failed');
+            updateStatus('disconnected', 'Не удалось подключиться к серверу');
         });
 
         socket.on('volume_changed', (data) => {
@@ -440,12 +485,15 @@
                 case 'stop':
                     stopVideo();
                     break;
+                case 'reload':
+                    location.reload();
+                    break;
             }
         }
 
         // Функции управления видео
         function changeVideo(videoId) {
-            const newSrc = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&controls=0&disablekb=1&modestbranding=1&rel=0&playsinline=1&loop=1&playlist=${videoId}`;
+            const newSrc = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=${isMuted ? 1 : 0}&controls=0&disablekb=1&modestbranding=1&rel=0&playsinline=1&loop=1&playlist=${videoId}`;
             videoIframe.src = newSrc;
         }
 
@@ -462,15 +510,34 @@
         }
 
         function playVideo() {
-            videoIframe.src = videoIframe.src.replace('autoplay=0', 'autoplay=1');
+            // Используем postMessage для управления YouTube плеером
+            try {
+                videoIframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+            } catch (e) {
+                console.error('Error playing video:', e);
+                // Fallback: перезагружаем iframe с autoplay
+                videoIframe.src = videoIframe.src.replace('autoplay=0', 'autoplay=1');
+            }
         }
 
         function pauseVideo() {
-            videoIframe.src = videoIframe.src.replace('autoplay=1', 'autoplay=0');
+            // Используем postMessage для управления YouTube плеером
+            try {
+                videoIframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+            } catch (e) {
+                console.error('Error pausing video:', e);
+                // Fallback: перезагружаем iframe без autoplay
+                videoIframe.src = videoIframe.src.replace('autoplay=1', 'autoplay=0');
+            }
         }
 
         function stopVideo() {
-            pauseVideo();
+            try {
+                videoIframe.contentWindow.postMessage('{"event":"command","func":"stopVideo","args":""}', '*');
+            } catch (e) {
+                console.error('Error stopping video:', e);
+                pauseVideo();
+            }
         }
 
         // Функция для показа платежной информации
@@ -485,9 +552,8 @@
             pauseVideo();
         }
 
-        // Добавьте в промо-страницу
+        // Обработчик клика по бегущей строке
         document.getElementById('ticker-container')?.addEventListener('click', function() {
-            // При клике на бегущую строку можно выполнить действие
             console.log('Бегущая строка кликнута:', currentTickerText);
             
             // Например, показать дополнительную информацию
@@ -509,22 +575,36 @@
         muteBtn.addEventListener('click', function() {
             if (isMuted) {
                 setVolume(70);
+                socket.emit('volume_change', { volume: 70 });
             } else {
                 setVolume(0);
+                socket.emit('volume_change', { volume: 0 });
             }
         });
 
         // Защита от паузы
         document.addEventListener('keydown', (e) => {
-            if (e.keyCode === 32 || e.key === ' ') {
+            if (e.keyCode === 32 || e.key === ' ' || e.keyCode === 75) { // Space или K (YouTube горячая клавиша)
                 e.preventDefault();
                 playVideo();
+            }
+            
+            // Блокировка других управляющих клавиш
+            if ([37, 38, 39, 40, 70].includes(e.keyCode)) { // Стрелки и F (fullscreen)
+                e.preventDefault();
             }
         });
 
         document.addEventListener('contextmenu', (e) => {
             e.preventDefault();
         });
+        
+        // Периодическая проверка соединения
+        setInterval(() => {
+            if (!socket.connected) {
+                updateStatus('disconnected', 'Нет соединения с сервером');
+            }
+        }, 10000);
 
         console.log("Промо-страница загружена и готова к командам");
     </script>
