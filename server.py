@@ -48,8 +48,8 @@ app.config['UPLOAD_FOLDER'] = str(UPLOAD_FOLDER)
 # Хранилище настроек
 promo_settings = {
     'volume': 70,
-    'currentVideo': 'dQw4w9WgXcQ',
-    'playlist': ['dQw4w9WgXcQ'],
+    'currentVideo': 'yq-Q4s53pvc',
+    'playlist': ['yq-Q4s53pvc'],
     'playlistMode': 'single',
     'defaultAmount': 5000,
     'theme': 'default'
@@ -610,8 +610,8 @@ def handle_reset_settings():
     global promo_settings
     promo_settings = {
         'volume': 70,
-        'currentVideo': 'dQw4w9WgXcQ',
-        'playlist': ['dQw4w9WgXcQ'],
+        'currentVideo': 'yq-Q4s53pvc',
+        'playlist': ['yq-Q4s53pvc'],
         'playlistMode': 'single',
         'defaultAmount': 5000,
         'theme': 'default'
@@ -1573,6 +1573,7 @@ if __name__ == '__main__':
         socketio.run(app, host='0.0.0.0', port=8080, debug=True)
     except Exception as e:
         print(f"[ОШИБКА] При запуске сервера: {e}")
+
 
 
 
