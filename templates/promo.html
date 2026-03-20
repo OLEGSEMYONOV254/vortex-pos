@@ -223,11 +223,7 @@
 </head>
 <body>
     <div class="video-container">
-        <iframe id="youtube-video" 
-                src="https://www.youtube.com/embed/yq-Q4s53pvc?autoplay=1&mute=0&controls=0&disablekb=1&modestbranding=1&rel=0&playsinline=1&loop=1&playlist=yq-Q4s53pvc" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                allowfullscreen>
-        </iframe>
+        <img id="promo-image" src="/static/background.jpg" alt="Promo Image" style="width: 100%; height: 100%; object-fit: cover;">
     </div>
     
     <div id="payment-overlay" class="payment-overlay">
@@ -444,34 +440,17 @@
         }
 
         // Функции управления видео
-        function changeVideo(videoId) {
-            const newSrc = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&controls=0&disablekb=1&modestbranding=1&rel=0&playsinline=1&loop=1&playlist=${videoId}`;
-            videoIframe.src = newSrc;
+        function changeVideo(imageId) {
+            // Если imageId — это прямой ID файла или URL
+            console.log('Changing image to:', imageId);
+            // Допустим, картинки лежат в той же папке и имеют расширение .jpg
+            promoImage.src = `/static/${imageId}.jpg`; 
         }
 
-        function setVolume(volume) {
-            if (volume === 0) {
-                videoIframe.src = videoIframe.src.replace('mute=0', 'mute=1');
-                muteBtn.textContent = '🔇';
-                isMuted = true;
-            } else {
-                videoIframe.src = videoIframe.src.replace('mute=1', 'mute=0');
-                muteBtn.textContent = '🔊';
-                isMuted = false;
-            }
-        }
-
-        function playVideo() {
-            videoIframe.src = videoIframe.src.replace('autoplay=0', 'autoplay=1');
-        }
-
-        function pauseVideo() {
-            videoIframe.src = videoIframe.src.replace('autoplay=1', 'autoplay=0');
-        }
-
-        function stopVideo() {
-            pauseVideo();
-        }
+        function setVolume(volume) { console.log('Volume command ignored (image mode)'); }
+        function playVideo() { console.log('Play command ignored (image mode)'); }
+        function pauseVideo() { console.log('Pause command ignored (image mode)'); }
+        function stopVideo() { console.log('Stop command ignored (image mode)'); }
 
         // Функция для показа платежной информации
         function showPaymentInfo(amount) {
