@@ -22,9 +22,20 @@
             position: fixed;
             top: 0;
             left: 0;
+            width: 100vw; /* 100% ширины вьюпорта */
+            height: 100vh; /* 100% высоты вьюпорта */
+            z-index: 1;
+            overflow: hidden;
+        }
+        
+        .video-container img {
             width: 100%;
             height: 100%;
-            z-index: 1;
+            /* Ключевое свойство: растягивает фото, сохраняя пропорции, 
+               обрезая лишнее, чтобы не было черных полос */
+            object-fit: cover; 
+            /* Центрирует изображение */
+            object-position: center; 
         }
         
         .video-container iframe {
@@ -223,7 +234,7 @@
 </head>
 <body>
     <div class="video-container">
-        <img id="promo-image" src="/static/background.jpg" alt="Promo Image" style="width: 100%; height: 100%; object-fit: cover;">
+        <img id="promo-image" src="/static/background.jpg" alt="Promo">
     </div>
     
     <div id="payment-overlay" class="payment-overlay">
