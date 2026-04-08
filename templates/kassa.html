@@ -1643,6 +1643,28 @@
     // ================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ================== //
     
     // Обновите функцию showTotal() для интеграции
+    function applyQuickMarkup(percent, label) {
+        const customer = getCurrentCustomer();
+        if (!customer || customer.cart.length === 0) {
+            alert('Добавьте товары в чек!');
+            return;
+        }
+    
+        let subtotal = customer.cart.reduce((sum, item) => sum + parseFloat(item.total), 0);
+        let totalWithMarkup = subtotal * (1 + percent / 100);
+        let finalTotal = Math.round(totalWithMarkup);
+    
+        customer.discount = {
+            type: 'markup',
+            percent: percent,
+            amount: finalTotal - subtotal
+        };
+    
+        updateCartDisplay();
+        showTotalOnScreen(finalTotal, customer.name);
+        showNotification(`Применена наценка ${label}: ${percent}%`, 'success');
+    }
+    
     function showTotal() {
         const customer = getCurrentCustomer();
         if (!customer) return;
