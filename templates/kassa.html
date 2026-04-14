@@ -1233,79 +1233,28 @@
       // ================== ФУНКЦИИ РАБОТЫ С ТОВАРАМИ ================== //
       
       async function loadProducts() {
-        try {
-          console.log('Загрузка товаров с сервера...');
-          
-          // Пробуем загрузить с ngrok
-          const response = await fetch('https://722445d46376.ngrok-free.app/get_products', {
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            }
-          });
-          
-          if (!response.ok) {
-            throw new Error('Ошибка загрузки товаров');
-          }
-          
-          allProducts = await response.json();
-          console.log('Товары загружены с сервера:', allProducts.length, 'шт.');
-          
-          renderCategoryMenu(allProducts);
-          renderProducts(allProducts);
-          
-        } catch (error) {
-          console.error('Ошибка загрузки товаров:', error);
-          
-          // Fallback на тестовые данные
-          allProducts = [
-            {id: 1, name: 'Шланг высокого давления', price: 1500, category: 'Шланги', unit: 'м', is_hose: true},
-            {id: 2, name: 'Шланг воздушный', price: 800, category: 'Шланги', unit: 'м', is_hose: true},
-            {id: 3, name: 'Фитинг резьба 1/2"', price: 250, category: 'Фитинги', unit: 'шт', is_hose: false},
-            {id: 4, name: 'Компрессор 50л', price: 25000, category: 'Оборудование', unit: 'шт', is_hose: false},
-            {id: 5, name: 'Мойка высокого давления', price: 18000, category: 'Оборудование', unit: 'шт', is_hose: false},
-            {id: 6, name: 'Пистолет распылительный', price: 1200, category: 'Аксессуары', unit: 'шт', is_hose: false}
-          ];
-          
-          renderCategoryMenu(allProducts);
-          renderProducts(allProducts);
-          console.log('Используются тестовые товары');
+            try {
+                const r = await fetch('/get_products');
+                allProducts = await r.json();
+            } catch(e) { console.error('Ошибка загрузки товаров'); }
         }
-      }
-  
-      async function loadCounterparties() {
-        try {
-          console.log('Загрузка контрагентов...');
-          
-          const response = await fetch('/api/counterparties', {
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            }
-          });
-          
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          
-          counterparties = await response.json();
-          console.log('Контрагенты загружены:', counterparties.length, 'шт.');
-          updateCounterpartySelect();
-          
-        } catch (error) {
-          console.error('Ошибка загрузки контрагентов:', error);
-          
-          // Используем тестовых контрагентов при ошибке
-          counterparties = [
-            {id: 1, name: 'ТОО "СтройТех"'},
-            {id: 2, name: 'ИП Петров И.С.'},
-            {id: 3, name: 'АО "НефтеГазСервис"'},
-            {id: 4, name: 'Розничный покупатель'}
-          ];
-          
-          updateCounterpartySelect();
-          console.log('Используются тестовые контрагенты');
-        }
+    
+        async function loadCounterparties() {
+          try {
+              const r = await fetch('/api/counterparties');
+              if (r.ok) {
+                  counterparties = await r.json();
+                  const select = document.getElementById('counterpartySelect');
+                  if (select) {
+                      select.innerHTML = '<option value="">Не выбрано</option>';
+                      counterparties.forEach(c => {
+                          const opt = document.createElement('option');
+                          opt.value = c.id; opt.textContent = c.name;
+                          select.appendChild(opt);
+                      });
+                  }
+              }
+          } catch(e) { console.error('Ошибка контрагентов'); }
       }
       
       function updateCounterpartySelect() {
