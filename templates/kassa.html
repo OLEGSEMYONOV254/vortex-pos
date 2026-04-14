@@ -1619,6 +1619,16 @@
             break;
         }
       }
+      // Функция отправки команд на промо-экран (пауза, видео и т.д.)
+      function sendToPromo(command) {
+          if (socket && socket.connected) {
+              socket.emit('kassa_command', { command: command });
+              // Опционально: показываем уведомление кассиру
+              console.log(`Команда ${command} отправлена на промо-экран`);
+          } else {
+              showNotification('Ошибка: нет связи с сервером для промо-экрана', 'error');
+          }
+      }
   </script>
 </body>
 </html>
