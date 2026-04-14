@@ -1545,28 +1545,37 @@
       const customer = getCurrentCustomer();
       if (!customer) return;
       
-      customer.paymentMethod = document.getElementById('paymentMethod').value;
-      customer.organization = document.getElementById('organizationSelect').value;
-      customer.counterpartyId = document.getElementById('counterpartySelect').value || null;
-      
       if (customer.cart.length === 0) {
         alert('Корзина пуста!');
         return;
       }
+
+      // Получаем данные из полей выбора в модальном окне оплаты
+      customer.paymentMethod = document.getElementById('paymentMethod').value;
+      customer.organization = document.getElementById('organizationSelect').value;
+      customer.counterpartyId = document.getElementById('counterpartySelect').value || null;
       
-      // Рассчитываем итоговую сумму с учетом скидки/наценки
+      // --- РАСЧЕТ ИТОГОВ ДЛЯ ОТЧЕТА ---
+      // 1. Базовая сумма товаров без наценок
       let subtotal = customer.cart.reduce((sum, item) => sum + parseFloat(item.total), 0);
+      
       let total = subtotal;
       let discountAmount = 0;
       
-      if (customer.discount.type && customer.discount.percent > 0) {
+      // 2. Расчет скидки или наценки (в т.ч. НДС 36% и Kaspi 10%)
+      if (customer.discount && customer.discount.type && customer.discount.percent > 0) {
         discountAmount = subtotal * (customer.discount.percent / 100);
+        
         if (customer.discount.type === 'discount') {
           total = subtotal - discountAmount;
         } else if (customer.discount.type === 'markup') {
           total = subtotal + discountAmount;
         }
       }
+
+      // Округляем значения до целых чисел (тенге)
+      const finalTotal = Math.round(total);
+      const finalDiscountAmount = Math.round(discountAmount);
       
       try {
         const response = await fetch('/process_sale', {
@@ -1575,10 +1584,10 @@
           body: JSON.stringify({
             cart: customer.cart,
             subtotal: subtotal,
-            total: total,
-            discount_type: customer.discount.type,
+            total: finalTotal,                     // Итоговая сумма с наценкой
+            discount_type: customer.discount.type,    // Тип: 'markup' или 'discount'
             discount_percent: customer.discount.percent,
-            discount_amount: discountAmount,
+            discount_amount: finalDiscountAmount,     // Сумма наценки/скидки в тенге
             payment_method: customer.paymentMethod,
             organization: customer.organization,
             counterparty_id: customer.counterpartyId,
@@ -1587,28 +1596,32 @@
         });
         
         if (response.ok) {
-          alert(`Продажа для ${customer.name} оформлена!`);
+          showNotification(`Продажа оформлена! Итого: ${finalTotal} ₸`, 'success');
 
-          hideTotalOnScreen();
+          // Скрываем сумму с клиентского экрана после успешной продажи
+          if (typeof hideTotalOnScreen === 'function') {
+            hideTotalOnScreen();
+          }
           
-          // Удаляем клиента после оплаты
+          // Удаляем клиента из активных после оплаты
           customers = customers.filter(c => c.id !== customer.id);
           
-          // Если клиентов не осталось, создаем нового
+          // Если это был последний клиент, создаем новый пустой чек
           if (customers.length === 0) {
-            addCustomer();
+            if (typeof addCustomer === 'function') addCustomer();
           } else {
-            // Иначе переключаемся на первого клиента
+            // Иначе переключаемся на следующего в очереди
             switchCustomer(customers[0].id);
           }
           
           closePaymentModal();
         } else {
-          throw new Error('Ошибка сервера');
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Ошибка сервера');
         }
       } catch (error) {
         console.error('Ошибка оплаты:', error);
-        alert('Ошибка при оформлении оплаты');
+        alert('Ошибка при оформлении оплаты: ' + error.message);
       }
     }
 
