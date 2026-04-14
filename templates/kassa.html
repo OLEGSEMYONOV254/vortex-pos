@@ -652,6 +652,15 @@
         from { transform: translate(-50%, -100%); opacity: 0; }
         to { transform: translate(-50%, 0); opacity: 1; }
     }
+
+    .category-folder {
+        border: 2px solid var(--primary) !important;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    .category-folder:hover {
+        transform: scale(1.02);
+    }
   </style>
 </head>
 <body>
@@ -1367,12 +1376,30 @@
       const container = document.getElementById('productGrid');
       if (!container) return;
 
-      console.log('🔄 Рендеринг товаров:', products.length);
-
-      
-      
       container.innerHTML = '';
-      
+
+      // Если товаров слишком много и это категория "Все", показываем категории как папки
+      const activeCategory = document.querySelector('.category-btn.active')?.textContent;
+
+      if (activeCategory === 'Все' && document.getElementById('searchInput').value === '') {
+        // Создаем "папки" категорий
+        const categories = [...new Set(allProducts.map(p => p.category || 'Без категории'))];
+        
+        categories.forEach(cat => {
+          const folder = document.createElement('div');
+          folder.className = 'product-card category-folder';
+          folder.style.background = '#e3f2fd'; // Выделим папки цветом
+          folder.innerHTML = `
+            <div class="product-name" style="font-weight: bold;">📁 ${cat}</div>
+            <div class="product-price">${allProducts.filter(p => p.category === cat).length} товаров</div>
+          `;
+          folder.onclick = () => filterByCategory(cat);
+          container.appendChild(folder);
+        });
+        return;
+      }
+
+      // Если категория выбрана или идет поиск — показываем сами товары
       products.forEach(product => {
         const card = document.createElement('div');
         card.className = 'product-card';
@@ -1381,8 +1408,8 @@
           <div class="product-price">${product.price} ₸</div>
           ${product.category ? `<div class="product-category">${product.category}</div>` : ''}
           <div class="quick-add-buttons">
-            <button class="quick-add-btn" onclick="addToCart(${JSON.stringify(product)}, 1)">+1</button>
-            <button class="quick-add-btn" onclick="addToCart(${JSON.stringify(product)}, 0.5)">+0.5</button>
+            <button class="quick-add-btn" onclick="event.stopPropagation(); addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')}, 1)">+1</button>
+            <button class="quick-add-btn" onclick="event.stopPropagation(); addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')}, 0.5)">+0.5</button>
           </div>
         `;
         card.onclick = () => showQuantityModal(product);
@@ -1404,10 +1431,20 @@
     
     function searchProducts() {
       const term = document.getElementById('searchInput').value.toLowerCase();
+      
+      // Если поиск пустой, просто возвращаем вид по категориям
+      if (term === '') {
+        const activeCategory = document.querySelector('.category-btn.active')?.textContent || 'Все';
+        filterByCategory(activeCategory);
+        return;
+      }
+
       const filtered = allProducts.filter(p => 
         p.name.toLowerCase().includes(term) || 
         (p.category && p.category.toLowerCase().includes(term))
       );
+      
+      // Передаем отфильтрованные товары в рендер
       renderProducts(filtered);
     }
 
