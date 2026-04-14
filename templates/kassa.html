@@ -467,995 +467,282 @@
 
   <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
   <script>
-    // Глобальные переменные
-    let customers = [
-      {
-        id: 0,
-        name: "Клиент 1",
-        cart: [],
-        paymentMethod: "",
-        organization: "",
-        counterpartyId: null,
-        discount: {
-          type: null, // 'discount' или 'markup'
-          percent: 0,
-          amount: 0
-        }
-      }
-    ];
-    let currentCustomerId = 0;
-    let allProducts = [];
-    let currentProduct = null;
-    let counterparties = [];
-    let discountType = 'discount'; // 'discount' или 'markup'
-    const socket = io();
-    const CART_STORAGE_KEY = 'saved_cart';
-    const kassaSocket = io();
-
-    // Подключение кассы к серверу
-    kassaSocket.on('connect', () => {
-        console.log('💰 Касса подключена к серверу');
-        kassaSocket.emit('kassa_connect');
-    });
-
-    kassaSocket.on('disconnect', () => {
-        console.log('❌ Касса отключена от сервера');
-    });
-
-    kassaSocket.on('command_result', (data) => {
-        console.log('📨 Ответ от сервера:', data.message);
-        if (data.success) {
-            showNotification(data.message, 'success');
-        } else {
-            showNotification(data.message, 'error');
-        }
-    });
-
-    // Функция показа суммы на промо-экране
-    function showTotalOnScreen(amount, customerName = '') {
-        kassaSocket.emit('show_total_on_screen', {
-            amount: amount,
-            customer_name: customerName
-        });
-    }
-
-    // Функция скрытия суммы с промо-экрана
-    function hideTotalOnScreen() {
-        kassaSocket.emit('hide_total_on_screen');
-    }
-
-    // Функция отправки команд на промо-экран
-    function sendToPromo(command) {
-        kassaSocket.emit('kassa_command', {
-            command: command
-        });
-    }
-
-    function updateCartCounter() {
-      const customer = getCurrentCustomer();
-      if (!customer) return;
-      
-      const totalItems = customer.cart.reduce((sum, item) => sum + item.quantity, 0);
-      const cartCounter = document.getElementById('cartCounter');
-      if (cartCounter) {
-        cartCounter.textContent = totalItems;
-      }
-    }
-
-    function updateCartDisplay() {
-      const customer = getCurrentCustomer();
-      if (!customer) return;
-      
-      const cartItems = document.getElementById('cartItems');
-      const totalAmount = document.getElementById('totalAmount');
-      const discountInfo = document.getElementById('discountInfo');
-      
-      if (!cartItems || !totalAmount || !discountInfo) return;
-      
-      cartItems.innerHTML = '';
-      
-      let subtotal = 0;
-      let totalItems = 0;
-      
-      customer.cart.forEach(item => {
-        subtotal += parseFloat(item.total);
-        totalItems += item.quantity;
-        
-        const cartItem = document.createElement('div');
-        cartItem.className = 'cart-item fade-in';
-        cartItem.innerHTML = `
-          <div class="cart-item-info">
-            <div class="cart-item-name">${item.name}</div>
-            <div class="cart-item-details">${item.price} ₸ × ${item.quantity} = ${item.total} ₸</div>
-          </div>
-          <div class="cart-item-controls">
-            <button class="quantity-btn" onclick="changeQuantity(${item.id}, -0.5)">-0.5</button>
-            <button class="quantity-btn" onclick="changeQuantity(${item.id}, 0.5)">+0.5</button>
-            <button class="remove-btn" onclick="removeFromCart(${item.id})">×</button>
-          </div>
-        `;
-        cartItems.appendChild(cartItem);
-      });
-      
-      // Применяем скидку/наценку если есть
-      let total = subtotal;
-      let discountAmount = 0;
-      
-      if (customer.discount.type && customer.discount.percent > 0) {
-        if (customer.discount.type === 'discount') {
-          discountAmount = subtotal * (customer.discount.percent / 100);
-          total = subtotal - discountAmount;
-        } else if (customer.discount.type === 'markup') {
-          discountAmount = subtotal * (customer.discount.percent / 100);
-          total = subtotal + discountAmount;
-        }
-        
-        // Обновляем информацию о скидке/наценке
-        customer.discount.amount = discountAmount;
-        
-        // Показываем информацию о скидке/наценке
-        discountInfo.innerHTML = `
-          ${customer.discount.type === 'discount' ? 'Скидка' : 'Наценка'}: 
-          <span class="discount-amount">${customer.discount.percent}% (${Math.round(discountAmount)} ₸)</span>
-          <button class="remove-btn" style="margin-left: 10px; width: 20px; height: 20px; font-size: 12px;" onclick="removeDiscount()">×</button>
-        `;
-      } else {
-        discountInfo.innerHTML = '';
-      }
-      
-      totalAmount.textContent = Math.round(total);
-      updateCartCounter();
-      saveCartToStorage();
-    }
-    
-    // Фокус на поиск
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) {
-      searchInput.focus();
-    }
-    
-    // Обработчики горячих клавиш
-    document.addEventListener('keydown', handleHotkeys);
-    
-    // Сокет-события
-    if (socket) {
-      socket.on('receipt_processed', (data) => {
-        console.log('Чек обработан:', data);
-      });
-      
-      socket.on('show_total', (data) => {
-        console.log('Сумма на экране:', data);
-      });
-    }
-
-    // Инициализация при загрузке
-    document.addEventListener('DOMContentLoaded', async () => {
-      // Загрузка тестовых данных
-      await loadProducts();
-      await loadCounterparties();
-      
-      // Инициализация интерфейса
-      renderCategoryMenu(allProducts);
-      renderProducts(allProducts);
-      renderCustomerTabs();
-      
-      // Восстановление корзины из localStorage
-      loadCartFromStorage();
-
-      const mobileCartToggle = document.getElementById('mobileCartToggle');
-      const cartContainer = document.querySelector('.cart-container');
-      
-      if (mobileCartToggle && cartContainer) {
-        mobileCartToggle.addEventListener('click', () => {
-          cartContainer.classList.toggle('expanded');
-        });
-      }
-
-      // Обновляем счетчик товаров
-      updateCartCounter();
-
-      setTimeout(() => {
-          hideTotalOnScreen();
-      }, 1000);
-    });
-
-    // ================== ФУНКЦИИ РАБОТЫ С КЛИЕНТАМИ ================== //
-    
-    function getCurrentCustomer() {
-      return customers.find(c => c.id === currentCustomerId) || customers[0];
-    }
-    
-    function addCustomer() {
-      const newId = customers.length > 0 ? Math.max(...customers.map(c => c.id)) + 1 : 0;
-      customers.push({
-        id: newId,
-        name: `Клиент ${newId + 1}`,
-        cart: [],
-        paymentMethod: "",
-        organization: "",
-        counterpartyId: null,
-        discount: {
-          type: null,
-          percent: 0,
-          amount: 0
-        }
-      });
-      
-      renderCustomerTabs();
-      switchCustomer(newId);
-    }
-    
-    function switchCustomer(customerId) {
-      currentCustomerId = customerId;
-      
-      // Обновляем активную вкладку
-      document.querySelectorAll('.customer-tab').forEach(tab => {
-        tab.classList.remove('active');
-        if (parseInt(tab.dataset.id) === customerId) {
-          tab.classList.add('active');
-        }
-      });
-      
-      // Обновляем отображение корзины
-      updateCartDisplay();
-    }
-    
-    function renderCustomerTabs() {
-      const container = document.getElementById('customerTabs');
-      if (!container) return;
-      
-      // Сохраняем кнопку добавления
-      const addBtn = container.querySelector('.btn');
-      container.innerHTML = '';
-      
-      customers.forEach(customer => {
-        const tab = document.createElement('button');
-        tab.className = `customer-tab ${customer.id === currentCustomerId ? 'active' : ''}`;
-        tab.textContent = customer.name;
-        tab.dataset.id = customer.id;
-        tab.onclick = () => switchCustomer(customer.id);
-        container.appendChild(tab);
-      });
-      
-      // Возвращаем кнопку добавления
-      if (addBtn) {
-        container.appendChild(addBtn);
-      }
-    }
-
-    // ================== ФУНКЦИИ РАБОТЫ С КОРЗИНОЙ ================== //
-    
-    function saveCartToStorage() {
-      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify({
-        customers: customers,
-        currentCustomerId: currentCustomerId
-      }));
-    }
-
-    function loadCartFromStorage() {
-      try {
-        const savedData = localStorage.getItem(CART_STORAGE_KEY);
-        if (savedData) {
-          const data = JSON.parse(savedData);
-          customers = data.customers || customers;
-          currentCustomerId = data.currentCustomerId || currentCustomerId;
+      // ================== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ==================
+      let customers = [
+          {
+              id: 0,
+              name: "Клиент 1",
+              cart: [],
+              paymentMethod: "qr",
+              organization: "vortex",
+              counterpartyId: null,
+              discount: { type: null, percent: 0, amount: 0 }
+          }
+      ];
+      let currentCustomerId = 0;
+      let allProducts = [];
+      let currentProduct = null;
+      let counterparties = [];
+      let discountType = 'discount'; 
+  
+      // Используем одно соединение для всего
+      const socket = io();
+      const CART_STORAGE_KEY = 'vortex_saved_cart';
+  
+      // ================== ИНИЦИАЛИЗАЦИЯ ==================
+      document.addEventListener('DOMContentLoaded', async () => {
+          await loadProducts();
+          await loadCounterparties();
+          
+          loadCartFromStorage();
           renderCustomerTabs();
+          renderCategoryMenu(allProducts);
+          renderProducts(allProducts);
+  
+          // Настройка мобильной корзины
+          const mobileCartToggle = document.getElementById('mobileCartToggle');
+          if (mobileCartToggle) {
+              mobileCartToggle.addEventListener('click', () => {
+                  document.querySelector('.cart-container')?.classList.toggle('expanded');
+              });
+          }
+  
+          // Фокус на поиск при старте
+          document.getElementById('searchInput')?.focus();
+  
+          // Socket события
+          socket.on('connect', () => console.log('✅ Подключено к серверу'));
+          socket.on('command_result', (data) => showNotification(data.message, data.success ? 'success' : 'error'));
+      });
+  
+      // ================== ФУНКЦИИ ЭКРАНА (SOCKET) ==================
+      function showTotalOnScreen(amount, customerName = '') {
+          socket.emit('show_total_on_screen', { amount, customer_name: customerName });
+      }
+  
+      function hideTotalOnScreen() {
+          socket.emit('hide_total_on_screen');
+      }
+  
+      function sendToPromo(command) {
+          socket.emit('kassa_command', { command });
+      }
+  
+      // ================== РАБОТА С КЛИЕНТАМИ ==================
+      function getCurrentCustomer() {
+          return customers.find(c => c.id === currentCustomerId) || customers[0];
+      }
+  
+      function switchCustomer(customerId) {
+          currentCustomerId = customerId;
+          document.querySelectorAll('.customer-tab').forEach(tab => {
+              tab.classList.toggle('active', parseInt(tab.dataset.id) === customerId);
+          });
           updateCartDisplay();
-        }
-      } catch (e) {
-        console.error('Ошибка при загрузке корзины:', e);
-        clearSavedCart();
       }
-    }
-
-    function clearSavedCart() {
-      localStorage.removeItem(CART_STORAGE_KEY);
-    }
-    
-    function addToCart(product, quantity = 1) {
-      if (!product || !product.id || !product.price) return;
-      
-      const customer = getCurrentCustomer();
-      if (!customer) return;
-      
-      const existingItem = customer.cart.find(item => item.id === product.id);
-      const total = Math.round(product.price * quantity * 100) / 100;
-      const toggle = document.getElementById('mobileCartToggle');
-      
-      if (toggle) {
-        toggle.classList.add('added');
-        setTimeout(() => toggle.classList.remove('added'), 500);
+  
+      function addCustomer() {
+          const newId = customers.length > 0 ? Math.max(...customers.map(c => c.id)) + 1 : 0;
+          customers.push({
+              id: newId,
+              name: `Клиент ${newId + 1}`,
+              cart: [],
+              paymentMethod: "qr",
+              organization: "vortex",
+              counterpartyId: null,
+              discount: { type: null, percent: 0, amount: 0 }
+          });
+          renderCustomerTabs();
+          switchCustomer(newId);
       }
-      
-      if (existingItem) {
-        existingItem.quantity = parseFloat((existingItem.quantity + quantity).toFixed(2));
-        existingItem.total = Math.round(existingItem.price * existingItem.quantity * 100) / 100;
-      } else {
-        customer.cart.push({
-          id: product.id,
-          name: product.name,
-          price: product.price,
-          quantity: quantity,
-          total: total
-        });
-      }
-      
-      updateCartDisplay();
-    }
-
-    function changeQuantity(productId, delta) {
-      const customer = getCurrentCustomer();
-      if (!customer) return;
-      
-      const item = customer.cart.find(item => item.id === productId);
-      if (item) {
-        item.quantity = parseFloat((item.quantity + delta).toFixed(2));
-        if (item.quantity <= 0) {
-          customer.cart = customer.cart.filter(i => i.id !== productId);
-        } else {
-          item.total = Math.round(item.price * item.quantity * 100) / 100;
-        }
-        updateCartDisplay();
-      }
-    }
-
-    function removeFromCart(productId) {
-      const customer = getCurrentCustomer();
-      if (!customer) return;
-      
-      customer.cart = customer.cart.filter(item => item.id !== productId);
-      updateCartDisplay();
-    }
-
-    function clearCart() {
-      const customer = getCurrentCustomer();
-      if (!customer) return;
-      
-      customer.cart = [];
-      customer.discount = {
-        type: null,
-        percent: 0,
-        amount: 0
-      };
-      updateCartDisplay();
-    }
-
-    // ================== ФУНКЦИИ СКИДКИ/НАЦЕНКИ ================== //
-    
-    function showDiscountModal() {
-      const customer = getCurrentCustomer();
-      if (!customer || customer.cart.length === 0) {
-        alert('Добавьте товары в чек перед применением скидки/наценки');
-        return;
-      }
-      
-      const modal = document.getElementById('discountModal');
-      if (!modal) return;
-      
-      // Сбрасываем ввод
-      const discountInput = document.getElementById('discountInput');
-      if (discountInput) {
-        discountInput.value = '';
-        discountInput.placeholder = 'Введите процент';
-      }
-      
-      // Устанавливаем активный тип
-      setDiscountType(customer.discount.type || 'discount');
-      
-      modal.style.display = 'flex';
-      
-      setTimeout(() => {
-        if (discountInput) {
-          discountInput.focus();
-        }
-      }, 100);
-    }
-    
-    function closeDiscountModal() {
-      const modal = document.getElementById('discountModal');
-      if (modal) {
-        modal.style.display = 'none';
-      }
-    }
-    
-    function setDiscountType(type) {
-      discountType = type;
-      
-      const discountBtn = document.getElementById('discountBtn');
-      const markupBtn = document.getElementById('markupBtn');
-      
-      if (discountBtn && markupBtn) {
-        discountBtn.classList.toggle('active', type === 'discount');
-        markupBtn.classList.toggle('active', type === 'markup');
-      }
-    }
-    
-    function appendToDiscount(value) {
-      const input = document.getElementById('discountInput');
-      if (!input) return;
-      
-      let current = input.value;
-      
-      if (value === '.' && current.includes('.')) {
-        return;
-      }
-      
-      input.value = current + value;
-    }
-    
-    function clearDiscount() {
-      const input = document.getElementById('discountInput');
-      if (input) {
-        input.value = '';
-      }
-    }
-    
-    function handleDiscountKeyDown(event) {
-      // Разрешаем: цифры (0-9), точка, Backspace, Delete, Tab, Enter
-      if ((event.key >= '0' && event.key <= '9') || 
-          event.key === '.' || 
-          event.key === 'Backspace' || 
-          event.key === 'Delete' || 
-          event.key === 'Tab' || 
-          event.key === 'Enter') {
-        return;
-      }
-      
-      // Запрещаем все остальные символы
-      event.preventDefault();
-    }
-    
-    function applyDiscount() {
-      const discountInput = document.getElementById('discountInput');
-      if (!discountInput) return;
-      
-      const percent = parseFloat(discountInput.value) || 0;
-      
-      if (percent <= 0 || percent > 100) {
-        alert('Введите корректный процент (0-100)');
-        return;
-      }
-      
-      const customer = getCurrentCustomer();
-      if (!customer) return;
-      
-      customer.discount = {
-        type: discountType,
-        percent: percent,
-        amount: 0
-      };
-      
-      updateCartDisplay();
-      closeDiscountModal();
-    }
-    
-    function removeDiscount() {
-      const customer = getCurrentCustomer();
-      if (!customer) return;
-      
-      customer.discount = {
-        type: null,
-        percent: 0,
-        amount: 0
-      };
-      
-      updateCartDisplay();
-    }
-
-    // ================== ФУНКЦИИ РАБОТЫ С ТОВАРАМИ ================== //
-    
-    async function loadProducts() {
-      try {
-        const response = await fetch('/get_products');
-        if (!response.ok) throw new Error('Ошибка загрузки товаров');
-        
-        allProducts = await response.json();
-        renderCategoryMenu(allProducts);
-        renderProducts(allProducts);
-      } catch (error) {
-        console.error('Ошибка загрузки товаров:', error);
-        alert('Не удалось загрузить товары. Пожалуйста, попробуйте позже.');
-        allProducts = [];
-      }
-    }
-    
-    async function loadCounterparties() {
-      try {
-        const response = await fetch('/api/counterparties');
-        if (!response.ok) throw new Error('Ошибка загрузки контрагентов');
-        
-        counterparties = await response.json();
-        updateCounterpartySelect();
-      } catch (error) {
-        console.error('Ошибка загрузки контрагентов:', error);
-        counterparties = [];
-      }
-    }
-    
-    function updateCounterpartySelect() {
-      const select = document.getElementById('counterpartySelect');
-      if (!select) return;
-      
-      select.innerHTML = '<option value="">Не выбрано</option>';
-      counterparties.forEach(c => {
-        const option = document.createElement('option');
-        option.value = c.id;
-        option.textContent = c.name;
-        select.appendChild(option);
-      });
-    }
-    
-    function renderCategoryMenu(products) {
-      const container = document.getElementById('categoryContainer');
-      if (!container) return;
-      
-      const categories = ['Все', ...new Set(products.map(p => p.category || 'Без категории'))];
-      
-      container.innerHTML = '';
-      categories.forEach(category => {
-        const btn = document.createElement('button');
-        btn.className = 'category-btn';
-        btn.textContent = category;
-        if (category === 'Все') btn.classList.add('active');
-        btn.onclick = () => filterByCategory(category);
-        container.appendChild(btn);
-      });
-    }
-    
-    function renderProducts(products) {
-      const container = document.getElementById('productGrid');
-      if (!container) return;
-
-      container.innerHTML = '';
-
-      const activeCategory = document.querySelector('.category-btn.active')?.textContent;
-      const isSearch = document.getElementById('searchInput').value !== '';
-
-      // Если мы в корне (Все) и нет поиска — рисуем папки
-      if (activeCategory === 'Все' && !isSearch) {
-        const categories = [...new Set(allProducts.map(p => p.category || 'Без категории'))];
-        
-        categories.forEach(cat => {
-          const folder = document.createElement('div');
-          folder.className = 'product-card category-folder'; // Применяем наш новый класс
-          folder.innerHTML = `
-            <div class="product-name">📁 ${cat}</div>
-            <div class="product-price">${allProducts.filter(p => (p.category || 'Без категории') === cat).length} тов.</div>
-          `;
-          folder.onclick = () => filterByCategory(cat);
-          container.appendChild(folder);
-        });
-        return;
-      }
-
-      // Обычный рендеринг товаров (когда зашли в категорию или ищем)
-      products.forEach(product => {
-        const card = document.createElement('div');
-        card.className = 'product-card';
-        card.innerHTML = `
-          <div class="product-name">${product.name}</div>
-          <div class="product-price">${product.price} ₸</div>
-          <div class="quick-add-buttons">
-            <button class="quick-add-btn" onclick="event.stopPropagation(); addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')}, 1)">+1</button>
-            <button class="quick-add-btn" onclick="event.stopPropagation(); addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')}, 0.5)">+0.5</button>
-          </div>
-        `;
-        card.onclick = () => showQuantityModal(product);
-        container.appendChild(card);
-      });
-    }
-    
-    function filterByCategory(category) {
-      const filtered = category === 'Все' 
-        ? allProducts 
-        : allProducts.filter(p => (p.category || 'Без категории') === category);
-      renderProducts(filtered);
-      
-      // Обновляем активную кнопку категории
-      document.querySelectorAll('.category-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.textContent === category);
-      });
-    }
-    
-    function searchProducts() {
-      const term = document.getElementById('searchInput').value.toLowerCase();
-      
-      // Если поиск пустой, просто возвращаем вид по категориям
-      if (term === '') {
-        const activeCategory = document.querySelector('.category-btn.active')?.textContent || 'Все';
-        filterByCategory(activeCategory);
-        return;
-      }
-
-      const filtered = allProducts.filter(p => 
-        p.name.toLowerCase().includes(term) || 
-        (p.category && p.category.toLowerCase().includes(term))
-      );
-      
-      // Передаем отфильтрованные товары в рендер
-      renderProducts(filtered);
-    }
-
-    // ================== МОДАЛЬНЫЕ ОКНА ================== //
-    
-    function showQuantityModal(product) {
-      if (!product) return;
-      
-      currentProduct = product;
-      const modal = document.getElementById('quantityModal');
-      if (!modal) return;
-      
-      const productName = document.getElementById('modalProductName');
-      if (productName) {
-        productName.textContent = product.name;
-      }
-      
-      const quantityInput = document.getElementById('quantityInput');
-      if (quantityInput) {
-        quantityInput.value = '';
-        quantityInput.placeholder = 'Введите количество';
-      }
-      
-      modal.style.display = 'flex';
-      
-      setTimeout(() => {
-        if (quantityInput) {
-          quantityInput.focus();
-        }
-      }, 100);
-    }
-    
-    function closeQuantityModal() {
-      const modal = document.getElementById('quantityModal');
-      if (modal) {
-        modal.style.display = 'none';
-      }
-    }
-    
-    function appendToQuantity(value) {
-      const input = document.getElementById('quantityInput');
-      if (!input) return;
-      
-      let current = input.value;
-      
-      if (value === '.' && current.includes('.')) {
-        return;
-      }
-      
-      input.value = current + value;
-    }
-    
-    function clearQuantity() {
-      const input = document.getElementById('quantityInput');
-      if (input) {
-        input.value = '';
-      }
-    }
-    
-    function handleQuantityKeyDown(event) {
-      // Разрешаем: цифры (0-9), точка, Backspace, Delete, Tab, Enter
-      if ((event.key >= '0' && event.key <= '9') || 
-          event.key === '.' || 
-          event.key === 'Backspace' || 
-          event.key === 'Delete' || 
-          event.key === 'Tab' || 
-          event.key === 'Enter') {
-        return;
-      }
-      
-      // Запрещаем все остальные символы
-      event.preventDefault();
-    }
-    
-    function addToCartWithQuantity() {
-      const quantityInput = document.getElementById('quantityInput');
-      if (!quantityInput || !currentProduct) return;
-      
-      const quantity = parseFloat(quantityInput.value) || 0;
-      if (quantity > 0) {
-        addToCart(currentProduct, quantity);
-        closeQuantityModal();
-      } else {
-        alert('Введите корректное количество');
-      }
-    }
-    
-    function processPayment() {
-      const customer = getCurrentCustomer();
-      if (!customer || customer.cart.length === 0) {
-        alert('Добавьте товары в чек перед оплатой');
-        return;
-      }
-      
-      // Рассчитываем итоговую сумму с учетом скидки/наценки
-      let subtotal = customer.cart.reduce((sum, item) => sum + parseFloat(item.total), 0);
-      let total = subtotal;
-      
-      if (customer.discount.type && customer.discount.percent > 0) {
-        if (customer.discount.type === 'discount') {
-          total = subtotal - (subtotal * (customer.discount.percent / 100));
-        } else if (customer.discount.type === 'markup') {
-          total = subtotal + (subtotal * (customer.discount.percent / 100));
-        }
-      }
-      
-      const modal = document.getElementById('paymentModal');
-      if (!modal) return;
-      
-      const modalTitle = modal.querySelector('h3');
-      if (modalTitle) {
-        let discountText = '';
-        if (customer.discount.type && customer.discount.percent > 0) {
-          discountText = ` (${customer.discount.type === 'discount' ? 'скидка' : 'наценка'} ${customer.discount.percent}%)`;
-        }
-        
-        modalTitle.innerHTML = `Оформление оплаты <small style="display: block; font-size: 0.7em; margin-top: 5px; color: var(--primary);">Сумма: ${Math.round(total)} ₸${discountText}</small>`;
-      }
-      
-      modal.style.display = 'flex';
-      const cartContainer = document.querySelector('.cart-container');
-      if (cartContainer) {
-        cartContainer.classList.remove('expanded');
-      }
-    }
-    
-    function closePaymentModal() {
-      const modal = document.getElementById('paymentModal');
-      if (modal) {
-        modal.style.display = 'none';
-      }
-    }
-    
-    async function confirmPayment() {
-      const customer = getCurrentCustomer();
-      if (!customer) return;
-      
-      if (customer.cart.length === 0) {
-        alert('Корзина пуста!');
-        return;
-      }
-
-      // Получаем данные из полей выбора в модальном окне оплаты
-      customer.paymentMethod = document.getElementById('paymentMethod').value;
-      customer.organization = document.getElementById('organizationSelect').value;
-      customer.counterpartyId = document.getElementById('counterpartySelect').value || null;
-      
-      // --- РАСЧЕТ ИТОГОВ ДЛЯ ОТЧЕТА ---
-      // 1. Базовая сумма товаров без наценок
-      let subtotal = customer.cart.reduce((sum, item) => sum + parseFloat(item.total), 0);
-      
-      let total = subtotal;
-      let discountAmount = 0;
-      
-      // 2. Расчет скидки или наценки (в т.ч. НДС 36% и Kaspi 10%)
-      if (customer.discount && customer.discount.type && customer.discount.percent > 0) {
-        discountAmount = subtotal * (customer.discount.percent / 100);
-        
-        if (customer.discount.type === 'discount') {
-          total = subtotal - discountAmount;
-        } else if (customer.discount.type === 'markup') {
-          total = subtotal + discountAmount;
-        }
-      }
-
-      // Округляем значения до целых чисел (тенге)
-      const finalTotal = Math.round(total);
-      const finalDiscountAmount = Math.round(discountAmount);
-      
-      try {
-        const response = await fetch('/process_sale', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            cart: customer.cart,
-            subtotal: subtotal,
-            total: finalTotal,                     // Итоговая сумма с наценкой
-            discount_type: customer.discount.type,    // Тип: 'markup' или 'discount'
-            discount_percent: customer.discount.percent,
-            discount_amount: finalDiscountAmount,     // Сумма наценки/скидки в тенге
-            payment_method: customer.paymentMethod,
-            organization: customer.organization,
-            counterparty_id: customer.counterpartyId,
-            customer_name: customer.name
-          })
-        });
-        
-        if (response.ok) {
-          showNotification(`Продажа оформлена! Итого: ${finalTotal} ₸`, 'success');
-
-          // Скрываем сумму с клиентского экрана после успешной продажи
-          if (typeof hideTotalOnScreen === 'function') {
-            hideTotalOnScreen();
-          }
+  
+      function renderCustomerTabs() {
+          const container = document.getElementById('customerTabs');
+          if (!container) return;
+          const addBtn = container.querySelector('.btn-add-customer'); 
+          container.innerHTML = '';
           
-          // Удаляем клиента из активных после оплаты
-          customers = customers.filter(c => c.id !== customer.id);
+          customers.forEach(c => {
+              const tab = document.createElement('button');
+              tab.className = `customer-tab ${c.id === currentCustomerId ? 'active' : ''}`;
+              tab.dataset.id = c.id;
+              tab.textContent = c.name;
+              tab.onclick = () => switchCustomer(c.id);
+              container.appendChild(tab);
+          });
+          if (addBtn) container.appendChild(addBtn);
+      }
+  
+      // ================== КОРЗИНА ==================
+      function updateCartDisplay() {
+          const customer = getCurrentCustomer();
+          const cartItems = document.getElementById('cartItems');
+          const totalAmount = document.getElementById('totalAmount');
+          const discountInfo = document.getElementById('discountInfo');
           
-          // Если это был последний клиент, создаем новый пустой чек
-          if (customers.length === 0) {
-            if (typeof addCustomer === 'function') addCustomer();
+          if (!customer || !cartItems) return;
+  
+          cartItems.innerHTML = '';
+          let subtotal = 0;
+  
+          customer.cart.forEach(item => {
+              subtotal += parseFloat(item.total);
+              const div = document.createElement('div');
+              div.className = 'cart-item fade-in';
+              div.innerHTML = `
+                  <div class="cart-item-info">
+                      <div class="cart-item-name">${item.name}</div>
+                      <div class="cart-item-details">${item.price} ₸ × ${item.quantity} = ${item.total} ₸</div>
+                  </div>
+                  <div class="cart-item-controls">
+                      <button class="quantity-btn" onclick="changeQuantity(${item.id}, -0.5)">-0.5</button>
+                      <button class="quantity-btn" onclick="changeQuantity(${item.id}, 0.5)">+0.5</button>
+                      <button class="remove-btn" onclick="removeFromCart(${item.id})">×</button>
+                  </div>`;
+              cartItems.appendChild(div);
+          });
+  
+          let total = subtotal;
+          if (customer.discount.type && customer.discount.percent > 0) {
+              let mod = customer.discount.type === 'discount' ? -1 : 1;
+              let diff = subtotal * (customer.discount.percent / 100);
+              total = subtotal + (mod * diff);
+              customer.discount.amount = Math.round(diff);
+              
+              discountInfo.innerHTML = `
+                  ${customer.discount.type === 'discount' ? 'Скидка' : 'Наценка'}: 
+                  <span class="discount-amount">${customer.discount.percent}% (${Math.round(diff)} ₸)</span>
+                  <button class="remove-btn" onclick="removeDiscount()">×</button>`;
           } else {
-            // Иначе переключаемся на следующего в очереди
-            switchCustomer(customers[0].id);
+              discountInfo.innerHTML = '';
+          }
+  
+          totalAmount.textContent = Math.round(total);
+          document.getElementById('cartCounter').textContent = customer.cart.length;
+          saveCartToStorage();
+      }
+  
+      function addToCart(product, quantity = 1) {
+          const customer = getCurrentCustomer();
+          const existing = customer.cart.find(i => i.id === product.id);
+          
+          if (existing) {
+              existing.quantity = parseFloat((existing.quantity + quantity).toFixed(2));
+              existing.total = Math.round(existing.price * existing.quantity);
+          } else {
+              customer.cart.push({
+                  id: product.id,
+                  name: product.name,
+                  price: product.price,
+                  quantity: quantity,
+                  total: Math.round(product.price * quantity)
+              });
+          }
+          updateCartDisplay();
+      }
+  
+      function changeQuantity(id, delta) {
+          const customer = getCurrentCustomer();
+          const item = customer.cart.find(i => i.id === id);
+          if (item) {
+              item.quantity = parseFloat((item.quantity + delta).toFixed(2));
+              if (item.quantity <= 0) {
+                  customer.cart = customer.cart.filter(i => i.id !== id);
+              } else {
+                  item.total = Math.round(item.price * item.quantity);
+              }
+              updateCartDisplay();
+          }
+      }
+  
+      // ================== СКИДКИ ==================
+      function applyDiscount() {
+          const val = parseFloat(document.getElementById('discountInput').value);
+          if (isNaN(val) || val < 0 || val > 100) return alert('Введите 0-100');
+          
+          const customer = getCurrentCustomer();
+          customer.discount = { type: discountType, percent: val, amount: 0 };
+          updateCartDisplay();
+          closeDiscountModal();
+      }
+  
+      // ================== ОПЛАТА ==================
+      async function confirmPayment() {
+          const customer = getCurrentCustomer();
+          if (customer.cart.length === 0) return alert('Пусто!');
+  
+          const payload = {
+              cart: customer.cart,
+              total: parseInt(document.getElementById('totalAmount').textContent),
+              payment_method: document.getElementById('paymentMethod').value,
+              organization: document.getElementById('organizationSelect').value,
+              discount_type: customer.discount.type,
+              discount_percent: customer.discount.percent
+          };
+  
+          try {
+              const res = await fetch('/process_sale', {
+                  method: 'POST',
+                  headers: {'Content-Type': 'application/json'},
+                  body: JSON.stringify(payload)
+              });
+              if (res.ok) {
+                  showNotification('Продажа успешно завершена!');
+                  hideTotalOnScreen();
+                  // Удаляем текущего клиента и создаем нового если пусто
+                  customers = customers.filter(c => c.id !== customer.id);
+                  if (customers.length === 0) addCustomer();
+                  else switchCustomer(customers[0].id);
+                  renderCustomerTabs();
+                  closePaymentModal();
+              }
+          } catch (e) { alert('Ошибка сервера'); }
+      }
+  
+      // ================== ГОРЯЧИЕ КЛАВИШИ ==================
+      function handleHotkeys(e) {
+          const isModal = (id) => document.getElementById(id).style.display === 'flex';
+  
+          if (e.key === 'F1') { e.preventDefault(); document.getElementById('searchInput').focus(); }
+          if (e.key === 'F2') { e.preventDefault(); processPayment(); }
+          if (e.key === 'F4') { e.preventDefault(); showDiscountModal(); }
+          
+          if (e.key === 'Enter') {
+              if (isModal('quantityModal')) { e.preventDefault(); addToCartWithQuantity(); }
+              if (isModal('discountModal')) { e.preventDefault(); applyDiscount(); }
           }
           
-          closePaymentModal();
-        } else {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Ошибка сервера');
-        }
-      } catch (error) {
-        console.error('Ошибка оплаты:', error);
-        alert('Ошибка при оформлении оплаты: ' + error.message);
+          if (e.key === 'Escape') {
+              closeQuantityModal();
+              closePaymentModal();
+              closeDiscountModal();
+          }
       }
-    }
-
-
-    // Функция показа уведомлений
-    function showNotification(message, type = 'success') {
-        // Создаем элемент уведомления
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        notification.textContent = message;
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: ${type === 'success' ? 'var(--primary)' : 'var(--danger)'};
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            z-index: 10000;
-            animation: slideDown 0.3s ease;
-        `;
-        
-        document.body.appendChild(notification);
-        
-        // Удаляем уведомление через 3 секунды
-        setTimeout(() => {
-            notification.remove();
-        }, 3000);
-    }
-
-    // ================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ================== //
-    
-    // Обновите функцию showTotal() для интеграции
-    function applyQuickMarkup(percent, label) {
-        const customer = getCurrentCustomer();
-        if (!customer || customer.cart.length === 0) {
-            alert('Добавьте товары в чек!');
-            return;
-        }
-    
-        let subtotal = customer.cart.reduce((sum, item) => sum + parseFloat(item.total), 0);
-        let totalWithMarkup = subtotal * (1 + percent / 100);
-        let finalTotal = Math.round(totalWithMarkup);
-    
-        customer.discount = {
-            type: 'markup',
-            percent: percent,
-            amount: finalTotal - subtotal
-        };
-    
-        updateCartDisplay();
-        showTotalOnScreen(finalTotal, customer.name);
-        showNotification(`Применена наценка ${label}: ${percent}%`, 'success');
-    }
-    
-    function showTotal() {
-        const customer = getCurrentCustomer();
-        if (!customer) return;
-        
-        let subtotal = customer.cart.reduce((sum, item) => sum + parseFloat(item.total), 0);
-        let total = subtotal;
-        let discountText = '';
-        
-        if (customer.discount.type && customer.discount.percent > 0) {
-            const discountAmount = subtotal * (customer.discount.percent / 100);
-            if (customer.discount.type === 'discount') {
-                total = subtotal - discountAmount;
-                discountText = ` (скидка ${customer.discount.percent}% = ${Math.round(discountAmount)} ₸)`;
-            } else if (customer.discount.type === 'markup') {
-                total = subtotal + discountAmount;
-                discountText = ` (наценка ${customer.discount.percent}% = ${Math.round(discountAmount)} ₸)`;
-            }
-        }
-        
-        // Отправляем сумму на промо-экран через Socket.io
-        showTotalOnScreen(Math.round(total), customer.name);
-        
-        // Также отправляем через HTTP (как backup)
-        fetch('/send_to_screen', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                total: total,
-                discount_text: discountText,
-                payment_method: 'qr',
-                items: customer.cart,
-                customer_name: customer.name
-            })
-        })
-        .then(response => {
-            if (!response.ok) throw new Error('Ошибка отправки на промо-экран');
-            console.log('Данные успешно отправлены на промо-экран');
-        })
-        .catch(error => {
-            console.error('Ошибка:', error);
-        });
-        
-        return total;
-    }
-    
-    function handleHotkeys(e) {
-        if (!e) return;
-        
-        switch(e.key) {
-            case 'F1': 
-                e.preventDefault();
-                const searchInput = document.getElementById('searchInput');
-                if (searchInput) searchInput.focus();
-                break;
-            case 'F2': 
-                e.preventDefault();
-                processPayment();
-                break;
-            case 'F3': 
-                e.preventDefault();
-                clearCart();
-                // Также скрываем сумму с экрана при очистке корзины
-                hideTotalOnScreen();
-                break;
-            case 'F4': 
-                e.preventDefault();
-                showDiscountModal();
-                break;
-            case 'F5': 
-                e.preventDefault();
-                // Новая горячая клавиша - скрыть сумму с экрана
-                hideTotalOnScreen();
-                showNotification('Сумма скрыта с экрана', 'success');
-                break;
-            case 'F9': 
-                e.preventDefault();
-                // Тестовая команда для промо-экрана
-                sendToPromo('play');
-                showNotification('Команда "play" отправлена', 'success');
-                break;
-            case 'F10': 
-                e.preventDefault();
-                // Тестовая команда для промо-экрана
-                sendToPromo('pause');
-                showNotification('Команда "pause" отправлена', 'success');
-                break;
-            case 'Enter':
-              if (document.getElementById('quantityModal').style.display === 'flex') {
-                e.preventDefault();
-                addToCartWithQuantity();
-              }
-              if (document.getElementById('discountModal').style.display === 'flex') {
-                e.preventDefault();
-                applyDiscount();
-              }
-              break;
-            case 'Escape':
-              if (document.getElementById('quantityModal').style.display === 'flex') {
-                closeQuantityModal();
-              }
-              if (document.getElementById('paymentModal').style.display === 'flex') {
-                closePaymentModal();
-              }
-              if (document.getElementById('discountModal').style.display === 'flex') {
-                closeDiscountModal();
-              }
-              break;
-        }
-    }
-
-    window.addEventListener('beforeunload', () => {
-        hideTotalOnScreen();
-    });
+  
+      document.addEventListener('keydown', handleHotkeys);
+  
+      // ================== СЛУЖЕБНЫЕ ==================
+      function saveCartToStorage() {
+          localStorage.setItem(CART_STORAGE_KEY, JSON.stringify({ customers, currentCustomerId }));
+      }
+  
+      function loadCartFromStorage() {
+          const saved = localStorage.getItem(CART_STORAGE_KEY);
+          if (saved) {
+              const data = JSON.parse(saved);
+              customers = data.customers;
+              currentCustomerId = data.currentCustomerId;
+          }
+      }
+  
+      async function loadProducts() {
+          try {
+              const r = await fetch('/get_products');
+              allProducts = await r.json();
+          } catch(e) { console.error('Ошибка загрузки товаров'); }
+      }
+  
+      window.addEventListener('beforeunload', () => hideTotalOnScreen());
   </script>
 </body>
 </html>
