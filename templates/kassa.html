@@ -653,13 +653,31 @@
         to { transform: translate(-50%, 0); opacity: 1; }
     }
 
+    
+    /* Стиль для папок категорий */
     .category-folder {
-        border: 2px solid var(--primary) !important;
-        cursor: pointer;
-        transition: transform 0.2s;
+        background-color: #007bff !important; /* Насыщенный синий цвет */
+        color: white !important;               /* Белый текст, чтобы его было видно */
+        border: 1px solid #0056b3 !important;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        min-height: 100px;                     /* Сделаем их повыше */
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
-    .category-folder:hover {
-        transform: scale(1.02);
+    
+    .category-folder .product-name {
+        font-size: 1.2em !important;           /* Крупный текст */
+        font-weight: bold !important;
+        margin-bottom: 5px;
+        color: white !important;               /* Принудительно белый цвет названия */
+    }
+    
+    .category-folder .product-price {
+        color: #e0e0e0 !important;             /* Светло-серый цвет для количества товаров */
+        font-size: 0.9em;
     }
   </style>
 </head>
@@ -1378,20 +1396,19 @@
 
       container.innerHTML = '';
 
-      // Если товаров слишком много и это категория "Все", показываем категории как папки
       const activeCategory = document.querySelector('.category-btn.active')?.textContent;
+      const isSearch = document.getElementById('searchInput').value !== '';
 
-      if (activeCategory === 'Все' && document.getElementById('searchInput').value === '') {
-        // Создаем "папки" категорий
+      // Если мы в корне (Все) и нет поиска — рисуем папки
+      if (activeCategory === 'Все' && !isSearch) {
         const categories = [...new Set(allProducts.map(p => p.category || 'Без категории'))];
         
         categories.forEach(cat => {
           const folder = document.createElement('div');
-          folder.className = 'product-card category-folder';
-          folder.style.background = '#e3f2fd'; // Выделим папки цветом
+          folder.className = 'product-card category-folder'; // Применяем наш новый класс
           folder.innerHTML = `
-            <div class="product-name" style="font-weight: bold;">📁 ${cat}</div>
-            <div class="product-price">${allProducts.filter(p => p.category === cat).length} товаров</div>
+            <div class="product-name">📁 ${cat}</div>
+            <div class="product-price">${allProducts.filter(p => (p.category || 'Без категории') === cat).length} тов.</div>
           `;
           folder.onclick = () => filterByCategory(cat);
           container.appendChild(folder);
@@ -1399,14 +1416,13 @@
         return;
       }
 
-      // Если категория выбрана или идет поиск — показываем сами товары
+      // Обычный рендеринг товаров (когда зашли в категорию или ищем)
       products.forEach(product => {
         const card = document.createElement('div');
         card.className = 'product-card';
         card.innerHTML = `
           <div class="product-name">${product.name}</div>
           <div class="product-price">${product.price} ₸</div>
-          ${product.category ? `<div class="product-category">${product.category}</div>` : ''}
           <div class="quick-add-buttons">
             <button class="quick-add-btn" onclick="event.stopPropagation(); addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')}, 1)">+1</button>
             <button class="quick-add-btn" onclick="event.stopPropagation(); addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')}, 0.5)">+0.5</button>
