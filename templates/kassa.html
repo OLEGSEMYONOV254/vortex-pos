@@ -469,12 +469,8 @@
   <script>
       // ================== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ==================
       let customers = [{
-          id: 0,
-          name: "Клиент 1",
-          cart: [],
-          paymentMethod: "qr",
-          organization: "vortex",
-          counterpartyId: null,
+          id: 0, name: "Клиент 1", cart: [], paymentMethod: "qr",
+          organization: "vortex", counterpartyId: null,
           discount: { type: null, percent: 0, amount: 0 }
       }];
       let currentCustomerId = 0;
@@ -489,8 +485,7 @@
       // ================== ИНИЦИАЛИЗАЦИЯ ==================
       document.addEventListener('DOMContentLoaded', async () => {
           await loadProducts();
-          await loadCounterparties(); // ТЕПЕРЬ ОПРЕДЕЛЕНА
-          
+          await loadCounterparties();
           loadCartFromStorage();
           renderCustomerTabs();
           renderCategoryMenu(allProducts);
@@ -508,7 +503,7 @@
           socket.on('command_result', (data) => showNotification(data.message, data.success ? 'success' : 'error'));
       });
   
-      // ================== ЗАГРУЗКА ДАННЫХ (API) ==================
+      // ================== API И ЗАГРУЗКА ==================
       async function loadProducts() {
           try {
               const r = await fetch('/get_products');
@@ -523,7 +518,7 @@
                   counterparties = await r.json();
                   updateCounterpartySelect();
               }
-          } catch(e) { console.error('Ошибка загрузки контрагентов'); }
+          } catch(e) { console.error('Ошибка контрагентов'); }
       }
   
       function updateCounterpartySelect() {
@@ -532,124 +527,116 @@
           select.innerHTML = '<option value="">Не выбрано</option>';
           counterparties.forEach(c => {
               const opt = document.createElement('option');
-              opt.value = c.id;
-              opt.textContent = c.name;
+              opt.value = c.id; opt.textContent = c.name;
               select.appendChild(opt);
           });
       }
   
-      // ================== ПОИСК И ФИЛЬТРЫ ==================
-      function searchProducts() {
-          const term = document.getElementById('searchInput').value.toLowerCase();
-          if (!term) {
-              const activeCat = document.querySelector('.category-btn.active')?.textContent || 'Все';
-              filterByCategory(activeCat);
-              return;
-          }
-          const filtered = allProducts.filter(p => 
-              p.name.toLowerCase().includes(term) || 
-              (p.category && p.category.toLowerCase().includes(term))
-          );
-          renderProducts(filtered);
+      // ================== МОДАЛЬНЫЕ ОКНА (УПРАВЛЕНИЕ) ==================
+      function showQuantityModal(product) {
+          currentProduct = product;
+          const modal = document.getElementById('quantityModal');
+          if (!modal) return;
+          document.getElementById('modalProductName').textContent = product.name;
+          document.getElementById('quantityInput').value = '';
+          modal.style.display = 'flex';
+          setTimeout(() => document.getElementById('quantityInput').focus(), 100);
       }
   
-      function filterByCategory(category) {
-          const filtered = category === 'Все' 
-              ? allProducts 
-              : allProducts.filter(p => (p.category || 'Без категории') === category);
-          
-          document.querySelectorAll('.category-btn').forEach(btn => {
-              btn.classList.toggle('active', btn.textContent === category);
-          });
-          renderProducts(filtered);
+      function closeQuantityModal() {
+          document.getElementById('quantityModal').style.display = 'none';
       }
   
-      // ================== ЛОГИКА КЛИЕНТОВ И КОРЗИНЫ ==================
-      function getCurrentCustomer() {
-          return customers.find(c => c.id === currentCustomerId) || customers[0];
+      function addToCartWithQuantity() {
+          const qty = parseFloat(document.getElementById('quantityInput').value);
+          if (qty > 0) {
+              addToCart(currentProduct, qty);
+              closeQuantityModal();
+          } else { alert('Введите количество'); }
       }
   
-      function switchCustomer(id) {
-          currentCustomerId = id;
-          document.querySelectorAll('.customer-tab').forEach(t => t.classList.toggle('active', parseInt(t.dataset.id) === id));
-          updateCartDisplay();
+      function showDiscountModal() {
+          const c = getCurrentCustomer();
+          if (c.cart.length === 0) return alert('Сначала добавьте товары');
+          document.getElementById('discountInput').value = '';
+          document.getElementById('discountModal').style.display = 'flex';
       }
   
-      function renderCustomerTabs() {
-          const container = document.getElementById('customerTabs');
-          if (!container) return;
-          const addBtn = container.querySelector('.btn-add-customer') || document.createElement('button');
-          container.innerHTML = '';
-          customers.forEach(c => {
-              const tab = document.createElement('button');
-              tab.className = `customer-tab ${c.id === currentCustomerId ? 'active' : ''}`;
-              tab.dataset.id = c.id;
-              tab.textContent = c.name;
-              tab.onclick = () => switchCustomer(c.id);
-              container.appendChild(tab);
-          });
-          container.appendChild(addBtn);
+      function closeDiscountModal() {
+          document.getElementById('discountModal').style.display = 'none';
       }
+  
+      function processPayment() {
+          const c = getCurrentCustomer();
+          if (c.cart.length === 0) return alert('Корзина пуста');
+          document.getElementById('paymentModal').style.display = 'flex';
+      }
+  
+      function closePaymentModal() {
+          document.getElementById('paymentModal').style.display = 'none';
+      }
+  
+      // Функции для кнопок-цифр (калькулятора)
+      function appendToQuantity(val) { document.getElementById('quantityInput').value += val; }
+      function clearQuantity() { document.getElementById('quantityInput').value = ''; }
+      function appendToDiscount(val) { document.getElementById('discountInput').value += val; }
+      function clearDiscountField() { document.getElementById('discountInput').value = ''; }
+      function setDiscountType(type) { 
+          discountType = type;
+          document.getElementById('discountBtn').classList.toggle('active', type==='discount');
+          document.getElementById('markupBtn').classList.toggle('active', type==='markup');
+      }
+  
+      // ================== ЛОГИКА КОРЗИНЫ ==================
+      function getCurrentCustomer() { return customers.find(c => c.id === currentCustomerId) || customers[0]; }
   
       function updateCartDisplay() {
-          const customer = getCurrentCustomer();
+          const c = getCurrentCustomer();
           const cartItems = document.getElementById('cartItems');
-          if (!customer || !cartItems) return;
-  
+          if (!c || !cartItems) return;
           cartItems.innerHTML = '';
           let subtotal = 0;
-  
-          customer.cart.forEach(item => {
+          c.cart.forEach(item => {
               subtotal += parseFloat(item.total);
               const div = document.createElement('div');
               div.className = 'cart-item fade-in';
-              div.innerHTML = `
-                  <div class="cart-item-info">
-                      <div class="cart-item-name">${item.name}</div>
-                      <div class="cart-item-details">${item.price} ₸ × ${item.quantity} = ${item.total} ₸</div>
-                  </div>
+              div.innerHTML = `<div class="cart-item-info"><b>${item.name}</b><br>${item.price}₸ × ${item.quantity}=${item.total}₸</div>
                   <div class="cart-item-controls">
-                      <button class="quantity-btn" onclick="changeQuantity(${item.id}, -0.5)">-0.5</button>
-                      <button class="quantity-btn" onclick="changeQuantity(${item.id}, 0.5)">+0.5</button>
+                      <button onclick="changeQuantity(${item.id},-0.5)">-0.5</button>
+                      <button onclick="changeQuantity(${item.id},0.5)">+0.5</button>
                       <button class="remove-btn" onclick="removeFromCart(${item.id})">×</button>
                   </div>`;
               cartItems.appendChild(div);
           });
-  
           let total = subtotal;
-          if (customer.discount.type && customer.discount.percent > 0) {
-              let diff = subtotal * (customer.discount.percent / 100);
-              total = customer.discount.type === 'discount' ? subtotal - diff : subtotal + diff;
-              customer.discount.amount = Math.round(diff);
+          if (c.discount.percent > 0) {
+              let diff = subtotal * (c.discount.percent / 100);
+              total = c.discount.type === 'discount' ? subtotal - diff : subtotal + diff;
           }
-          
           document.getElementById('totalAmount').textContent = Math.round(total);
-          document.getElementById('cartCounter').textContent = customer.cart.length;
+          document.getElementById('cartCounter').textContent = c.cart.length;
           saveCartToStorage();
       }
   
-      function addToCart(product, quantity = 1) {
-          const customer = getCurrentCustomer();
-          const existing = customer.cart.find(i => i.id === product.id);
-          if (existing) {
-              existing.quantity = parseFloat((existing.quantity + quantity).toFixed(2));
-              existing.total = Math.round(existing.price * existing.quantity);
+      function addToCart(p, q = 1) {
+          const c = getCurrentCustomer();
+          const ex = c.cart.find(i => i.id === p.id);
+          if (ex) {
+              ex.quantity = parseFloat((ex.quantity + q).toFixed(2));
+              ex.total = Math.round(ex.price * ex.quantity);
           } else {
-              customer.cart.push({
-                  id: product.id, name: product.name, price: product.price,
-                  quantity: quantity, total: Math.round(product.price * quantity)
-              });
+              c.cart.push({ id: p.id, name: p.name, price: p.price, quantity: q, total: Math.round(p.price * q) });
           }
           updateCartDisplay();
       }
   
-      function changeQuantity(id, delta) {
-          const customer = getCurrentCustomer();
-          const item = customer.cart.find(i => i.id === id);
-          if (item) {
-              item.quantity = parseFloat((item.quantity + delta).toFixed(2));
-              if (item.quantity <= 0) customer.cart = customer.cart.filter(i => i.id !== id);
-              else item.total = Math.round(item.price * item.quantity);
+      function changeQuantity(id, d) {
+          const c = getCurrentCustomer();
+          const i = c.cart.find(x => x.id === id);
+          if (i) {
+              i.quantity = parseFloat((i.quantity + d).toFixed(2));
+              if (i.quantity <= 0) c.cart = c.cart.filter(x => x.id !== id);
+              else i.total = Math.round(i.price * i.quantity);
               updateCartDisplay();
           }
       }
@@ -660,18 +647,21 @@
           updateCartDisplay();
       }
   
+      function removeDiscount() {
+          const c = getCurrentCustomer();
+          c.discount = { type: null, percent: 0, amount: 0 };
+          updateCartDisplay();
+      }
+  
       // ================== ИНТЕРФЕЙС ТОВАРОВ ==================
       function renderProducts(products) {
           const container = document.getElementById('productGrid');
           if (!container) return;
           container.innerHTML = '';
-  
           products.forEach(p => {
               const card = document.createElement('div');
               card.className = 'product-card';
-              card.innerHTML = `
-                  <div class="product-name">${p.name}</div>
-                  <div class="product-price">${p.price} ₸</div>
+              card.innerHTML = `<div class="product-name">${p.name}</div><div class="product-price">${p.price} ₸</div>
                   <div class="quick-add-buttons">
                       <button class="quick-add-btn" onclick="event.stopPropagation(); addToCart(${JSON.stringify(p).replace(/"/g, '&quot;')}, 1)">+1</button>
                       <button class="quick-add-btn" onclick="event.stopPropagation(); addToCart(${JSON.stringify(p).replace(/"/g, '&quot;')}, 0.5)">+0.5</button>
@@ -695,54 +685,70 @@
           });
       }
   
-      // ================== СЕРВИСНЫЕ ФУНКЦИИ ==================
-      function saveCartToStorage() {
-          localStorage.setItem(CART_STORAGE_KEY, JSON.stringify({ customers, currentCustomerId }));
+      function filterByCategory(cat) {
+          const f = cat === 'Все' ? allProducts : allProducts.filter(p => (p.category || 'Без категории') === cat);
+          document.querySelectorAll('.category-btn').forEach(b => b.classList.toggle('active', b.textContent === cat));
+          renderProducts(f);
       }
   
-      function loadCartFromStorage() {
-          const saved = localStorage.getItem(CART_STORAGE_KEY);
-          if (saved) {
-              try {
-                  const data = JSON.parse(saved);
-                  customers = data.customers || customers;
-                  currentCustomerId = data.currentCustomerId || 0;
-              } catch(e) { localStorage.removeItem(CART_STORAGE_KEY); }
+      function searchProducts() {
+          const t = document.getElementById('searchInput').value.toLowerCase();
+          if (!t) { filterByCategory('Все'); return; }
+          renderProducts(allProducts.filter(p => p.name.toLowerCase().includes(t)));
+      }
+  
+      // ================== ОПЛАТА И СЕРВИС ==================
+      async function confirmPayment() {
+          const c = getCurrentCustomer();
+          const payload = {
+              cart: c.cart, total: parseInt(document.getElementById('totalAmount').textContent),
+              payment_method: document.getElementById('paymentMethod').value,
+              organization: document.getElementById('organizationSelect').value,
+              counterparty_id: document.getElementById('counterpartySelect').value
+          };
+          const r = await fetch('/process_sale', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+          if (r.ok) {
+              showNotification('Готово!');
+              socket.emit('hide_total_on_screen');
+              customers = customers.filter(x => x.id !== c.id);
+              if (customers.length === 0) addCustomer(); else switchCustomer(customers[0].id);
+              renderCustomerTabs(); closePaymentModal();
           }
       }
   
-      function showNotification(msg, type = 'success') {
+      function applyDiscount() {
+          const p = parseFloat(document.getElementById('discountInput').value);
+          if (p >= 0 && p <= 100) {
+              getCurrentCustomer().discount = { type: discountType, percent: p, amount: 0 };
+              updateCartDisplay(); closeDiscountModal();
+          }
+      }
+  
+      function showNotification(m, t = 'success') {
           const n = document.createElement('div');
-          n.className = `notification ${type}`;
-          n.textContent = msg;
-          n.style.cssText = `position:fixed; top:20px; left:50%; transform:translateX(-50%); background:${type==='success'?'#00cc66':'#ff4444'}; color:white; padding:10px 20px; border-radius:5px; z-index:9999;`;
-          document.body.appendChild(n);
-          setTimeout(() => n.remove(), 3000);
+          n.textContent = m; n.className = `notification ${t}`;
+          n.style.cssText = `position:fixed; top:20px; left:50%; transform:translateX(-50%); background:${t==='success'?'#00cc66':'#ff4444'}; color:white; padding:10px; z-index:9999;`;
+          document.body.appendChild(n); setTimeout(() => n.remove(), 2000);
       }
   
-      function showTotalOnScreen(amount, customerName = '') {
-          socket.emit('show_total_on_screen', { amount, customer_name: customerName });
+      function saveCartToStorage() { localStorage.setItem(CART_STORAGE_KEY, JSON.stringify({ customers, currentCustomerId })); }
+      function loadCartFromStorage() {
+          const s = localStorage.getItem(CART_STORAGE_KEY);
+          if (s) { const d = JSON.parse(s); customers = d.customers; currentCustomerId = d.currentCustomerId; }
       }
   
-      function hideTotalOnScreen() {
-          socket.emit('hide_total_on_screen');
-      }
-  
-      // Обработка горячих клавиш (Enter, Escape, F1-F4)
+      // Hotkeys
       document.addEventListener('keydown', (e) => {
-          const isVisible = (id) => document.getElementById(id)?.style.display === 'flex';
           if (e.key === 'Escape') { 
-              ['quantityModal', 'paymentModal', 'discountModal'].forEach(id => {
-                  const m = document.getElementById(id); if(m) m.style.display = 'none';
-              });
+              closeQuantityModal(); closePaymentModal(); closeDiscountModal(); 
           }
           if (e.key === 'Enter') {
-              if (isVisible('quantityModal')) addToCartWithQuantity();
-              if (isVisible('discountModal')) applyDiscount();
+              if (document.getElementById('quantityModal').style.display === 'flex') addToCartWithQuantity();
+              if (document.getElementById('discountModal').style.display === 'flex') applyDiscount();
           }
       });
   
-      window.addEventListener('beforeunload', () => hideTotalOnScreen());
+      window.addEventListener('beforeunload', () => socket.emit('hide_total_on_screen'));
   </script>
 </body>
 </html>
