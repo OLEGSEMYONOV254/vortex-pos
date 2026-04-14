@@ -468,100 +468,118 @@
   <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
   <script>
       // ================== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ==================
-      let customers = [
-          {
-              id: 0,
-              name: "Клиент 1",
-              cart: [],
-              paymentMethod: "qr",
-              organization: "vortex",
-              counterpartyId: null,
-              discount: { type: null, percent: 0, amount: 0 }
-          }
-      ];
+      let customers = [{
+          id: 0,
+          name: "Клиент 1",
+          cart: [],
+          paymentMethod: "qr",
+          organization: "vortex",
+          counterpartyId: null,
+          discount: { type: null, percent: 0, amount: 0 }
+      }];
       let currentCustomerId = 0;
       let allProducts = [];
-      let currentProduct = null;
       let counterparties = [];
-      let discountType = 'discount'; 
+      let currentProduct = null;
+      let discountType = 'discount';
   
-      // Используем одно соединение для всего
       const socket = io();
       const CART_STORAGE_KEY = 'vortex_saved_cart';
   
       // ================== ИНИЦИАЛИЗАЦИЯ ==================
       document.addEventListener('DOMContentLoaded', async () => {
           await loadProducts();
-          await loadCounterparties();
+          await loadCounterparties(); // ТЕПЕРЬ ОПРЕДЕЛЕНА
           
           loadCartFromStorage();
           renderCustomerTabs();
           renderCategoryMenu(allProducts);
           renderProducts(allProducts);
   
-          // Настройка мобильной корзины
           const mobileCartToggle = document.getElementById('mobileCartToggle');
           if (mobileCartToggle) {
               mobileCartToggle.addEventListener('click', () => {
                   document.querySelector('.cart-container')?.classList.toggle('expanded');
               });
           }
-  
-          // Фокус на поиск при старте
           document.getElementById('searchInput')?.focus();
   
-          // Socket события
-          socket.on('connect', () => console.log('✅ Подключено к серверу'));
+          socket.on('connect', () => console.log('✅ Vortex POS Connected'));
           socket.on('command_result', (data) => showNotification(data.message, data.success ? 'success' : 'error'));
       });
   
-      // ================== ФУНКЦИИ ЭКРАНА (SOCKET) ==================
-      function showTotalOnScreen(amount, customerName = '') {
-          socket.emit('show_total_on_screen', { amount, customer_name: customerName });
+      // ================== ЗАГРУЗКА ДАННЫХ (API) ==================
+      async function loadProducts() {
+          try {
+              const r = await fetch('/get_products');
+              allProducts = await r.json();
+          } catch(e) { console.error('Ошибка загрузки товаров'); }
       }
   
-      function hideTotalOnScreen() {
-          socket.emit('hide_total_on_screen');
+      async function loadCounterparties() {
+          try {
+              const r = await fetch('/api/counterparties');
+              if (r.ok) {
+                  counterparties = await r.json();
+                  updateCounterpartySelect();
+              }
+          } catch(e) { console.error('Ошибка загрузки контрагентов'); }
       }
   
-      function sendToPromo(command) {
-          socket.emit('kassa_command', { command });
+      function updateCounterpartySelect() {
+          const select = document.getElementById('counterpartySelect');
+          if (!select) return;
+          select.innerHTML = '<option value="">Не выбрано</option>';
+          counterparties.forEach(c => {
+              const opt = document.createElement('option');
+              opt.value = c.id;
+              opt.textContent = c.name;
+              select.appendChild(opt);
+          });
       }
   
-      // ================== РАБОТА С КЛИЕНТАМИ ==================
+      // ================== ПОИСК И ФИЛЬТРЫ ==================
+      function searchProducts() {
+          const term = document.getElementById('searchInput').value.toLowerCase();
+          if (!term) {
+              const activeCat = document.querySelector('.category-btn.active')?.textContent || 'Все';
+              filterByCategory(activeCat);
+              return;
+          }
+          const filtered = allProducts.filter(p => 
+              p.name.toLowerCase().includes(term) || 
+              (p.category && p.category.toLowerCase().includes(term))
+          );
+          renderProducts(filtered);
+      }
+  
+      function filterByCategory(category) {
+          const filtered = category === 'Все' 
+              ? allProducts 
+              : allProducts.filter(p => (p.category || 'Без категории') === category);
+          
+          document.querySelectorAll('.category-btn').forEach(btn => {
+              btn.classList.toggle('active', btn.textContent === category);
+          });
+          renderProducts(filtered);
+      }
+  
+      // ================== ЛОГИКА КЛИЕНТОВ И КОРЗИНЫ ==================
       function getCurrentCustomer() {
           return customers.find(c => c.id === currentCustomerId) || customers[0];
       }
   
-      function switchCustomer(customerId) {
-          currentCustomerId = customerId;
-          document.querySelectorAll('.customer-tab').forEach(tab => {
-              tab.classList.toggle('active', parseInt(tab.dataset.id) === customerId);
-          });
+      function switchCustomer(id) {
+          currentCustomerId = id;
+          document.querySelectorAll('.customer-tab').forEach(t => t.classList.toggle('active', parseInt(t.dataset.id) === id));
           updateCartDisplay();
-      }
-  
-      function addCustomer() {
-          const newId = customers.length > 0 ? Math.max(...customers.map(c => c.id)) + 1 : 0;
-          customers.push({
-              id: newId,
-              name: `Клиент ${newId + 1}`,
-              cart: [],
-              paymentMethod: "qr",
-              organization: "vortex",
-              counterpartyId: null,
-              discount: { type: null, percent: 0, amount: 0 }
-          });
-          renderCustomerTabs();
-          switchCustomer(newId);
       }
   
       function renderCustomerTabs() {
           const container = document.getElementById('customerTabs');
           if (!container) return;
-          const addBtn = container.querySelector('.btn-add-customer'); 
+          const addBtn = container.querySelector('.btn-add-customer') || document.createElement('button');
           container.innerHTML = '';
-          
           customers.forEach(c => {
               const tab = document.createElement('button');
               tab.className = `customer-tab ${c.id === currentCustomerId ? 'active' : ''}`;
@@ -570,16 +588,12 @@
               tab.onclick = () => switchCustomer(c.id);
               container.appendChild(tab);
           });
-          if (addBtn) container.appendChild(addBtn);
+          container.appendChild(addBtn);
       }
   
-      // ================== КОРЗИНА ==================
       function updateCartDisplay() {
           const customer = getCurrentCustomer();
           const cartItems = document.getElementById('cartItems');
-          const totalAmount = document.getElementById('totalAmount');
-          const discountInfo = document.getElementById('discountInfo');
-          
           if (!customer || !cartItems) return;
   
           cartItems.innerHTML = '';
@@ -604,20 +618,12 @@
   
           let total = subtotal;
           if (customer.discount.type && customer.discount.percent > 0) {
-              let mod = customer.discount.type === 'discount' ? -1 : 1;
               let diff = subtotal * (customer.discount.percent / 100);
-              total = subtotal + (mod * diff);
+              total = customer.discount.type === 'discount' ? subtotal - diff : subtotal + diff;
               customer.discount.amount = Math.round(diff);
-              
-              discountInfo.innerHTML = `
-                  ${customer.discount.type === 'discount' ? 'Скидка' : 'Наценка'}: 
-                  <span class="discount-amount">${customer.discount.percent}% (${Math.round(diff)} ₸)</span>
-                  <button class="remove-btn" onclick="removeDiscount()">×</button>`;
-          } else {
-              discountInfo.innerHTML = '';
           }
-  
-          totalAmount.textContent = Math.round(total);
+          
+          document.getElementById('totalAmount').textContent = Math.round(total);
           document.getElementById('cartCounter').textContent = customer.cart.length;
           saveCartToStorage();
       }
@@ -625,17 +631,13 @@
       function addToCart(product, quantity = 1) {
           const customer = getCurrentCustomer();
           const existing = customer.cart.find(i => i.id === product.id);
-          
           if (existing) {
               existing.quantity = parseFloat((existing.quantity + quantity).toFixed(2));
               existing.total = Math.round(existing.price * existing.quantity);
           } else {
               customer.cart.push({
-                  id: product.id,
-                  name: product.name,
-                  price: product.price,
-                  quantity: quantity,
-                  total: Math.round(product.price * quantity)
+                  id: product.id, name: product.name, price: product.price,
+                  quantity: quantity, total: Math.round(product.price * quantity)
               });
           }
           updateCartDisplay();
@@ -646,82 +648,54 @@
           const item = customer.cart.find(i => i.id === id);
           if (item) {
               item.quantity = parseFloat((item.quantity + delta).toFixed(2));
-              if (item.quantity <= 0) {
-                  customer.cart = customer.cart.filter(i => i.id !== id);
-              } else {
-                  item.total = Math.round(item.price * item.quantity);
-              }
+              if (item.quantity <= 0) customer.cart = customer.cart.filter(i => i.id !== id);
+              else item.total = Math.round(item.price * item.quantity);
               updateCartDisplay();
           }
       }
   
-      // ================== СКИДКИ ==================
-      function applyDiscount() {
-          const val = parseFloat(document.getElementById('discountInput').value);
-          if (isNaN(val) || val < 0 || val > 100) return alert('Введите 0-100');
-          
-          const customer = getCurrentCustomer();
-          customer.discount = { type: discountType, percent: val, amount: 0 };
+      function removeFromCart(id) {
+          const c = getCurrentCustomer();
+          c.cart = c.cart.filter(i => i.id !== id);
           updateCartDisplay();
-          closeDiscountModal();
       }
   
-      // ================== ОПЛАТА ==================
-      async function confirmPayment() {
-          const customer = getCurrentCustomer();
-          if (customer.cart.length === 0) return alert('Пусто!');
+      // ================== ИНТЕРФЕЙС ТОВАРОВ ==================
+      function renderProducts(products) {
+          const container = document.getElementById('productGrid');
+          if (!container) return;
+          container.innerHTML = '';
   
-          const payload = {
-              cart: customer.cart,
-              total: parseInt(document.getElementById('totalAmount').textContent),
-              payment_method: document.getElementById('paymentMethod').value,
-              organization: document.getElementById('organizationSelect').value,
-              discount_type: customer.discount.type,
-              discount_percent: customer.discount.percent
-          };
-  
-          try {
-              const res = await fetch('/process_sale', {
-                  method: 'POST',
-                  headers: {'Content-Type': 'application/json'},
-                  body: JSON.stringify(payload)
-              });
-              if (res.ok) {
-                  showNotification('Продажа успешно завершена!');
-                  hideTotalOnScreen();
-                  // Удаляем текущего клиента и создаем нового если пусто
-                  customers = customers.filter(c => c.id !== customer.id);
-                  if (customers.length === 0) addCustomer();
-                  else switchCustomer(customers[0].id);
-                  renderCustomerTabs();
-                  closePaymentModal();
-              }
-          } catch (e) { alert('Ошибка сервера'); }
+          products.forEach(p => {
+              const card = document.createElement('div');
+              card.className = 'product-card';
+              card.innerHTML = `
+                  <div class="product-name">${p.name}</div>
+                  <div class="product-price">${p.price} ₸</div>
+                  <div class="quick-add-buttons">
+                      <button class="quick-add-btn" onclick="event.stopPropagation(); addToCart(${JSON.stringify(p).replace(/"/g, '&quot;')}, 1)">+1</button>
+                      <button class="quick-add-btn" onclick="event.stopPropagation(); addToCart(${JSON.stringify(p).replace(/"/g, '&quot;')}, 0.5)">+0.5</button>
+                  </div>`;
+              card.onclick = () => showQuantityModal(p);
+              container.appendChild(card);
+          });
       }
   
-      // ================== ГОРЯЧИЕ КЛАВИШИ ==================
-      function handleHotkeys(e) {
-          const isModal = (id) => document.getElementById(id).style.display === 'flex';
-  
-          if (e.key === 'F1') { e.preventDefault(); document.getElementById('searchInput').focus(); }
-          if (e.key === 'F2') { e.preventDefault(); processPayment(); }
-          if (e.key === 'F4') { e.preventDefault(); showDiscountModal(); }
-          
-          if (e.key === 'Enter') {
-              if (isModal('quantityModal')) { e.preventDefault(); addToCartWithQuantity(); }
-              if (isModal('discountModal')) { e.preventDefault(); applyDiscount(); }
-          }
-          
-          if (e.key === 'Escape') {
-              closeQuantityModal();
-              closePaymentModal();
-              closeDiscountModal();
-          }
+      function renderCategoryMenu(products) {
+          const container = document.getElementById('categoryContainer');
+          if (!container) return;
+          const cats = ['Все', ...new Set(products.map(p => p.category || 'Без категории'))];
+          container.innerHTML = '';
+          cats.forEach(c => {
+              const btn = document.createElement('button');
+              btn.className = `category-btn ${c === 'Все' ? 'active' : ''}`;
+              btn.textContent = c;
+              btn.onclick = () => filterByCategory(c);
+              container.appendChild(btn);
+          });
       }
   
-      document.addEventListener('keydown', handleHotkeys);
-  
-      // ================== СЛУЖЕБНЫЕ ==================
+      // ================== СЕРВИСНЫЕ ФУНКЦИИ ==================
       function saveCartToStorage() {
           localStorage.setItem(CART_STORAGE_KEY, JSON.stringify({ customers, currentCustomerId }));
       }
@@ -729,18 +703,44 @@
       function loadCartFromStorage() {
           const saved = localStorage.getItem(CART_STORAGE_KEY);
           if (saved) {
-              const data = JSON.parse(saved);
-              customers = data.customers;
-              currentCustomerId = data.currentCustomerId;
+              try {
+                  const data = JSON.parse(saved);
+                  customers = data.customers || customers;
+                  currentCustomerId = data.currentCustomerId || 0;
+              } catch(e) { localStorage.removeItem(CART_STORAGE_KEY); }
           }
       }
   
-      async function loadProducts() {
-          try {
-              const r = await fetch('/get_products');
-              allProducts = await r.json();
-          } catch(e) { console.error('Ошибка загрузки товаров'); }
+      function showNotification(msg, type = 'success') {
+          const n = document.createElement('div');
+          n.className = `notification ${type}`;
+          n.textContent = msg;
+          n.style.cssText = `position:fixed; top:20px; left:50%; transform:translateX(-50%); background:${type==='success'?'#00cc66':'#ff4444'}; color:white; padding:10px 20px; border-radius:5px; z-index:9999;`;
+          document.body.appendChild(n);
+          setTimeout(() => n.remove(), 3000);
       }
+  
+      function showTotalOnScreen(amount, customerName = '') {
+          socket.emit('show_total_on_screen', { amount, customer_name: customerName });
+      }
+  
+      function hideTotalOnScreen() {
+          socket.emit('hide_total_on_screen');
+      }
+  
+      // Обработка горячих клавиш (Enter, Escape, F1-F4)
+      document.addEventListener('keydown', (e) => {
+          const isVisible = (id) => document.getElementById(id)?.style.display === 'flex';
+          if (e.key === 'Escape') { 
+              ['quantityModal', 'paymentModal', 'discountModal'].forEach(id => {
+                  const m = document.getElementById(id); if(m) m.style.display = 'none';
+              });
+          }
+          if (e.key === 'Enter') {
+              if (isVisible('quantityModal')) addToCartWithQuantity();
+              if (isVisible('discountModal')) applyDiscount();
+          }
+      });
   
       window.addEventListener('beforeunload', () => hideTotalOnScreen());
   </script>
