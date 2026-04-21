@@ -1010,6 +1010,32 @@
           container.appendChild(addBtn);
         }
       }
+
+      // Универсальная функция для быстрой наценки (НДС, Kaspi и т.д.)
+      function applyQuickMarkup(percent, label) {
+          const customer = getCurrentCustomer();
+          
+          if (customer.cart.length === 0) {
+              showNotification('Сначала добавьте товары в корзину', 'error');
+              return;
+          }
+      
+          // Устанавливаем наценку в объект текущего клиента
+          customer.discount = { 
+              type: 'markup', 
+              percent: parseFloat(percent),
+              label: label // Сохраняем имя для отображения (НДС или Kaspi)
+          };
+          
+          // Пересчитываем корзину
+          updateCartDisplay();
+          
+          // Отправляем новую сумму на экран покупателя
+          const total = document.getElementById('totalAmount').textContent;
+          showTotalOnScreen(total);
+          
+          showNotification(`Применено: ${label} (${percent}%)`, 'success');
+      }
   
       // ================== ФУНКЦИИ РАБОТЫ С КОРЗИНОЙ ================== //
       
@@ -1329,6 +1355,44 @@
           (p.category && p.category.toLowerCase().includes(term))
         );
         renderProducts(filtered);
+      }
+
+      // Функция для расчета цены с НДС (36%)
+      function applyVAT() {
+          const customer = getCurrentCustomer();
+          if (customer.cart.length === 0) return showNotification('Корзина пуста', 'error');
+      
+          // Устанавливаем тип "markup" (наценка) и 36%
+          customer.discount = { 
+              type: 'markup', 
+              percent: 36 
+          };
+          
+          updateCartDisplay();
+          showNotification('Применен НДС 36%', 'success');
+          
+          // Сразу отправляем новую сумму на экран покупателя
+          const total = document.getElementById('totalAmount').textContent;
+          showTotalOnScreen(total);
+      }
+      
+      // Функция для расчета цены Kaspi (10%)
+      function applyKaspiMarkup() {
+          const customer = getCurrentCustomer();
+          if (customer.cart.length === 0) return showNotification('Корзина пуста', 'error');
+      
+          // Устанавливаем тип "markup" (наценка) и 10%
+          customer.discount = { 
+              type: 'markup', 
+              percent: 10 
+          };
+          
+          updateCartDisplay();
+          showNotification('Применена комиссия Kaspi 10%', 'success');
+          
+          // Сразу отправляем новую сумму на экран покупателя
+          const total = document.getElementById('totalAmount').textContent;
+          showTotalOnScreen(total);
       }
   
       // ================== МОДАЛЬНЫЕ ОКНА ================== //
