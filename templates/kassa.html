@@ -673,7 +673,7 @@
                   <button onclick="applyQuickMarkup(36, 'НДС')" class="markup-btn">Цена с НДС (36%)</button>
                   <button onclick="applyQuickMarkup(10, 'Kaspi')" class="markup-btn">Цена Kaspi (10%)</button>
               </div>
-              <button class="btn" onclick="showTotal()">💵 Показать сумму</button>
+              <button onclick="showTotalOnScreen()" class="btn-display">💵 Показать сумму</button>
               <button class="btn btn-discount" onclick="showDiscountModal()">🎯 Скидка/Наценка (F4)</button>
               <button class="btn btn-danger" onclick="clearCart()">🧹 Очистить (F3)</button>
               <button class="btn btn-pay" onclick="processPayment()">💰 Оплатить (F2)</button>
@@ -1627,6 +1627,23 @@
               console.log(`Команда ${command} отправлена на промо-экран`);
           } else {
               showNotification('Ошибка: нет связи с сервером для промо-экрана', 'error');
+          }
+      }
+      function showTotalOnScreen() {
+          // Получаем сумму из текстового элемента
+          const total = document.getElementById('totalAmount').textContent;
+          const customer = getCurrentCustomer();
+          
+          console.log("Отправка суммы на экран:", total); // Проверка в консоли
+      
+          if (socket && socket.connected) {
+              socket.emit('show_total_on_screen', { 
+                  amount: total, 
+                  customer_name: customer ? customer.name : '' 
+              });
+              showNotification('Сумма отправлена на экран', 'success');
+          } else {
+              showNotification('Ошибка: экран не подключен', 'error');
           }
       }
   </script>
