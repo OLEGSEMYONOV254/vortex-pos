@@ -1710,6 +1710,22 @@
               showNotification('Ошибка: экран не подключен', 'error');
           }
       }
+
+      function hideTotalOnScreen() {
+          // 1. Сначала проверяем, подключен ли сокет
+          if (socket && socket.connected) {
+              // 2. Отправляем сигнал на сервер. 
+              // ВАЖНО: сервер должен переслать это событие на промо-экран.
+              socket.emit('hide_total_on_screen');
+              
+              // 3. Визуальный отклик для кассира
+              showNotification('Команда скрытия отправлена');
+              console.log("Сигнал hide_total_on_screen отправлен через сокет");
+          } else {
+              console.error("Ошибка: сокет не подключен. Не удалось скрыть сумму.");
+              showNotification('Ошибка связи', 'error');
+          }
+      }
   </script>
 </body>
 </html>
