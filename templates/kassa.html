@@ -1713,21 +1713,55 @@
           }
       }
 
+     // Функция скрытия (твоя рабочая версия)
       function hideTotalOnScreen() {
-          // 1. Сначала проверяем, подключен ли сокет
           if (socket && socket.connected) {
-              // 2. Отправляем сигнал на сервер. 
-              // ВАЖНО: сервер должен переслать это событие на промо-экран.
               socket.emit('hide_total_on_screen');
-              
-              // 3. Визуальный отклик для кассира
               showNotification('Команда скрытия отправлена');
-              console.log("Сигнал hide_total_on_screen отправлен через сокет");
+              console.log("Сигнал hide_total_on_screen отправлен");
           } else {
-              console.error("Ошибка: сокет не подключен. Не удалось скрыть сумму.");
+              console.error("Сокет не подключен");
               showNotification('Ошибка связи', 'error');
           }
       }
+
+      // КРИТИЧЕСКИ ВАЖНО: Добавь эту функцию, её не было в коде!
+      function showNotification(message, type = 'success') {
+          console.log(`Уведомление [${type}]: ${message}`);
+          
+          // Создаем элемент уведомления, если его нет в HTML
+          let container = document.getElementById('notification-container');
+          if (!container) {
+              container = document.createElement('div');
+              container.id = 'notification-container';
+              container.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999;';
+              document.body.appendChild(container);
+          }
+
+          const notification = document.createElement('div');
+          notification.className = `notification ${type}`;
+          notification.style.cssText = `
+              background: ${type === 'success' ? '#2ecc71' : '#e74c3c'};
+              color: white;
+              padding: 10px 20px;
+              margin-bottom: 10px;
+              border-radius: 5px;
+              box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+              animation: fadeIn 0.3s;
+          `;
+          notification.textContent = message;
+
+          container.appendChild(notification);
+
+          // Удаляем через 3 секунды
+          setTimeout(() => {
+              notification.style.opacity = '0';
+              notification.style.transition = '0.5s';
+              setTimeout(() => notification.remove(), 500);
+          }, 3000);
+      }
+
+      // Закрываем основной тег скрипта
   </script>
 </body>
 </html>
