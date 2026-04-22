@@ -1572,6 +1572,8 @@
           
           if (response.ok) {
             alert(`Продажа для ${customer.name} оформлена!`);
+
+            hideTotalOnScreen();
             
             // Удаляем клиента после оплаты
             customers = customers.filter(c => c.id !== customer.id);
