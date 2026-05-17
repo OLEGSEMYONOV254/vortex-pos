@@ -1561,6 +1561,32 @@ def import_products_json():
         return f"[ОШИБКА] Не удалось импортировать: {str(e)}", 500
 
 
+# ==========================================
+# МОДУЛЬ УПРАВЛЕНИЯ СКЛАДОМ РВД
+# ==========================================
+
+@app.route('/rvd')
+def rvd_warehouse():
+    """Открывает страницу параметрического фильтра и конструктора РВД"""
+    # Пока отдаем страницу без проверки авторизации, чтобы протестировать интерфейс
+    return render_template('rvd_warehouse.html')
+
+@app.route('/api/rvd/search', methods=['GET'])
+def api_rvd_search():
+    """Бэкенд-эндпоинт для параметрического поиска деталей (демо-данные)"""
+    item_type = request.args.get('type')
+    standard = request.args.get('standard')
+    angle = request.args.get('angle')
+    
+    # Временная заглушка, возвращающая тестовые данные, пока мы не настроили таблицы
+    demo_result = {
+        "status": "success",
+        "product_name": f"Фитинг {standard.upper() if standard else 'РВД'} { '90°' if angle == '90' else 'Прямой 0°' }",
+        "warehouse": "Склад №1",
+        "address": "Стеллаж Б -> Полка 3 -> Коробка №14",
+        "quantity": "42 шт"
+    }
+    return jsonify(demo_result)
 
 
 # ================ КОНЕЦ API для контрагентов ================
