@@ -188,8 +188,33 @@
         }
 
         function findProduct() {
-            // Временная имитация поиска до подключения бэкенда
-            document.getElementById('filter-result').classList.remove('hidden');
+            // Проверяем, выбрал ли пользователь параметры
+            if (!selectedData.type || !selectedData.standard || !selectedData.angle) {
+                alert("Пожалуйста, выберите все 3 параметра (Тип, Стандарт и Угол)!");
+                return;
+            }
+        
+            // Формируем URL с параметрами для нашего Flask бэкенда
+            const url = `/api/rvd/search?type=${selectedData.type}&standard=${selectedData.standard}&angle=${selectedData.angle}`;
+        
+            // Отправляем запрос на сервер
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Заполняем интерфейс реальными данными с сервера
+                        document.getElementById('res-name').innerText = data.product_name;
+                        document.getElementById('res-address').innerText = `${data.warehouse} -> ${data.address}`;
+                        document.getElementById('res-qty').innerText = data.quantity;
+                        
+                        // Показываем блок с результатом
+                        document.getElementById('filter-result').classList.remove('hidden');
+                    }
+                })
+                .catch(error => {
+                    console.error("Ошибка при поиске детали:", error);
+                    alert("Не удалось связаться с сервером.");
+                });
         }
 
         function buildRvd() {
