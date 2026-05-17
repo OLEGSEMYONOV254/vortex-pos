@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вортекс - Управление РВД</title>
+    <!-- Подключаем Tailwind CSS для красивого и быстрого дизайна -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .active-tab { border-bottom-width: 4px; border-color: #3b82f6; color: #3b82f6; }
+        .btn-choice { @apply bg-gray-100 hover:bg-blue-50 border border-gray-200 p-4 rounded-xl text-center font-medium transition-all text-gray-700 active:scale-95 cursor-pointer; }
+        .btn-choice.selected { @apply bg-blue-500 text-white border-blue-600; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans antialiased pb-12">
+
+    <!-- Навигация сверху -->
+    <div class="bg-white shadow-sm sticky top-0 z-50 px-4 py-3 flex justify-between items-center">
+        <h1 class="text-xl font-bold tracking-tight text-blue-600">Vortex РВД</h1>
+        <a href="/" class="text-sm text-gray-500 hover:text-gray-700">Назад в POS</a>
+    </div>
+
+    <!-- Переключатель вкладок (Табы) -->
+    <div class="flex bg-white border-b border-gray-200 text-center sticky top-[52px] z-40">
+        <button id="tab-filter-btn" class="flex-1 py-3 font-semibold active-tab" onclick="switchTab('filter')">🔍 Параметры</button>
+        <button id="tab-constructor-btn" class="flex-1 py-3 font-semibold text-gray-500" onclick="switchTab('constructor')">🛠️ Конструктор</button>
+    </div>
+
+    <div class="max-w-md mx-auto px-4 mt-6">
+
+        <!-- ВКЛАДКА 1: ПАРАМЕТРИЧЕСКИЙ ФИЛЬТР -->
+        <div id="tab-filter" class="space-y-6">
+            <h2 class="text-lg font-bold text-gray-800">Умный поиск детали</h2>
+            
+            <!-- Шаг 1: Тип -->
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">1. Тип изделия</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="btn-choice" onclick="selectParam(this, 'type', 'fitting')">Фитинг</div>
+                    <div class="btn-choice" onclick="selectParam(this, 'type', 'hose')">Шланг</div>
+                    <div class="btn-choice" onclick="selectParam(this, 'type', 'sleeve')">Муфта</div>
+                    <div class="btn-choice" onclick="selectParam(this, 'type', 'adapter')">Адаптер</div>
+                </div>
+            </div>
+
+            <!-- Шаг 2: Стандарт -->
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">2. Стандарт резьбы</label>
+                <div class="grid grid-cols-3 gap-2">
+                    <div class="btn-choice text-sm" onclick="selectParam(this, 'standard', 'DKOL')">DKOL</div>
+                    <div class="btn-choice text-sm" onclick="selectParam(this, 'standard', 'DKOS')">DKOS</div>
+                    <div class="btn-choice text-sm" onclick="selectParam(this, 'standard', 'BSP')">BSP</div>
+                    <div class="btn-choice text-sm" onclick="selectParam(this, 'standard', 'JIC')">JIC</div>
+                    <div class="btn-choice text-sm" onclick="selectParam(this, 'standard', 'ORFS')">ORFS</div>
+                </div>
+            </div>
+
+            <!-- Шаг 3: Угол -->
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">3. Угол изгиба</label>
+                <div class="grid grid-cols-3 gap-2">
+                    <div class="btn-choice" onclick="selectParam(this, 'angle', '0')">Прямой 0°</div>
+                    <div class="btn-choice" onclick="selectParam(this, 'angle', '45')">Угол 45°</div>
+                    <div class="btn-choice" onclick="selectParam(this, 'angle', '90')">Угол 90°</div>
+                </div>
+            </div>
+
+            <!-- Кнопка Поиска -->
+            <button onclick="findProduct()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all active:scale-95">
+                Найти на складе
+            </button>
+
+            <!-- Результат поиска -->
+            <div id="filter-result" class="hidden bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-2">
+                <h3 class="font-bold text-gray-800 text-lg" id="res-name">Фитинг DKOL G90 M18x1.5</h3>
+                <hr class="border-gray-100">
+                <p class="text-sm text-gray-600">📍 Место хранения:</p>
+                <p class="font-mono bg-amber-50 text-amber-800 px-3 py-1.5 rounded-md inline-block font-bold" id="res-address">Склад 1 -> Стеллаж Б -> Коробка №14</p>
+                <div class="flex justify-between items-center pt-2">
+                    <span class="text-sm text-gray-500">В этой коробке:</span>
+                    <span class="font-bold text-green-600 text-xl" id="res-qty">42 шт</span>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ВКЛАДКА 2: КОНСТРУКТОР РВД -->
+        <div id="tab-constructor" class="hidden space-y-6">
+            <h2 class="text-lg font-bold text-gray-800">Конструктор готового рукава</h2>
+
+            <!-- Параметры рукава -->
+            <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1">Выбор шланга</label>
+                    <select class="w-full bg-gray-50 border border-gray-200 p-3 rounded-lg focus:outline-blue-50">
+                        <option>2SN DN10 (3/8")</option>
+                        <option>1SN DN10 (3/8")</option>
+                        <option>2SN DN13 (1/2")</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1">Длина шланга (метры)</label>
+                    <input type="number" step="0.01" placeholder="Например: 1.45" class="w-full bg-gray-50 border border-gray-200 p-3 rounded-lg focus:outline-blue-50">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1">Левый наконечник</label>
+                    <select class="w-full bg-gray-50 border border-gray-200 p-3 rounded-lg focus:outline-blue-50">
+                        <option>DKOL M18x1.5 (Прямой)</option>
+                        <option>DKOL M18x1.5 (Угол 90°)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1">Правый наконечник</label>
+                    <select class="w-full bg-gray-50 border border-gray-200 p-3 rounded-lg focus:outline-blue-50">
+                        <option>Штуцер CEL M18x1.5 (Прямой)</option>
+                        <option>DKOL M18x1.5 (Угол 90°)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button onclick="buildRvd()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all active:scale-95">
+                Рассчитать сборку и списать
+            </button>
+
+            <!-- Результат сборки / Маршрутная карта -->
+            <div id="constructor-result" class="hidden bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-4">
+                <h3 class="font-bold text-green-700">📋 Маршрутный лист сборщика:</h3>
+                
+                <div class="space-y-3 font-sm">
+                    <div class="flex items-start gap-3 bg-gray-50 p-2.5 rounded-lg">
+                        <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-bold mt-0.5">1</span>
+                        <div>
+                            <p class="font-semibold text-gray-800">Отрезать шланг 2SN DN10 — 1.45 м</p>
+                            <p class="text-xs text-gray-400">Где: Склад 1, Зона А (Бухты)</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3 bg-gray-50 p-2.5 rounded-lg">
+                        <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-bold mt-0.5">2</span>
+                        <div>
+                            <p class="font-semibold text-gray-800">Взять 2 обжимные муфты 2SN DN10</p>
+                            <p class="text-xs text-gray-400">Где: Склад 1 -> Стеллаж А -> Коробка №5</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3 bg-gray-50 p-2.5 rounded-lg">
+                        <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-bold mt-0.5">3</span>
+                        <div>
+                            <p class="font-semibold text-gray-800">Взять 1 фитинг DKOL M18x1.5</p>
+                            <p class="text-xs text-gray-400">Где: Склад 1 -> Стеллаж Б -> Коробка №12</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Логика переключения вкладок и демонстрации (пока без БД) -->
+    <script>
+        let selectedData = { type: '', standard: '', angle: '' };
+
+        function switchTab(tab) {
+            if (tab === 'filter') {
+                document.getElementById('tab-filter').classList.remove('hidden');
+                document.getElementById('tab-constructor').classList.add('hidden');
+                document.getElementById('tab-filter-btn').classList.add('active-tab');
+                document.getElementById('tab-constructor-btn').classList.remove('active-tab');
+            } else {
+                document.getElementById('tab-filter').classList.add('hidden');
+                document.getElementById('tab-constructor').classList.remove('hidden');
+                document.getElementById('tab-filter-btn').classList.remove('active-tab');
+                document.getElementById('tab-constructor-btn').classList.add('active-tab');
+            }
+        }
+
+        function selectParam(element, paramType, value) {
+            // Снимаем выделение с соседних кнопок в этой группе
+            const siblings = element.parentNode.children;
+            for (let sibling of siblings) {
+                sibling.classList.remove('selected');
+            }
+            // Выделяем текущую
+            element.classList.add('selected');
+            selectedData[paramType] = value;
+        }
+
+        function findProduct() {
+            // Временная имитация поиска до подключения бэкенда
+            document.getElementById('filter-result').classList.remove('hidden');
+        }
+
+        function buildRvd() {
+            // Временная имитация сборки до подключения бэкенда
+            document.getElementById('constructor-result').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
