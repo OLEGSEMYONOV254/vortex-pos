@@ -325,8 +325,8 @@
 
         socket.on('show_total_on_screen', (data) => {
             const amount = Number(data.amount ?? data.total ?? 0);
-            const imagePath = data.qr_image || data.image || data.qr_url || (data.extra_qr ? '/static/qrSARA.png' : '/static/qrЖетес1.png');
-            console.log('Show total on screen:', { amount, imagePath, extra_qr: data.extra_qr });
+            const imagePath = data.qr_image || data.image || data.qr_url || '/static/qrЖетес1.png';
+            console.log('Show total on screen:', { amount, imagePath, qr_label: data.qr_label });
             showPaymentInfo(amount, { image: imagePath, label: data.qr_label || data.name || 'QR' });
         });
 
