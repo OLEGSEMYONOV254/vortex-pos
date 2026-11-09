@@ -352,6 +352,22 @@
       .btn-discount:hover {
         background: #2980b9;
       }
+
+      .btn-display {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.2s;
+      }
+
+      .btn-display:hover {
+        background: #00b359;
+        transform: translateY(-2px);
+      }
       
       .discount-info {
         font-size: 0.9rem;
@@ -674,6 +690,7 @@
                   <button onclick="applyQuickMarkup(10, 'Kaspi')" class="markup-btn">Цена Kaspi (10%)</button>
               </div>
               <button onclick="showTotalOnScreen()" class="btn-display">💵 Показать сумму</button>
+              <button onclick="showTotalWithExtraQr()" class="btn-display" title="Показать сумму с доп. QR ИП SARA KEMASH">💳 Показать сумму с доп. QR ИП SARA KEMASH</button>
               <button class="btn btn-discount" onclick="showDiscountModal()">🎯 Скидка/Наценка (F4)</button>
               <button class="btn btn-danger" onclick="clearCart()">🧹 Очистить (F3)</button>
               <button class="btn btn-pay" onclick="processPayment()">💰 Оплатить (F2)</button>
@@ -1713,6 +1730,26 @@
           }
       }
 
+      function showTotalWithExtraQr() {
+          const total = document.getElementById('totalAmount').textContent;
+          const customer = getCurrentCustomer();
+          const companyName = 'ИП SARA KEMASH';
+
+          if (socket && socket.connected) {
+              socket.emit('show_total_on_screen', {
+                  amount: total,
+                  customer_name: customer ? customer.name : '',
+                  extra_qr: true,
+                  qr_label: companyName,
+                  qr_text: companyName,
+                  source: 'extra_qr'
+              });
+              showNotification('Сумма отправлена на экран с доп. QR ИП SARA KEMASH', 'success');
+          } else {
+              showNotification('Ошибка: экран не подключен', 'error');
+          }
+      }
+
      // Функция скрытия (твоя рабочая версия)
       function hideTotalOnScreen() {
           if (socket && socket.connected) {
@@ -1765,7 +1802,6 @@
   </script>
 </body>
 </html>
-
 
 
 
