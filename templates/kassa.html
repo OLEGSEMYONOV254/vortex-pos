@@ -1770,25 +1770,21 @@
       }
 
       function showTotalWithExtraQr() {
-          const total = document.getElementById('totalAmount').textContent;
           const customer = getCurrentCustomer();
           const companyName = 'QR.SARA';
-          const qrImagePath = '/static/qrSARA.png';
 
+          // Показываем обычную сумму на промо-экране, как у кнопки "Показать сумму"
           if (socket && socket.connected) {
               socket.emit('show_total_on_screen', {
-                  amount: total,
+                  amount: document.getElementById('totalAmount').textContent,
                   customer_name: customer ? customer.name : '',
-                  extra_qr: true,
                   qr_label: companyName,
-                  qr_text: companyName,
-                  qr_image: qrImagePath,
                   source: 'extra_qr'
               });
           }
 
           openExtraPhotoModal();
-          showNotification('Показана сумма и открыто фото QR.SARA', 'success');
+          showNotification('Показана сумма на промо-экране и открыто окно QR.SARA', 'success');
       }
 
       function openExtraPhotoModal() {
