@@ -325,9 +325,10 @@
 
         socket.on('show_total_on_screen', (data) => {
             const amount = Number(data.amount ?? data.total ?? 0);
-            const imagePath = data.qr_image || data.image || data.qr_url || '/static/qrЖетес1.png';
-            console.log('Show total on screen:', { amount, imagePath, qr_label: data.qr_label });
-            showPaymentInfo(amount, { image: imagePath, label: data.qr_label || data.name || 'QR' });
+            const shouldUseSaraQr = data.qr_label === 'QR.SARA' || data.source === 'extra_qr' || /sara/i.test(String(data.qr_image || data.image || data.qr_url || ''));
+            const imagePath = data.qr_image || data.image || data.qr_url || (shouldUseSaraQr ? '/static/qrSARA.png' : '/static/qrЖетес1.png');
+            console.log('Show total on screen:', { amount, imagePath, qr_label: data.qr_label, source: data.source });
+            showPaymentInfo(amount, { image: imagePath, label: data.qr_label || (shouldUseSaraQr ? 'QR.SARA' : 'QR') });
         });
 
         socket.on('hide_payment', () => {
@@ -494,10 +495,18 @@
             const paymentOverlay = document.getElementById('payment-overlay');
             const amountValue = document.getElementById('amount-value');
             const qrImage = document.getElementById('qr-image');
-            const imagePath = options.image || '/static/qrЖетес1.png';
+            const defaultImage = '/static/qrЖетес1.png';
+            const imagePath = options.image || defaultImage;
             
             amountValue.textContent = Number(amount || 0).toLocaleString();
             if (qrImage) {
+                qrImage.onerror = () => {
+                    if (qrImage.src !== window.location.origin + defaultImage && qrImage.dataset.fallbackUsed !== 'true') {
+                        qrImage.dataset.fallbackUsed = 'true';
+                        qrImage.src = defaultImage;
+                    }
+                };
+                qrImage.dataset.fallbackUsed = 'false';
                 qrImage.src = imagePath;
                 qrImage.alt = options.label || 'QR-код для оплаты';
             }
