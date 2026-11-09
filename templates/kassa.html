@@ -1772,32 +1772,20 @@
       function showTotalWithExtraQr() {
           const customer = getCurrentCustomer();
           const companyName = 'QR.SARA';
+          const qrImagePath = '/static/qrSARA.png';
 
-          // Показываем обычную сумму на промо-экране, как у кнопки "Показать сумму"
+          // Показываем сумму на промо-экране, но вместо обычного QR используем qrSARA.png
           if (socket && socket.connected) {
               socket.emit('show_total_on_screen', {
                   amount: document.getElementById('totalAmount').textContent,
                   customer_name: customer ? customer.name : '',
                   qr_label: companyName,
+                  qr_image: qrImagePath,
                   source: 'extra_qr'
               });
           }
 
-          openExtraPhotoModal();
-          showNotification('Показана сумма на промо-экране и открыто окно QR.SARA', 'success');
-      }
-
-      function openExtraPhotoModal() {
-          const modal = document.getElementById('extraPhotoModal');
-          if (!modal) return;
-          modal.style.display = 'flex';
-      }
-
-      function closeExtraPhotoModal() {
-          const modal = document.getElementById('extraPhotoModal');
-          if (modal) {
-              modal.style.display = 'none';
-          }
+          showNotification('Сумма отправлена на промо-экран с QR.SARA', 'success');
       }
 
      // Функция скрытия (твоя рабочая версия)
