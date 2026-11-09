@@ -1773,6 +1773,7 @@
           const total = document.getElementById('totalAmount').textContent;
           const customer = getCurrentCustomer();
           const companyName = 'QR.SARA';
+          const qrImagePath = '/static/qrSARA.png';
 
           if (socket && socket.connected) {
               socket.emit('show_total_on_screen', {
@@ -1781,6 +1782,7 @@
                   extra_qr: true,
                   qr_label: companyName,
                   qr_text: companyName,
+                  qr_image: qrImagePath,
                   source: 'extra_qr'
               });
           }
