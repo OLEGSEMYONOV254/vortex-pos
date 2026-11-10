@@ -278,24 +278,7 @@ def add_counterparty_column():
         finally:
             cur.close()  # Колонка уже есть
 
-@app.route('/api/markup_all_prices')
-def markup_all_prices():
-    """Разовое увеличение всех цен в базе на 10%"""
-    try:
-        with get_db() as conn:
-            cur = conn.cursor()
-            # Умножаем price, price_wholesale и price_bulk на 1.1 и округляем до 2 знаков
-            cur.execute("""
-                UPDATE products 
-                SET price = ROUND((price * 1.1)::numeric, 2),
-                    price_wholesale = ROUND((price_wholesale * 1.1)::numeric, 2),
-                    price_bulk = ROUND((price_bulk * 1.1)::numeric, 2)
-            """)
-            conn.commit()
-            cur.close()
-        return "✅ Все цены в базе данных успешно увеличены на 10%!"
-    except Exception as e:
-        return f"❌ Ошибка при обновлении цен: {str(e)}", 500
+
 
 @app.route("/ai", methods=["GET", "POST"])
 def vortex_ai():
