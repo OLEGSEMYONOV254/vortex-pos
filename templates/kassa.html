@@ -352,22 +352,6 @@
       .btn-discount:hover {
         background: #2980b9;
       }
-
-      .btn-display {
-        background: var(--primary);
-        color: white;
-        border: none;
-        padding: 10px 15px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: bold;
-        transition: all 0.2s;
-      }
-
-      .btn-display:hover {
-        background: #00b359;
-        transform: translateY(-2px);
-      }
       
       .discount-info {
         font-size: 0.9rem;
@@ -532,31 +516,6 @@
         padding: 12px;
         font-size: 1em;
       }
-
-      .photo-modal-content {
-        background: linear-gradient(145deg, #2a2a2a, #1f1f1f);
-        padding: 20px;
-        border-radius: 12px;
-        width: min(90vw, 500px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-        border: 1px solid #444;
-      }
-
-      .photo-modal-title {
-        color: #00ffcc;
-        text-align: center;
-        margin: 0 0 15px;
-        font-size: 1.2em;
-      }
-
-      .extra-photo {
-        width: 100%;
-        max-height: 70vh;
-        border-radius: 10px;
-        object-fit: contain;
-        background: #111;
-        border: 1px solid #444;
-      }
       
       .mobile-cart-toggle {
         display: none; /* По умолчанию скрыто */
@@ -715,7 +674,6 @@
                   <button onclick="applyQuickMarkup(10, 'Kaspi')" class="markup-btn">Цена Kaspi (10%)</button>
               </div>
               <button onclick="showTotalOnScreen()" class="btn-display">💵 Показать сумму</button>
-              <button onclick="showTotalWithExtraQr()" class="btn-display" title="Показать сумму + QR.SARA">💳 Показать сумму + QR.SARA</button>
               <button class="btn btn-discount" onclick="showDiscountModal()">🎯 Скидка/Наценка (F4)</button>
               <button class="btn btn-danger" onclick="clearCart()">🧹 Очистить (F3)</button>
               <button class="btn btn-pay" onclick="processPayment()">💰 Оплатить (F2)</button>
@@ -831,20 +789,6 @@
           <div class="modal-actions">
               <button class="btn btn-pay" onclick="confirmPayment()">✅ Подтвердить</button>
               <button class="btn btn-danger" onclick="closePaymentModal()">❌ Отмена (Esc)</button>
-          </div>
-      </div>
-  </div>
-
-  <div id="extraPhotoModal" class="modal">
-      <div class="modal-content photo-modal-content">
-          <h3 class="photo-modal-title">QR.SARA</h3>
-          <img
-            class="extra-photo"
-            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='800' viewBox='0 0 800 800'%3E%3Crect width='800' height='800' fill='%230b1220'/%3E%3Crect x='40' y='40' width='720' height='720' rx='28' fill='%2314232d' stroke='%2300ffcc' stroke-width='6'/%3E%3Cg fill='%2300ffcc'%3E%3Crect x='90' y='90' width='64' height='64'/%3E%3Crect x='90' y='230' width='64' height='64'/%3E%3Crect x='90' y='370' width='64' height='64'/%3E%3Crect x='90' y='510' width='64' height='64'/%3E%3Crect x='90' y='650' width='64' height='64'/%3E%3Crect x='230' y='90' width='64' height='64'/%3E%3Crect x='230' y='230' width='64' height='64'/%3E%3Crect x='230' y='370' width='64' height='64'/%3E%3Crect x='230' y='510' width='64' height='64'/%3E%3Crect x='230' y='650' width='64' height='64'/%3E%3Crect x='370' y='90' width='64' height='64'/%3E%3Crect x='370' y='230' width='64' height='64'/%3E%3Crect x='370' y='370' width='64' height='64'/%3E%3Crect x='370' y='510' width='64' height='64'/%3E%3Crect x='370' y='650' width='64' height='64'/%3E%3Crect x='510' y='90' width='64' height='64'/%3E%3Crect x='510' y='230' width='64' height='64'/%3E%3Crect x='510' y='370' width='64' height='64'/%3E%3Crect x='510' y='510' width='64' height='64'/%3E%3Crect x='510' y='650' width='64' height='64'/%3E%3Crect x='650' y='90' width='64' height='64'/%3E%3Crect x='650' y='230' width='64' height='64'/%3E%3Crect x='650' y='370' width='64' height='64'/%3E%3Crect x='650' y='510' width='64' height='64'/%3E%3Crect x='650' y='650' width='64' height='64'/%3E%3C/g%3E%3Cg fill='%23d1fae5' font-family='Arial, sans-serif' font-weight='700' text-anchor='middle'%3E%3Ctext x='400' y='420' font-size='62'%3EQR.SARA%3C/text%3E%3C/g%3E%3C/svg%3E"
-            alt="QR.SARA"
-          >
-          <div class="modal-actions" style="justify-content:center; margin-top: 15px;">
-              <button class="btn btn-danger" onclick="closeExtraPhotoModal()">Закрыть</button>
           </div>
       </div>
   </div>
@@ -1767,25 +1711,6 @@
           } else {
               showNotification('Ошибка: экран не подключен', 'error');
           }
-      }
-
-      function showTotalWithExtraQr() {
-          const customer = getCurrentCustomer();
-          const companyName = 'QR.SARA';
-          const qrImagePath = '/static/qrSARA.png';
-
-          // Показываем сумму на промо-экране, но вместо обычного QR используем qrSARA.png
-          if (socket && socket.connected) {
-              socket.emit('show_total_on_screen', {
-                  amount: document.getElementById('totalAmount').textContent,
-                  customer_name: customer ? customer.name : '',
-                  qr_label: companyName,
-                  qr_image: qrImagePath,
-                  source: 'extra_qr'
-              });
-          }
-
-          showNotification('Сумма отправлена на промо-экран с QR.SARA', 'success');
       }
 
      // Функция скрытия (твоя рабочая версия)
