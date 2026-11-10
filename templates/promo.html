@@ -369,6 +369,7 @@
             tickerContainer.classList.remove('ticker-hidden');
             tickerContainer.classList.add('ticker-visible', 'ticker-scrolling');
         }
+
         
         function hideTicker() {
             const tickerContainer = document.getElementById('ticker-container');
@@ -496,6 +497,16 @@
             }
         });
 
+        socket.on('display_second_qr', function(data) {
+            // Находим элементы на промо-экране и обновляем их
+            document.getElementById('promoAmount').textContent = data.amount + ' ₸';
+            document.getElementById('promoQrImage').src = data.qr_image_url;
+            
+            // Показываем блок с QR-кодом и скрываем фоновое видео/слайд-шоу
+            document.getElementById('promoVideoContainer').style.display = 'none';
+            document.getElementById('promoQrContainer').style.display = 'flex';
+        });
+
         // Функция для скрытия платежной информации
         function hidePaymentInfo() {
             const paymentOverlay = document.getElementById('payment-overlay');
@@ -513,6 +524,7 @@
                 setVolume(0);
             }
         });
+        
 
         // Защита от паузы
         document.addEventListener('keydown', (e) => {
