@@ -592,6 +592,21 @@ def handle_control_command(data):
             emit('control_command', data, room=sid)
     emit('command_result', {'success': True, 'message': 'Command sent'})
 
+@socketio.on('show_second_qr_on_screen')
+def handle_second_qr(data):
+    amount = data.get('amount')
+    customer_name = data.get('customer_name')
+    
+    # Здесь можно сгенерировать ссылку/картинку для второго QR (например, подставить другие реквизиты)
+    qr_data = {
+        'amount': amount,
+        'customer_name': customer_name,
+        'qr_image_url': '/static/images/qr_second_bank.png'  # Путь к картинке второго QR
+    }
+    
+    # Пересылаем данные на клиентские экраны (промо-экран)
+    socketio.emit('display_second_qr', qr_data)
+
 @socketio.on('set_theme')
 def handle_set_theme(data):
     promo_settings['theme'] = data['theme']
