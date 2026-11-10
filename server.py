@@ -601,7 +601,7 @@ def handle_second_qr(data):
     qr_data = {
         'amount': amount,
         'customer_name': customer_name,
-        'qr_image_url': '/static/images/qr_second_bank.png'  # Путь к картинке второго QR
+        'qr_image_url': '/static/qrSARA.png'  # Путь к картинке второго QR
     }
     
     # Пересылаем данные на клиентские экраны (промо-экран)
