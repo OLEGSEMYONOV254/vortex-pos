@@ -232,8 +232,15 @@
     
     <div id="payment-overlay" class="payment-overlay">
         <div class="amount">Сумма к оплате: <span id="amount-value">0</span> ₸</div>
-        <div class="qr-code">
-            <img id="qr-image" src="/static/qrЖетес1.png" alt="QR-код для оплаты">
+        
+        <!-- Основной QR-код (для первой кнопки) -->
+        <div class="qr-code" id="qr-container-1">
+            <img id="qr-image-1" src="/static/qrЖетес1.png" alt="Основной QR">
+        </div>
+        
+        <!-- Второй QR-код (скрыт по умолчанию, показывается по второй кнопке) -->
+        <div class="qr-code" id="qr-container-2" style="display: none;">
+            <img id="qr-image-2" src="/static/qrSARA.png" alt="Второй QR">
         </div>
     </div>
     
@@ -478,11 +485,13 @@
         function showPaymentInfo(amount) {
             const paymentOverlay = document.getElementById('payment-overlay');
             const amountValue = document.getElementById('amount-value');
+            amountValue.textContent = Number(amount).toLocaleString();
             
-            amountValue.textContent = amount.toLocaleString();
+            // Показываем первый QR, скрываем второй
+            document.getElementById('qr-container-1').style.display = 'block';
+            document.getElementById('qr-container-2').style.display = 'none';
+            
             paymentOverlay.classList.add('visible');
-            
-            // Пауза видео
             pauseVideo();
         }
 
@@ -498,11 +507,17 @@
         });
 
         socket.on('display_second_qr', function(data) {
-            // Обновляем сумму и картинку QR-кода существующими ID
             document.getElementById('amount-value').textContent = Number(data.amount).toLocaleString();
-            document.getElementById('qr-image').src = data.qr_image_url;
             
-            // Показываем оверлей оплаты и ставим видео на паузу
+            // Если бэкенд передает путь к картинке второго QR, обновляем его
+            if (data.qr_image_url) {
+                document.getElementById('qr-image-2').src = data.qr_image_url;
+            }
+            
+            // Скрываем первый QR, показываем второй
+            document.getElementById('qr-container-1').style.display = 'none';
+            document.getElementById('qr-container-2').style.display = 'block';
+            
             const paymentOverlay = document.getElementById('payment-overlay');
             paymentOverlay.classList.add('visible');
             pauseVideo();
