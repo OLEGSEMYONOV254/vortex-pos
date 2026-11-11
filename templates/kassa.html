@@ -158,6 +158,24 @@
         white-space: nowrap;
         transition: all 0.2s;
       }
+
+     .btn-display {
+          background: var(--primary) !important;
+          color: #000 !important; /* Черный текст для контраста */
+          font-size: 1.4rem !important; /* Большой текст */
+          padding: 18px 25px !important; /* Большие отступы */
+          width: 100% !important; /* На всю ширину блока */
+          border-radius: 10px !important;
+          font-weight: 800 !important;
+          box-shadow: 0 4px 15px rgba(0, 204, 102, 0.4); /* Эффект свечения */
+          transition: all 0.2s ease;
+          order: -1; /* Перемещает кнопку в самый верх панели действий */
+      }
+      
+      .btn-display:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(0, 204, 102, 0.6);
+      }
       
       .category-btn.active {
         background: var(--primary);
