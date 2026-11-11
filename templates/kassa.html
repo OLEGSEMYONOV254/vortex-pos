@@ -1373,21 +1373,24 @@
         renderProducts(filtered);
       }
 
-      // Функция для расчета цены с НДС (36%)
+      // Функция для наценки 26% (НДС)
       function applyVAT() {
           const customer = getCurrentCustomer();
-          if (customer.cart.length === 0) return showNotification('Корзина пуста', 'error');
-      
-          // Устанавливаем тип "markup" (наценка) и 36%
+          if (customer.cart.length === 0) {
+              showNotification('Корзина пуста', 'error');
+              return;
+          }
+          
+          // Устанавливаем тип "markup" (наценка) и 26%
           customer.discount = { 
               type: 'markup', 
-              percent: 26 
+              percent: 26,
+              label: 'НДС'
           };
           
           updateCartDisplay();
-          showNotification('Применен НДС 36%', 'success');
+          showNotification('Применен НДС 26%', 'success');
           
-          // Сразу отправляем новую сумму на экран покупателя
           const total = document.getElementById('totalAmount').textContent;
           showTotalOnScreen(total);
       }
