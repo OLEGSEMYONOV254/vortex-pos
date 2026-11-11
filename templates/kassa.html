@@ -670,8 +670,8 @@
   
           <div class="cart-actions">
               <div class="quick-markup-buttons">
-                  <button onclick="applyQuickMarkup(36, 'НДС')" class="markup-btn">Цена с НДС (36%)</button>
-                  <button onclick="applyQuickMarkup(10, 'Kaspi')" class="markup-btn">Цена Kaspi (10%)</button>
+                  <button onclick="applyVatDiscount()" class="markup-btn">Скидка 26% (НДС)</button>
+                  <button onclick="applyKaspiDiscount()" class="markup-btn">Скидка 10% (Kaspi)</button>
               </div>
               <button onclick="showTotalOnScreen()" class="btn-display">💵 Показать сумму</button>
               <button class="btn btn-discount" onclick="showDiscountModal()">🎯 Скидка/Наценка (F4)</button>
@@ -1381,7 +1381,7 @@
           // Устанавливаем тип "markup" (наценка) и 36%
           customer.discount = { 
               type: 'markup', 
-              percent: 36 
+              percent: 26 
           };
           
           updateCartDisplay();
@@ -1392,22 +1392,17 @@
           showTotalOnScreen(total);
       }
       
-      // Функция для расчета цены Kaspi (10%)
-      function applyKaspiMarkup() {
+      // Функция для скидки 10% (вместо наценки Kaspi)
+      function applyKaspiDiscount() {
           const customer = getCurrentCustomer();
           if (customer.cart.length === 0) return showNotification('Корзина пуста', 'error');
-      
-          // Устанавливаем тип "markup" (наценка) и 10%
-          customer.discount = { 
-              type: 'markup', 
-              percent: 10 
-          };
           
+          // Устанавливаем тип "discount" (скидка) и 10%
+          customer.discount = { type: 'discount', percent: 10 };
           updateCartDisplay();
-          showNotification('Применена комиссия Kaspi 10%', 'success');
+          showNotification('Применена скидка 10%', 'success');
           
-          // Сразу отправляем новую сумму на экран покупателя
-          const total = document.getElementById('totalAmount').textContent;
+          const total = document.getElementById('totalAmount'.textContent;
           showTotalOnScreen(total);
       }
   
