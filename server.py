@@ -419,6 +419,10 @@ def handle_kassa_command(data):
 def home():
     return render_template("index.html")
 
+@app.route("/kassa2")
+def home():
+    return render_template("kassa2.html")
+  
 @app.route("/test")
 def test():
     return render_template("test.html")
