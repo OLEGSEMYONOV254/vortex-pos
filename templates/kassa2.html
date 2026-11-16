@@ -205,6 +205,28 @@
             box-shadow: 0 0 8px var(--accent-success);
         }
     </style>
+    <style>
+    .btn-warehouse-v2 {
+        background-color: #181b22;
+        border: 1px solid #2d323b;
+        color: #e2e8f0;
+        font-weight: 500;
+        padding: 10px 16px;
+        border-radius: 8px;
+        transition: all 0.2s ease-in-out;
+    }
+    
+    .btn-warehouse-v2:hover {
+        background-color: #222730;
+        border-color: #3b4252;
+        color: #ffffff;
+        transform: translateY(-1px);
+    }
+    
+    .btn-warehouse-v2:active {
+        transform: translateY(0);
+    }
+    </style>
 </head>
 <body>
 
@@ -213,6 +235,13 @@
         <div class="d-flex align-items-center gap-3">
             <span class="brand-title"><i class="bi bi-fire text-warning"></i> PRO-КАССА V2</span>
             <span class="badge bg-secondary text-light font-monospace small" id="shift-status">Смена открыта</span>
+        </div>
+        <!-- Кнопка перехода на склад V2 -->
+        <div class="mb-3">
+            <a href="/warehouse/v2" class="btn btn-warehouse-v2 w-100 d-flex align-items-center justify-content-center gap-2">
+                <i class="bi bi-box-seam-fill"></i>
+                <span>Перейти на склад V2</span>
+            </a>
         </div>
         <div class="d-flex align-items-center gap-3">
             <div class="d-flex align-items-center gap-2 small text-muted">
