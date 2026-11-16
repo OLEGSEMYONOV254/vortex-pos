@@ -1,265 +1,483 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>🔥 PRO-КАССА V2</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-  <style>
-    body {
-      background-color: #121212;
-      color: #fff;
-      font-family: 'Segoe UI', sans-serif;
-    }
-    .product-card {
-      background: #1e1e1e;
-      border: 1px solid #333;
-      border-radius: 10px;
-      padding: 12px;
-      margin: 5px;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-    .product-card:hover {
-      transform: scale(1.03);
-      background-color: #292929;
-    }
-    .cart-panel {
-      background: #1c1c1c;
-      padding: 15px;
-      border-radius: 8px;
-    }
-    .category-tab {
-      background: #2b2b2b;
-      border: none;
-      padding: 10px;
-      border-radius: 5px;
-      margin-right: 5px;
-      color: white;
-    }
-    .category-tab.active {
-      background: #00cc66;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>🔥 PRO-КАССА V2 | Vortex POS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap 5.3.3 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-base: #0f1115;
+            --bg-surface: #181b22;
+            --bg-card: #212631;
+            --border-color: #30363d;
+            --accent-primary: #3b82f6;
+            --accent-success: #22c55e;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --text-main: #f0f6fc;
+            --text-muted: #8b949e;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Шапка кассы */
+        .pos-header {
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border-color);
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+        }
+
+        .brand-title {
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: 0.5px;
+            color: var(--text-main);
+        }
+
+        /* Поиск и категории */
+        .search-box {
+            position: relative;
+        }
+        .search-box input {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 8px;
+            padding-left: 38px;
+        }
+        .search-box input:focus {
+            background: var(--bg-card);
+            color: var(--text-main);
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .categories-container {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+            scrollbar-width: thin;
+        }
+        .category-tab {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-weight: 500;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .category-tab:hover, .category-tab.active {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: #fff;
+        }
+
+        /* Сетка товаров */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+            overflow-y: auto;
+            max-height: calc(100vh - 140px);
+            padding: 4px;
+        }
+
+        .product-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 110px;
+            position: relative;
+            overflow: hidden;
+        }
+        .product-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .product-name {
+            font-size: 0.85rem;
+            font-weight: 500;
+            line-height: 1.2;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .product-price {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--accent-success);
+        }
+        .product-stock {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        /* Панель чека / корзины */
+        .cart-panel {
+            background: var(--bg-surface);
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 60px);
+        }
+        .cart-items-list {
+            flex-grow: 1;
+            overflow-y: auto;
+            scrollbar-width: thin;
+        }
+        .cart-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 8px 10px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        /* Кнопки оплаты и итогов */
+        .cart-summary {
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+            padding: 15px;
+        }
+        .total-amount {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+        
+        .btn-pay-cash { background-color: var(--accent-success); border: none; color: #fff; font-weight: 600; }
+        .btn-pay-cash:hover { background-color: #1ea34f; color: #fff; }
+        
+        .btn-pay-card { background-color: var(--accent-primary); border: none; color: #fff; font-weight: 600; }
+        .btn-pay-card:hover { background-color: #2563eb; color: #fff; }
+
+        /* Статус бар соединения */
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            background-color: var(--accent-danger);
+        }
+        .status-indicator.online {
+            background-color: var(--accent-success);
+            box-shadow: 0 0 8px var(--accent-success);
+        }
+    </style>
 </head>
 <body>
-  <div class="container-fluid">
-    <div class="row my-3">
-      <div class="col-md-9">
-        <input type="text" id="search" class="form-control form-control-lg mb-3" placeholder="Поиск товара...">
-        <div id="categoryTabs" class="d-flex overflow-auto mb-3"></div>
-        <div id="productGrid" class="row"></div>
-      </div>
-      <div class="col-md-3">
-        <div class="cart-panel">
-          <h4>🛒 Корзина</h4>
-          <div id="cartItems"></div>
-          <hr>
-          <div class="d-flex justify-content-between">
-            <strong>Итого:</strong>
-            <span id="cartTotal">0 ₸</span>
-          </div>
-          <button class="btn btn-success w-100 mt-3" onclick="openPaymentModal()">💰 Оплатить</button>
+
+    <!-- Верхняя панель -->
+    <header class="pos-header">
+        <div class="d-flex align-items-center gap-3">
+            <span class="brand-title"><i class="bi bi-fire text-warning"></i> PRO-КАССА V2</span>
+            <span class="badge bg-secondary text-light font-monospace small" id="shift-status">Смена открыта</span>
         </div>
-      </div>
+        <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-2 small text-muted">
+                <span class="status-indicator online" id="ws-indicator"></span>
+                <span id="ws-text">Online</span>
+            </div>
+            <button class="btn btn-sm btn-outline-danger" title="Закрыть смену"><i class="bi bi-power"></i></button>
+        </div>
+    </header>
+
+    <!-- Основной рабочий интерфейс -->
+    <div class="container-fluid h-100 p-0">
+        <div class="row g-0 h-100">
+            
+            <!-- Левая колонка: Каталог и поиск -->
+            <div class="col-lg-8 col-md-7 d-flex flex-column p-3">
+                <!-- Поиск и фильтры -->
+                <div class="row g-2 mb-3">
+                    <div class="col-md-5">
+                        <div class="search-box">
+                            <i class="bi bi-search"></i>
+                            <input type="text" id="searchInput" class="form-control" placeholder="Поиск товара или артикул...">
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="categories-container" id="categoriesContainer">
+                            <button class="category-tab active" data-category="all">Все товары</button>
+                            <!-- Динамические категории подтягиваются через JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Сетка товаров -->
+                <div class="products-grid" id="productsGrid">
+                    <!-- Заглушка до загрузки -->
+                    <div class="text-muted text-center w-100 py-5">
+                        <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                        Загрузка номенклатуры...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Правая колонка: Чек и оплата -->
+            <div class="col-lg-4 col-md-5 cart-panel p-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="m-0 fw-bold"><i class="bi bi-receipt me-2"></i>Текущий чек</h6>
+                    <button class="btn btn-sm btn-outline-secondary py-0 px-2 text-danger" onclick="clearCart()"><i class="bi bi-trash"></i> Очистить</button>
+                </div>
+
+                <!-- Список товаров в чеке -->
+                <div class="cart-items-list pe-1" id="cartItemsList">
+                    <div class="text-center text-muted my-auto py-5 small">
+                        <i class="bi bi-cart3 fs-2 d-block mb-2 text-secondary"></i>
+                        Корзина пуста. Выберите товар или отсканируйте штрихкод.
+                    </div>
+                </div>
+
+                <!-- Итоги и оплата -->
+                <div class="cart-summary rounded-3 mt-2">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted small">Итого к оплате:</span>
+                        <span class="total-amount" id="cartTotal">0 ₸</span>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <button class="btn btn-pay-cash w-100 py-2" onclick="processPayment('cash')">
+                                <i class="bi bi-cash me-1"></i> Наличные
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <button class="btn btn-pay-card w-100 py-2" onclick="processPayment('card')">
+                                <i class="bi bi-credit-card me-1"></i> Kaspi / Карты
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
-  </div>
 
-  <div class="modal fade" id="paymentModal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content bg-dark text-white">
-        <div class="modal-header">
-          <h5 class="modal-title">Выберите параметры оплаты</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <label>Способ оплаты:</label>
-          <select id="paymentMethod" class="form-select mb-3">
-            <option value="cash">💵 Наличные</option>
-            <option value="card">💳 Карта</option>
-            <option value="qr">📱 QR</option>
-            <option value="bill">📄 Счёт</option>
-          </select>
-  
-          <label>Организация:</label>
-          <select id="organizationSelect" class="form-select mb-3">
-            <option value="Жетес">Жетес</option>
-            <option value="AS Qadir">AS Qadir</option>
-          </select>
-  
-          <label>Контрагент:</label>
-          <select id="counterpartySelect" class="form-select">
-            <option value="">Не выбрано</option>
-          </select>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-success" onclick="confirmPayment()">✅ Подтвердить</button>
-          <button class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-        </div>
-      </div>
-    </div>
-  </div>
+    <!-- Скрипты Socket.io и логика кассы -->
+    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.7.2/dist/socket.io.min.js"></script>
+    <script>
+        let cart = [];
+        let allProducts = [];
 
-
-  <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
-  <script>
-    const socket = io();
-    let allProducts = [];
-    let cart = [];
-
-    async function fetchProducts() {
-      const res = await fetch("/get_products");
-      allProducts = await res.json();
-      renderCategories();
-      renderProducts(allProducts);
-    }
-
-    function renderCategories() {
-      const categories = ["Все", ...new Set(allProducts.map(p => p.category || "Без категории"))];
-      const tabContainer = document.getElementById("categoryTabs");
-      tabContainer.innerHTML = "";
-      categories.forEach(cat => {
-        const btn = document.createElement("button");
-        btn.className = "category-tab";
-        btn.innerText = cat;
-        btn.onclick = () => filterByCategory(cat);
-        tabContainer.appendChild(btn);
-      });
-    }
-
-    function filterByCategory(cat) {
-      document.querySelectorAll(".category-tab").forEach(b => b.classList.remove("active"));
-      [...document.querySelectorAll(".category-tab")].find(b => b.innerText === cat)?.classList.add("active");
-      const filtered = cat === "Все" ? allProducts : allProducts.filter(p => (p.category || "Без категории") === cat);
-      renderProducts(filtered);
-    }
-
-    function renderProducts(products) {
-      const grid = document.getElementById("productGrid");
-      grid.innerHTML = "";
-      products.forEach(p => {
-        const col = document.createElement("div");
-        col.className = "col-md-3";
-        col.innerHTML = `
-          <div class="product-card" onclick="addToCart(${p.id})">
-            <strong>${p.name}</strong><br>
-            <span>${p.price} ₸</span>
-          </div>
-        `;
-        grid.appendChild(col);
-      });
-    }
-
-    function addToCart(id) {
-      const product = allProducts.find(p => p.id === id);
-      if (!product) return;
-      const existing = cart.find(c => c.id === id);
-      if (existing) {
-        existing.quantity += 1;
-        existing.total = (existing.quantity * existing.price).toFixed(2);
-      } else {
-        cart.push({
-          id: product.id,
-          name: product.name,
-          price: product.price,
-          quantity: 1,
-          total: product.price.toFixed(2)
+        // Инициализация при загрузке
+        document.addEventListener("DOMContentLoaded", () => {
+            loadProducts();
+            initWebSocket();
+            
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                filterProducts(e.target.value);
+            });
         });
-      }
-      updateCart();
-    }
 
-    function updateCart() {
-      const container = document.getElementById("cartItems");
-      const totalEl = document.getElementById("cartTotal");
-      container.innerHTML = "";
-      let total = 0;
-      cart.forEach(item => {
-        total += parseFloat(item.total);
-        container.innerHTML += `
-          <div class="d-flex justify-content-between mb-2">
-            <div>${item.name} × ${item.quantity}</div>
-            <div>${item.total} ₸</div>
-          </div>
-        `;
-      });
-      totalEl.innerText = total.toFixed(2) + " ₸";
-    }
-
-    function pay() {
-      if (cart.length === 0) return alert("Корзина пуста!");
-      const payload = {
-        cart,
-        payment_method: "cash",
-        organization: "Жетес"
-      };
-      fetch("/process_sale", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      }).then(res => {
-        if (res.ok) {
-          alert("Оплата прошла!");
-          cart = [];
-          updateCart();
-        } else {
-          alert("Ошибка оплаты");
+        // Загрузка товаров с бэкенда
+        async function loadProducts() {
+            try {
+                const response = await fetch('/get_products');
+                allProducts = await response.json();
+                renderProducts(allProducts);
+                extractCategories(allProducts);
+            } catch (err) {
+                console.error("Ошибка загрузки товаров:", err);
+                document.getElementById('productsGrid').innerHTML = `
+                    <div class="text-danger text-center w-100 py-4 small">
+                        <i class="bi bi-exclamation-triangle me-1"></i> Не удалось загрузить каталог товаров.
+                    </div>`;
+            }
         }
-      });
-    }
-    async function loadCounterparties() {
-      const res = await fetch('/api/counterparties');
-      const data = await res.json();
-      const select = document.getElementById("counterpartySelect");
-      select.innerHTML = '<option value="">Не выбрано</option>';
-      data.forEach(c => {
-        const opt = document.createElement("option");
-        opt.value = c.id;
-        opt.textContent = c.name;
-        select.appendChild(opt);
-      });
-    }
-    document.addEventListener('DOMContentLoaded', async () => {
-      await fetchProducts();
-      await loadCounterparties();
-    });
 
-    function openPaymentModal() {
-      if (cart.length === 0) return alert("Корзина пуста");
-      const modal = new bootstrap.Modal(document.getElementById('paymentModal'));
-      modal.show();
-    }
-    
-    async function confirmPayment() {
-      const payment_method = document.getElementById('paymentMethod').value;
-      const organization = document.getElementById('organizationSelect').value;
-      const counterparty_id = document.getElementById('counterpartySelect').value || null;
-    
-      const payload = {
-        cart,
-        payment_method,
-        organization,
-        counterparty_id
-      };
-    
-      const res = await fetch("/process_sale", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-    
-      if (res.ok) {
-        alert("✅ Продажа завершена");
-        cart = [];
-        updateCart();
-        bootstrap.Modal.getInstance(document.getElementById('paymentModal')).hide();
-      } else {
-        alert("❌ Ошибка при продаже");
-      }
-    }
+        // Рендер карточек товаров
+        function renderProducts(products) {
+            const grid = document.getElementById('productsGrid');
+            if (!products.length) {
+                grid.innerHTML = `<div class="text-muted text-center w-100 py-4 small">Товары не найдены</div>`;
+                return;
+            }
 
+            grid.innerHTML = products.map(p => `
+                <div class="product-card" onclick='addToCart(${JSON.stringify(p)})'>
+                    <div class="product-name">${p.name || p.title || 'Товар'}</div>
+                    <div>
+                        <div class="product-price">${formatMoney(p.price || 0)} ₸</div>
+                        <div class="product-stock">Остаток: ${p.stock ?? '-'}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
 
-    fetchProducts();
-  </script>
+        // Выделение категорий
+        function extractCategories(products) {
+            const container = document.getElementById('categoriesContainer');
+            const categories = [...new Set(products.map(p => p.category).filter(Boolean))];
+            
+            categories.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = 'category-tab';
+                btn.textContent = cat;
+                btn.onclick = () => {
+                    document.querySelectorAll('.category-tab').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    filterByCategory(cat);
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function filterByCategory(category) {
+            if (category === 'all') {
+                renderProducts(allProducts);
+            } else {
+                renderProducts(allProducts.filter(p => p.category === category));
+            }
+        }
+
+        function filterProducts(query) {
+            const q = query.toLowerCase();
+            const filtered = allProducts.filter(p => 
+                (p.name && p.name.toLowerCase().includes(q)) || 
+                (p.sku && p.sku.toLowerCase().includes(q))
+            );
+            renderProducts(filtered);
+        }
+
+        // Управление корзиной
+        function addToCart(product) {
+            const existing = cart.find(item => item.id === product.id);
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ ...product, qty: 1 });
+            }
+            renderCart();
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== id);
+            renderCart();
+        }
+
+        function changeQty(id, delta) {
+            const item = cart.find(i => i.id === id);
+            if (item) {
+                item.qty += delta;
+                if (item.qty <= 0) {
+                    removeFromCart(id);
+                } else {
+                    renderCart();
+                }
+            }
+        }
+
+        function clearCart() {
+            cart = [];
+            renderCart();
+        }
+
+        function renderCart() {
+            const list = document.getElementById('cartItemsList');
+            if (!cart.length) {
+                list.innerHTML = `
+                    <div class="text-center text-muted my-auto py-5 small">
+                        <i class="bi bi-cart3 fs-2 d-block mb-2 text-secondary"></i>
+                        Корзина пуста. Выберите товар или отсканируйте штрихкод.
+                    </div>`;
+                document.getElementById('cartTotal').textContent = '0 ₸';
+                return;
+            }
+
+            list.innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <div style="flex-grow: 1; min-width: 0;" class="pe-2">
+                        <div class="text-truncate small fw-medium">${item.name}</div>
+                        <div class="text-muted font-monospace" style="font-size: 0.75rem;">${formatMoney(item.price)} ₸ × ${item.qty}</div>
+                    </div>
+                    <div class="d-flex align-items-center gap-1">
+                        <button class="btn btn-sm btn-outline-secondary py-0 px-1" onclick='changeQty("${item.id}", -1)'>-</button>
+                        <span class="small font-monospace px-1">${item.qty}</span>
+                        <button class="btn btn-sm btn-outline-secondary py-0 px-1" onclick='changeQty("${item.id}", 1)'>+</button>
+                        <button class="btn btn-sm text-danger py-0 px-1 ms-1" onclick='removeFromCart("${item.id}")'><i class="bi bi-x"></i></button>
+                    </div>
+                </div>
+            `).join('');
+
+            const total = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+            document.getElementById('cartTotal').textContent = formatMoney(total) + ' ₸';
+        }
+
+        function formatMoney(amount) {
+            return new Intl.NumberFormat('ru-RU').format(amount);
+        }
+
+        function processPayment(type) {
+            if (!cart.length) {
+                alert('Корзина пуста!');
+                return;
+            }
+            const total = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+            alert(`Оплата ${type === 'cash' ? 'наличными' : 'картой / Kaspi'} на сумму ${formatMoney(total)} ₸ прошла успешно!`);
+            clearCart();
+        }
+
+        // WebSocket подключение
+        function initWebSocket() {
+            const socket = io();
+            const indicator = document.getElementById('ws-indicator');
+            const wsText = document.getElementById('ws-text');
+
+            socket.on('connect', () => {
+                indicator.classList.add('online');
+                wsText.textContent = 'Online';
+            });
+
+            socket.on('disconnect', () => {
+                indicator.classList.remove('online');
+                wsText.textContent = 'Offline';
+            });
+
+            socket.on('settings_update', (data) => {
+                console.log("Настройки обновлены:", data);
+            });
+        }
+    </script>
 </body>
 </html>
