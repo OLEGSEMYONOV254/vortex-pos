@@ -420,7 +420,7 @@ def home():
     return render_template("index.html")
 
 @app.route("/kassa2")
-def home():
+def kassa_2():
     return render_template("kassa2.html")
   
 @app.route("/test")
