@@ -422,6 +422,10 @@ def home():
 @app.route("/kassa2")
 def kassa_2():
     return render_template("kassa2.html")
+
+@app.route("/sklad2")
+def sklad_2():
+    return render_template("warehouse2.html")
   
 @app.route("/test")
 def test():
