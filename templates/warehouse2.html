@@ -83,6 +83,29 @@
             padding: 10px;
             margin-bottom: 8px;
         }
+
+        :root {
+            --bg-body: #0f1115;
+            --bg-surface: #181b22;
+            --border-color: #2d323b;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+        }
+        body { background-color: var(--bg-body); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; }
+        .card-custom { background-color: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 10px; }
+    
+        /* Мобильная оптимизация (скрываем десктопную таблицу на узких экранах и показываем карточки) */
+        @media (max-width: 768px) {
+            .desktop-table-container { display: none !important; }
+            .mobile-cards-container { display: block !important; }
+            .container-fluid { padding-left: 10px !important; padding-right: 10px !important; }
+            h2 { font-size: 1.3rem; }
+            .btn-sm { padding: 0.35rem 0.6rem; font-size: 0.85rem; }
+        }
+        @media (min-width: 769px) {
+            .mobile-cards-container { display: none !important; }
+            .desktop-table-container { display: block !important; }
+        }
     </style>
 </head>
 <body>
@@ -122,6 +145,11 @@
                     <i class="bi bi-plus-lg me-1"></i> Добавить новый товар
                 </button>
             </div>
+        </div>
+
+        <!-- Контейнер для мобильных устройств (карточки) -->
+        <div class="mobile-cards-container vstack gap-3 mb-4" id="mobileWarehouseCards">
+            <!-- Сюда JS будет рендерить карточки для телефонов -->
         </div>
 
         <!-- Таблица товаров -->
@@ -439,12 +467,17 @@
             fetch('/api/warehouse/v2/products')
                 .then(response => response.json())
                 .then(products => {
-                    allProductsCache = products; // Сохраняем в кэш
+                    allProductsCache = products;
                     const tbody = document.getElementById('warehouseTableBody');
+                    const mobileContainer = document.getElementById('mobileWarehouseCards');
+                    
                     tbody.innerHTML = '';
+                    mobileContainer.innerHTML = '';
 
                     if (!products || products.length === 0) {
+                        const emptyHtml = `<div class="text-center text-muted py-4 card card-custom">Склад пуст. Добавьте первый товар!</div>`;
                         tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4">Склад пуст. Добавьте первый товар!</td></tr>`;
+                        mobileContainer.innerHTML = emptyHtml;
                         return;
                     }
 
@@ -465,6 +498,7 @@
                             locationsHtml = '<span class="text-muted small">Места не указаны</span>';
                         }
 
+                        // 1. Рендерим строку для ПК-таблицы
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
                             <td class="ps-4">
@@ -483,15 +517,42 @@
                                 <div class="small text-info">Розн: ${prod.retail_price} ₸</div>
                             </td>
                             <td class="text-end pe-4">
-                                <button class="btn btn-sm btn-outline-warning" onclick="openEditModal(${prod.id})" title="Редактировать товар"><i class="bi bi-pencil"></i></button>
+                                <button class="btn btn-sm btn-outline-warning" onclick="openEditModal(${prod.id})" title="Редактировать"><i class="bi bi-pencil"></i></button>
                             </td>
                         `;
                         tbody.appendChild(tr);
+
+                        // 2. Рендерим удобную карточку для мобильных телефонов (Android / iOS)
+                        const cardDiv = document.createElement('div');
+                        cardDiv.className = 'card card-custom p-3';
+                        cardDiv.innerHTML = `
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="fw-bold mb-1 text-white">${prod.name}</h6>
+                                    <code class="text-warning small">Артикул: ${prod.article || '—'}</code>
+                                </div>
+                                <button class="btn btn-sm btn-outline-warning" onclick="openEditModal(${prod.id})" title="Редактировать">
+                                    <i class="bi bi-pencil"></i> Ред.
+                                </button>
+                            </div>
+                            ${specsText ? `<div class="small text-muted mb-2">${specsText}</div>` : ''}
+                            <div class="bg-dark bg-opacity-50 p-2 rounded mb-2 border border-secondary border-opacity-25">
+                                <div class="small text-warning fw-bold mb-1"><i class="bi bi-boxes me-1"></i> Остатки по местам:</div>
+                                ${locationsHtml}
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center text-small pt-1 border-top border-secondary border-opacity-25">
+                                <div>
+                                    <span class="text-success small me-2">Опт: <strong>${prod.wholesale_price} ₸</strong></span>
+                                    <span class="text-info small">Розн: <strong>${prod.retail_price} ₸</strong></span>
+                                </div>
+                                ${prod.category ? `<span class="badge bg-secondary bg-opacity-25 text-info">${prod.category}</span>` : ''}
+                            </div>
+                        `;
+                        mobileContainer.appendChild(cardDiv);
                     });
                 })
                 .catch(error => {
-                    console.error('Ошибка загрузки товаров:', error);
-                    document.getElementById('warehouseTableBody').innerHTML = `<tr><td colspan="6" class="text-center text-danger py-4">Ошибка загрузки данных с сервера</td></tr>`;
+                    console.error('Ошибка загрузки:', error);
                 });
         }
 
