@@ -575,12 +575,13 @@ def add_warehouse_v2_product():
 
 @app.route('/api/warehouse/v2/products', methods=['GET'])
 def get_warehouse_v2_products():
-    """Получение списка всех товаров V2 со списком их локаций и остатков"""
+    """Получение списка всех товаров V2 со списком их локаций и общим остатком"""
     with get_db() as conn:
         cursor = conn.cursor(cursor_factory=DictCursor)
         try:
             query = """
                 SELECT p.*, 
+                       COALESCE(SUM(l.quantity), 0) as total_qty,
                        COALESCE(
                            json_agg(
                                json_build_object('location', l.location_name, 'qty', l.quantity, 'loc_id', l.id)
@@ -594,7 +595,6 @@ def get_warehouse_v2_products():
             cursor.execute(query)
             products = cursor.fetchall()
             
-            # Конвертируем в обычные словари для JSON
             result = [dict(row) for row in products]
             return jsonify(result)
 
