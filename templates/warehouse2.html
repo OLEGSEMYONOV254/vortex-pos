@@ -75,6 +75,14 @@
             background-color: #2563eb;
             color: #ffffff;
         }
+        
+        .location-row {
+            background: rgba(255,255,255,0.02);
+            border: 1px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+        }
     </style>
 </head>
 <body>
@@ -83,11 +91,11 @@
     <nav class="navbar navbar-custom px-4 py-3 mb-4">
         <div class="container-fluid d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center gap-3">
-                <a href="/" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> На кассу</a>
-                <h4 class="m-0 fw-bold">Склад V2</h4>
+                <a href="/kassa" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> На кассу</a>
+                <h4 class="m-0 fw-bold">Склад V2 — Учет товаров и ячеек</h4>
             </div>
             <div>
-                <span class="text-muted small">Управление остатками</span>
+                <span class="text-muted small">Многоскладской учет</span>
             </div>
         </div>
     </nav>
@@ -95,19 +103,19 @@
     <!-- Основной контент -->
     <div class="container-fluid px-4">
         
-        <!-- Панель управления (Поиск и кнопка добавления) -->
+        <!-- Панель управления -->
         <div class="row mb-4 g-3">
             <div class="col-md-6">
                 <div class="input-group">
                     <span class="input-group-text bg-transparent border-end-0 text-muted" style="border-color: var(--border-color);">
                         <i class="bi bi-search"></i>
                     </span>
-                    <input type="text" class="form-control border-start-0" id="searchProduct" placeholder="Поиск товара по названию или артикулу...">
+                    <input type="text" class="form-control border-start-0" id="searchProduct" placeholder="Поиск по наименованию, артикулу или резьбе...">
                 </div>
             </div>
             <div class="col-md-6 text-md-end">
                 <button class="btn btn-custom-primary px-4" data-bs-toggle="modal" data-bs-target="#addProductModal">
-                    <i class="bi bi-plus-lg me-1"></i> Добавить товар
+                    <i class="bi bi-plus-lg me-1"></i> Добавить новый товар
                 </button>
             </div>
         </div>
@@ -118,41 +126,18 @@
                 <table class="table table-custom m-0 align-middle">
                     <thead>
                         <tr>
-                            <th class="ps-4">Наименование</th>
+                            <th class="ps-4">Наименование / Характеристики</th>
                             <th>Артикул</th>
-                            <th>Склад / Ячейка</th>
-                            <th>Остаток</th>
-                            <th>Цена (₸)</th>
+                            <th>Резьба / Рукав</th>
+                            <th>Места хранения и остатки</th>
+                            <th>Цены (Опт / Розница)</th>
                             <th class="text-end pe-4">Действия</th>
                         </tr>
                     </thead>
                     <tbody id="warehouseTableBody">
-                        <!-- Пример строки товара (в дальнейшем будет заменяться на данные из бэкенда/БД) -->
+                        <!-- Динамические строки будут загружаться через JS -->
                         <tr>
-                            <td class="ps-4 fw-medium">Рукав высокого давления 2SN DN12</td>
-                            <td class="text-muted">RVD-2SN-12</td>
-                            <td>Склад №1 (Ряд А, Полка 3)</td>
-                            <td>
-                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1">45 м</span>
-                            </td>
-                            <td>2 800 ₸</td>
-                            <td class="text-end pe-4">
-                                <button class="btn btn-sm btn-outline-secondary me-1" title="Редактировать"><i class="bi bi-pencil"></i></button>
-                                <button class="btn btn-sm btn-outline-danger" title="Удалить"><i class="bi bi-trash"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="ps-4 fw-medium">Фитинг DKOL M22x1.5</td>
-                            <td class="text-muted">FT-DKOL-22</td>
-                            <td>Склад №2 (Коробка 14)</td>
-                            <td>
-                                <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-2 py-1">120 шт</span>
-                            </td>
-                            <td>450 ₸</td>
-                            <td class="text-end pe-4">
-                                <button class="btn btn-sm btn-outline-secondary me-1" title="Редактировать"><i class="bi bi-pencil"></i></button>
-                                <button class="btn btn-sm btn-outline-danger" title="Удалить"><i class="bi bi-trash"></i></button>
-                            </td>
+                            <td colspan="6" class="text-center text-muted py-4">Загрузка данных склада...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -161,49 +146,176 @@
 
     </div>
 
-    <!-- Модальное окно добавления товара (заготовка) -->
+    <!-- Модальное окно добавления товара с расширенными полями -->
     <div class="modal fade" id="addProductModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content" style="background-color: var(--bg-surface); border: 1px solid var(--border-color); color: var(--text-main);">
                 <div class="modal-header border-bottom border-secondary border-opacity-25">
-                    <h5 class="modal-title">Новый товар на склад</h5>
+                    <h5 class="modal-title fw-bold"><i class="bi bi-box-seam me-2"></i>Добавление товара на склад V2</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Закрыть"></button>
                 </div>
                 <div class="modal-body">
                     <form id="addProductForm">
-                        <div class="mb-3">
-                            <label class="form-label text-muted small">Наименование товара</label>
-                            <input type="text" class="form-control" required placeholder="Например: Адаптер BSP 1/2">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-muted small">Артикул / Код</label>
-                            <input type="text" class="form-control" placeholder="Например: ADP-001">
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label text-muted small">Количество</label>
-                                <input type="number" class="form-control" required value="0">
+                        <!-- Основные данные -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-8">
+                                <label class="form-label text-muted small">Наименование товара *</label>
+                                <input type="text" class="form-control" id="prodName" required placeholder="Например: Фитинг DKOL / Рукав 2SN">
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label text-muted small">Цена (₸)</label>
-                                <input type="number" class="form-control" required value="0">
+                            <div class="col-md-4">
+                                <label class="form-label text-muted small">Артикул / Код</label>
+                                <input type="text" class="form-control" id="prodArticle" placeholder="RVD-12-DKOL">
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label text-muted small">Расположение (Склад / Ячейка)</label>
-                            <input type="text" class="form-control" placeholder="Склад №1, коробка 5">
+
+                        <!-- Характеристики резьбы и рукавов -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-3">
+                                <label class="form-label text-muted small">Тип/Название резьбы</label>
+                                <input type="text" class="form-control" id="prodThreadName" placeholder="BSP, Metric, JIC">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label text-muted small">Шаг резьбы</label>
+                                <input type="text" class="form-control" id="prodThreadPitch" placeholder="1.5, 22x1.5">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label text-muted small">Диаметр рукава</label>
+                                <input type="text" class="form-control" id="prodHoseDia" placeholder="DN12, 1/2''">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label text-muted small">Угол (в градусах)</label>
+                                <input type="number" class="form-control" id="prodAngle" placeholder="0, 45, 90">
+                            </div>
                         </div>
+
+                        <!-- Цены и категории -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label text-muted small">Оптовая цена (₸)</label>
+                                <input type="number" step="0.01" class="form-control" id="prodWholesale" value="0">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-muted small">Розничная цена (₸)</label>
+                                <input type="number" step="0.01" class="form-control" id="prodRetail" value="0">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-muted small">Категория</label>
+                                <input type="text" class="form-control" id="prodCategory" placeholder="Фитинги, Рукава, Адаптеры">
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label text-muted small">Единица измерения</label>
+                                <select class="form-select" id="prodUnit">
+                                    <option value="шт">шт (штуки)</option>
+                                    <option value="м">м (метры)</option>
+                                    <option value="кг">кг (килограммы)</option>
+                                    <option value="компл">компл (комплекты)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <hr class="border-secondary opacity-25 my-4">
+
+                        <!-- Места хранения и остатки (можно добавлять несколько) -->
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label class="form-label text-muted small m-0 fw-bold">Места расположения и остатки:</label>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="addLocationRow()">
+                                <i class="bi bi-plus-circle me-1"></i> Добавить место хранения
+                            </button>
+                        </div>
+                        
+                        <div id="locationsContainer">
+                            <!-- Первая строка локации по умолчанию -->
+                            <div class="location-row row g-2 align-items-center">
+                                <div class="col-md-7">
+                                    <input type="text" class="form-control form-control-sm loc-name" placeholder="Склад №1 (Ряд А, Коробка 3)" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="number" step="0.01" class="form-control form-control-sm loc-qty" placeholder="Количество" value="0" required>
+                                </div>
+                                <div class="col-md-1 text-center">
+                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeLocationRow(this)" disabled><i class="bi bi-trash"></i></button>
+                                </div>
+                            </div>
+                        </div>
+
                     </form>
                 </div>
                 <div class="modal-footer border-top border-secondary border-opacity-25">
                     <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Отмена</button>
-                    <button type="button" class="btn btn-custom-primary btn-sm">Сохранить товар</button>
+                    <button type="button" class="btn btn-custom-primary btn-sm px-4" onclick="saveNewProduct()">Сохранить товар</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Bootstrap 5 JS Bundle -->
-    <script src="https://cdn.jsdelivr.5org/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Функция добавления новой строчки локации в модальном окне
+        function addLocationRow() {
+            const container = document.getElementById('locationsContainer');
+            const row = document.createElement('div');
+            row.className = 'location-row row g-2 align-items-center';
+            row.innerHTML = `
+                <div class="col-md-7">
+                    <input type="text" class="form-control form-control-sm loc-name" placeholder="Склад №2 / Полка 5" required>
+                </div>
+                <div class="col-md-4">
+                    <input type="number" step="0.01" class="form-control form-control-sm loc-qty" placeholder="Количество" value="0" required>
+                </div>
+                <div class="col-md-1 text-center">
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeLocationRow(this)"><i class="bi bi-trash"></i></button>
+                </div>
+            `;
+            container.appendChild(row);
+        }
+
+        function removeLocationRow(btn) {
+            const row = btn.closest('.location-row');
+            if (document.querySelectorAll('.location-row').length > 1) {
+                row.remove();
+            }
+        }
+
+        // Заглушка для сохранения товара (будет отправлять на ваш эндпоинт в server.py)
+        function saveNewProduct() {
+            const name = document.getElementById('prodName').value;
+            if (!name) {
+                alert('Введите наименование товара!');
+                return;
+            }
+
+            // Собираем массив локаций
+            const locations = [];
+            document.querySelectorAll('.location-row').forEach(row => {
+                const locName = row.querySelector('.loc-name').value;
+                const locQty = row.querySelector('.loc-qty').value;
+                if (locName) {
+                    locations.push({ location_name: locName, quantity: parseFloat(locQty) || 0 });
+                }
+            });
+
+            const productData = {
+                name: name,
+                article: document.getElementById('prodArticle').value,
+                thread_name: document.getElementById('prodThreadName').value,
+                thread_pitch: document.getElementById('prodThreadPitch').value,
+                hose_diameter: document.getElementById('prodHoseDia').value,
+                angle_degrees: parseInt(document.getElementById('prodAngle').value) || 0,
+                wholesale_price: parseFloat(document.getElementById('prodWholesale').value) || 0,
+                retail_price: parseFloat(document.getElementById('prodRetail').value) || 0,
+                category: document.getElementById('prodCategory').value,
+                unit: document.getElementById('prodUnit').value,
+                locations: locations
+            };
+
+            console.log("Отправка товара на сервер:", productData);
+            // Здесь в дальнейшем можно добавить fetch('/api/warehouse/v2/add', ...) для сохранения в базу данных
+            alert('Товар подготовлен к сохранению! (Подключим обработчик в server.py)');
+        }
+    </script>
 </body>
 </html>
