@@ -546,6 +546,11 @@ def get_warehouse_v2_products():
             return jsonify({"success": False, "error": str(e)}), 500
         finally:
             cursor.close()
+
+@app.route('/detal_ostatki')
+def detal_ostatki_page():
+    """Страница детального анализа остатков и срочности заказа"""
+    return render_template('detal_ostatki.html')
   
 @app.route("/test")
 def test():
