@@ -462,13 +462,13 @@ def sklad_2():
 
 @app.route('/api/warehouse/v2/add', methods=['POST'])
 def add_warehouse_v2_product():
-    """Эндпоинт для добавления товара. Если артикул уже существует, суммирует остатки."""
+    """Эндпоинт для добавления товара с защитой от случайного смешивания разных товаров"""
     data = request.json
     if not data or not data.get('name'):
         return jsonify({"success": False, "error": "Наименование товара обязательно"}), 400
 
     name = data.get('name')
-    article = data.get('article') or None
+    article = data.get('article').strip() if data.get('article') else None
     thread_name = data.get('thread_name')
     thread_pitch = data.get('thread_pitch')
     hose_diameter = data.get('hose_diameter')
@@ -483,15 +483,16 @@ def add_warehouse_v2_product():
         cursor = conn.cursor()
         try:
             product_id = None
+            existing_product = None
 
-            # 1. Если передан артикул, проверяем, есть ли уже такой товар в базе
-            if article:
+            # 1. Ищем существующий товар ТОЛЬКО если введен НЕПУСТОЙ артикул
+            if article and article != '':
                 cursor.execute("SELECT id FROM products_v2 WHERE article = %s;", (article,))
                 existing_product = cursor.fetchone()
                 if existing_product:
                     product_id = existing_product[0]
 
-            # 2. Если товар найден по артикулу — обновляем его основные данные и добавляем новые остатки
+            # 2. Если товар найден по уникальному артикулу — обновляем его данные
             if product_id:
                 update_query = """
                     UPDATE products_v2 
@@ -505,7 +506,7 @@ def add_warehouse_v2_product():
                     angle_degrees, wholesale_price, retail_price, category, unit, product_id
                 ))
             else:
-                # 3. Если товара нет — создаем новую запись
+                # 3. Если артикул пустой ИЛИ товара с таким артикулом еще нет — ВСЕГДА создаем новую запись!
                 insert_product_query = """
                     INSERT INTO products_v2 
                     (name, article, thread_name, thread_pitch, hose_diameter, angle_degrees, wholesale_price, retail_price, category, unit)
@@ -523,31 +524,33 @@ def add_warehouse_v2_product():
                 loc_name = loc.get('location_name')
                 quantity = float(loc.get('quantity', 0.0))
                 if loc_name:
-                    # Проверяем, есть ли уже этот товар на конкретно этой локации/складе
-                    cursor.execute(
-                        "SELECT id, quantity FROM product_locations_v2 WHERE product_id = %s AND location_name = %s;",
-                        (product_id, loc_name)
-                    )
-                    loc_record = cursor.fetchone()
-
-                    if loc_record:
-                        # Если локация уже есть — прибавляем количество к существующему
-                        loc_id, current_qty = loc_record
-                        new_qty = float(current_qty) + quantity
+                    # Если мы обновляем существующий товар по артикулу, на склад может поступить партия — 
+                    # тогда суммируем остаток. Если товар совершенно новый — просто записываем его количество.
+                    if product_id and existing_product:
                         cursor.execute(
-                            "UPDATE product_locations_v2 SET quantity = %s WHERE id = %s;",
-                            (new_qty, loc_id)
+                            "SELECT id, quantity FROM product_locations_v2 WHERE product_id = %s AND location_name = %s;",
+                            (product_id, loc_name.strip())
                         )
-                    else:
-                        # Если такой локации у товара еще не было — создаем запись
-                        insert_loc_query = """
-                            INSERT INTO product_locations_v2 (product_id, location_name, quantity)
-                            VALUES (%s, %s, %s);
-                        """
-                        cursor.execute(insert_loc_query, (product_id, loc_name, quantity))
+                        loc_record = cursor.fetchone()
+
+                        if loc_record:
+                            loc_id, current_qty = loc_record
+                            new_qty = float(current_qty) + quantity
+                            cursor.execute(
+                                "UPDATE product_locations_v2 SET quantity = %s WHERE id = %s;",
+                                (new_qty, loc_id)
+                            )
+                            continue
+
+                    # Если это новый товар (или новый склад для старого товара) — создаем привязку
+                    insert_loc_query = """
+                        INSERT INTO product_locations_v2 (product_id, location_name, quantity)
+                        VALUES (%s, %s, %s);
+                    """
+                    cursor.execute(insert_loc_query, (product_id, loc_name.strip(), quantity))
 
             conn.commit()
-            action_type = "обновлен и остатки суммированы" if existing_product else "успешно добавлен"
+            action_type = "обновлен (остатки суммированы по артикулу)" if existing_product else "успешно добавлен"
             return jsonify({"success": True, "product_id": product_id, "message": f"Товар {action_type}!"})
 
         except Exception as e:
