@@ -551,6 +551,63 @@ def get_warehouse_v2_products():
 def detal_ostatki_page():
     """Страница детального анализа остатков и срочности заказа"""
     return render_template('detal_ostatki.html')
+
+@app.route('/api/warehouse/v2/update/<int:product_id>', methods=['PUT'])
+def update_warehouse_v2_product(product_id):
+    """Эндпоинт для обновления существующего товара V2 и его локаций"""
+    data = request.json
+    if not data or not data.get('name'):
+        return jsonify({"success": False, "error": "Наименование товара обязательно"}), 400
+
+    with get_db() as conn:
+        cursor = conn.cursor()
+        try:
+            # 1. Обновляем основные поля товара в products_v2
+            update_product_query = """
+                UPDATE products_v2 
+                SET name = %s, article = %s, thread_name = %s, thread_pitch = %s, 
+                    hose_diameter = %s, angle_degrees = %s, wholesale_price = %s, 
+                    retail_price = %s, category = %s, unit = %s
+                WHERE id = %s;
+            """
+            cursor.execute(update_product_query, (
+                data.get('name'),
+                data.get('article') or None,
+                data.get('thread_name'),
+                data.get('thread_pitch'),
+                data.get('hose_diameter'),
+                data.get('angle_degrees', 0),
+                data.get('wholesale_price', 0.0),
+                data.get('retail_price', 0.0),
+                data.get('category'),
+                data.get('unit', 'шт'),
+                product_id
+            ))
+
+            # 2. Обновляем локации: проще всего удалить старые привязки для этого товара и записать актуальные
+            cursor.execute("DELETE FROM product_locations_v2 WHERE product_id = %s;", (product_id,))
+            
+            locations = data.get('locations', [])
+            for loc in locations:
+                loc_name = loc.get('location_name')
+                quantity = loc.get('quantity', 0.0)
+                if loc_name:
+                    insert_loc_query = """
+                        INSERT INTO product_locations_v2 (product_id, location_name, quantity)
+                        VALUES (%s, %s, %s);
+                    """
+                    cursor.execute(insert_loc_query, (product_id, loc_name, quantity))
+
+            conn.commit()
+            return jsonify({"success": True, "message": "Товар успешно обновлен!"})
+
+        except Exception as e:
+            conn.rollback()
+            print(f"[ОШИБКА] Не удалось обновить товар V2 ID {product_id}: {e}")
+            return jsonify({"success": False, "error": str(e)}), 500
+        finally:
+            cursor.close()
+
   
 @app.route("/test")
 def test():
