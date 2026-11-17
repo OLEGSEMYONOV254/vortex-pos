@@ -459,6 +459,60 @@ def kassa_2():
 @app.route("/sklad2")
 def sklad_2():
     return render_template("warehouse2.html")
+
+@app.route('/api/warehouse/v2/add', methods=['POST'])
+def add_warehouse_v2_product():
+    """Эндпоинт для добавления товара со всеми характеристиками и местами хранения (Склад V2)"""
+    data = request.json
+    if not data or not data.get('name'):
+        return jsonify({"success": False, "error": "Наименование товара обязательно"}), 400
+
+    with get_db() as conn:
+        cur = conn.cursor()
+        try:
+            # 1. Вставляем основные характеристики товара в products_v2
+            insert_product_query = """
+                INSERT INTO products_v2 
+                (name, article, thread_name, thread_pitch, hose_diameter, angle_degrees, wholesale_price, retail_price, category, unit)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                RETURNING id;
+            """
+            cur.execute(insert_product_query, (
+                data.get('name'),
+                data.get('article') or None,
+                data.get('thread_name'),
+                data.get('thread_pitch'),
+                data.get('hose_diameter'),
+                data.get('angle_degrees', 0),
+                data.get('wholesale_price', 0.0),
+                data.get('retail_price', 0.0),
+                data.get('category'),
+                data.get('unit', 'шт')
+            ))
+            
+            product_id = cur.fetchone()[0]
+
+            # 2. Вставляем места хранения и остатки в product_locations_v2
+            locations = data.get('locations', [])
+            for loc in locations:
+                loc_name = loc.get('location_name')
+                quantity = loc.get('quantity', 0.0)
+                if loc_name:
+                    insert_loc_query = """
+                        INSERT INTO product_locations_v2 (product_id, location_name, quantity)
+                        VALUES (%s, %s, %s);
+                    """
+                    cur.execute(insert_loc_query, (product_id, loc_name, quantity))
+
+            conn.commit()
+            return jsonify({"success": True, "product_id": product_id, "message": "Товар успешно добавлен на склад V2!"})
+
+        except Exception as e:
+            conn.rollback()
+            print(f"[ОШИБКА] Не удалось добавить товар V2: {e}")
+            return jsonify({"success": False, "error": str(e)}), 500
+        finally:
+            cur.close()
   
 @app.route("/test")
 def test():
