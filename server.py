@@ -628,24 +628,25 @@ def update_warehouse_v2_product(product_id):
                 WHERE id = %s;
             """
             cursor.execute(update_product_query, (
-                data.get('name'),
-                data.get('article') or None,
-                data.get('thread_name'),
-                data.get('thread_pitch'),
-                data.get('hose_diameter'),
-                data.get('angle_degrees', 0),
-                data.get('wholesale_price', 0.0),
-                data.get('retail_price', 0.0),
-                data.get('category'),
-                data.get('unit', 'шт'),
+                data.get('name'), 
+                data.get('article') or None, 
+                data.get('thread_name'), 
+                data.get('thread_pitch'), 
+                data.get('hose_diameter'), 
+                data.get('angle_degrees', 0), 
+                data.get('wholesale_price', 0.0), 
+                data.get('retail_price', 0.0), 
+                data.get('category'), 
+                data.get('unit', 'шт'), 
                 product_id
             ))
 
-            # 2. Обновляем локации: проще всего удалить старые привязки для этого товара и записать актуальные
+            # 2. Очищаем старые привязки локаций для этого товара
             cursor.execute("DELETE FROM product_locations_v2 WHERE product_id = %s;", (product_id,))
             
             locations = data.get('locations', [])
-            # 4. Обрабатываем локации и остатки (с защитой от гонки и правильным суммированием)
+
+            # 3. Записываем актуальные локации и остатки заново
             for loc in locations:
                 loc_name = loc.get('location_name')
                 quantity = float(loc.get('quantity', 0.0))
@@ -654,15 +655,10 @@ def update_warehouse_v2_product(product_id):
                 
                 loc_name_clean = loc_name.strip()
 
-                # Используем UPSERT (INSERT ... ON CONFLICT DO UPDATE)
-                # Требуется, чтобы в базе был UNIQUE индекс на (product_id, LOWER(location_name))
-                upsert_location_query = """
-                    INSERT INTO product_locations_v2 (product_id, location_name, quantity)
-                    VALUES (%s, %s, %s)
-                    ON CONFLICT (product_id, location_name) 
-                    DO UPDATE SET quantity = product_locations_v2.quantity + EXCLUDED.quantity;
-                """
-                cursor.execute(upsert_location_query, (product_id, loc_name_clean, quantity))
+                cursor.execute(
+                    "INSERT INTO product_locations_v2 (product_id, location_name, quantity) VALUES (%s, %s, %s);",
+                    (product_id, loc_name_clean, quantity)
+                )
 
             conn.commit()
             return jsonify({"success": True, "message": "Товар успешно обновлен!"})
