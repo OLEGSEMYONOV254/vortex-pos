@@ -259,17 +259,7 @@
             const container = document.getElementById('locationsContainer');
             const row = document.createElement('div');
             row.className = 'location-row row g-2 align-items-center';
-            row.innerHTML = `
-                <div class="col-md-7">
-                    <input type="text" class="form-control form-control-sm loc-name" placeholder="Склад №2 / Полка 5" required>
-                </div>
-                <div class="col-md-4">
-                    <input type="number" step="0.01" class="form-control form-control-sm loc-qty" placeholder="Количество" value="0" required>
-                </div>
-                <div class="col-md-1 text-center">
-                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeLocationRow(this)"><i class="bi bi-trash"></i></button>
-                </div>
-            `;
+            row.innerHTML = `...`;
             container.appendChild(row);
         }
 
@@ -280,6 +270,9 @@
             }
         }
 
+        // ==========================================
+        // 1. ВСТАВЬТЕ В ЭТО МЕСТО ФУНКЦИЮ СОХРАНЕНИЯ:
+        // ==========================================
         function saveNewProduct() {
             const name = document.getElementById('prodName').value;
             if (!name) {
@@ -323,11 +316,11 @@
             .then(data => {
                 if (data.success) {
                     alert('Товар успешно сохранен в базе данных!');
-                    // Закрываем модальное окно и очищаем форму
                     const modalEl = document.getElementById('addProductModal');
                     const modal = bootstrap.Modal.getInstance(modalEl);
                     modal.hide();
                     document.getElementById('addProductForm').reset();
+                    
                     // Сбрасываем локации до одной строки
                     document.getElementById('locationsContainer').innerHTML = `
                         <div class="location-row row g-2 align-items-center">
@@ -342,7 +335,10 @@
                             </div>
                         </div>
                     `;
-                    // Здесь можно вызвать функцию перезагрузки таблицы товаров
+                    
+                    // А ТАКЖЕ ВЫЗЫВАЕМ ПЕРЕЗАГРУЗКУ ТАБЛИЦЫ, ЧТОБЫ ТОВАР СРАЗУ ПОЯВИЛСЯ НА ЭКРАНЕ:
+                    loadWarehouseProducts();
+
                 } else {
                     alert('Ошибка при сохранении: ' + (data.error || 'Неизвестная ошибка'));
                 }
@@ -353,6 +349,71 @@
                 alert('Произошла ошибка связи с сервером: ' + message);
             });
         }
+
+        // ==========================================
+        // 2. И СРАЗУ ПОД НЕЙ ДОБАВЬТЕ ФУНКЦИЮ ЗАГРУЗКИ:
+        // ==========================================
+        function loadWarehouseProducts() {
+            fetch('/api/warehouse/v2/products')
+                .then(response => response.json())
+                .then(products => {
+                    const tbody = document.getElementById('warehouseTableBody');
+                    tbody.innerHTML = '';
+
+                    if (!products || products.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4">Склад пуст. Добавьте первый товар!</td></tr>`;
+                        return;
+                    }
+
+                    products.forEach(prod => {
+                        let specs = [];
+                        if (prod.thread_name) specs.push(`Резьба: ${prod.thread_name}`);
+                        if (prod.thread_pitch) specs.push(`Шаг: ${prod.thread_pitch}`);
+                        if (prod.hose_diameter) specs.push(`Рукав: ${prod.hose_diameter}`);
+                        if (prod.angle_degrees) specs.push(`Угол: ${prod.angle_degrees}°`);
+                        const specsText = specs.join(' | ');
+
+                        let locationsHtml = '';
+                        if (prod.locations && prod.locations.length > 0) {
+                            locationsHtml = prod.locations.map(loc => 
+                                `<div class="small text-muted"><i class="bi bi-geo-alt me-1 text-primary"></i>${loc.location}: <strong class="text-white">${loc.qty} ${prod.unit}</strong></div>`
+                            ).join('');
+                        } else {
+                            locationsHtml = '<span class="text-muted small">Места не указаны</span>';
+                        }
+
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td class="ps-4">
+                                <div class="fw-bold">${prod.name}</div>
+                                <div class="small text-muted">${specsText}</div>
+                                ${prod.category ? `<span class="badge bg-secondary bg-opacity-25 text-info mt-1">${prod.category}</span>` : ''}
+                            </td>
+                            <td><code class="text-warning">${prod.article || '—'}</code></td>
+                            <td>
+                                <div class="small">${prod.thread_name || '—'}</div>
+                                <div class="text-muted small">${prod.hose_diameter ? 'Ду: ' + prod.hose_diameter : ''}</div>
+                            </td>
+                            <td>${locationsHtml}</td>
+                            <td>
+                                <div class="small text-success">Опт: ${prod.wholesale_price} ₸</div>
+                                <div class="small text-info">Розн: ${prod.retail_price} ₸</div>
+                            </td>
+                            <td class="text-end pe-4">
+                                <button class="btn btn-sm btn-outline-secondary" title="Редактировать"><i class="bi bi-pencil"></i></button>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                })
+                .catch(error => {
+                    console.error('Ошибка загрузки товаров:', error);
+                    document.getElementById('warehouseTableBody').innerHTML = `<tr><td colspan="6" class="text-center text-danger py-4">Ошибка загрузки данных с сервера</td></tr>`;
+                });
+        }
+
+        // Запускаем загрузку товаров при открытии страницы
+        document.addEventListener('DOMContentLoaded', loadWarehouseProducts);
     </script>
 </body>
 </html>
