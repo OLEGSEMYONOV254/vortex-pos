@@ -36,7 +36,18 @@
         .row-red { background-color: rgba(220, 53, 69, 0.15) !important; border-left: 4px solid #dc3545; }
         .row-yellow { background-color: rgba(255, 193, 7, 0.15) !important; border-left: 4px solid #ffc107; }
         .row-green { background-color: rgba(40, 167, 69, 0.1) !important; border-left: 4px solid #28a745; }
+
+        @media (max-width: 768px) {
+            .desktop-table-container { display: none !important; }
+            .mobile-cards-container { display: block !important; }
+            .container-fluid { padding: 10px !important; }
+        }
+        @media (min-width: 769px) {
+            .mobile-cards-container { display: none !important; }
+            .desktop-table-container { display: block !important; }
+        }
     </style>
+    
 </head>
 <body class="p-4">
     <div class="container-fluid">
