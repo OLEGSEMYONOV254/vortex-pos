@@ -164,8 +164,41 @@ def init_db():
             """)
             
 
+            # 1. Создаем таблицу номенклатуры товаров V2 (если её еще нет)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS products_v2 (
+                    id SERIAL PRIMARY KEY,
+                    name VARCHAR(255) NOT NULL,
+                    article VARCHAR(100) UNIQUE,
+                    thread_name VARCHAR(100),
+                    thread_pitch VARCHAR(50),
+                    hose_diameter VARCHAR(50),
+                    angle_degrees INT,
+                    wholesale_price NUMERIC(10, 2) DEFAULT 0.00,
+                    retail_price NUMERIC(10, 2) DEFAULT 0.00,
+                    category VARCHAR(100),
+                    unit VARCHAR(20) DEFAULT 'шт',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+
+            # 2. Создаем таблицу мест расположения и остатков (несколько мест для одного товара)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS product_locations_v2 (
+                    id SERIAL PRIMARY KEY,
+                    product_id INT REFERENCES products_v2(id) ON DELETE CASCADE,
+                    location_name VARCHAR(150) NOT NULL,
+                    quantity NUMERIC(10, 2) DEFAULT 0.00
+                )
+            """)
+
+            # Создаем индексы для быстрого поиска
+            cur.execute("CREATE INDEX IF NOT EXISTS idx_products_v2_name ON products_v2(name);")
+            cur.execute("CREATE INDEX IF NOT EXISTS idx_products_v2_article ON products_v2(article);")
+            cur.execute("CREATE INDEX IF NOT EXISTS idx_product_locations_product_id ON product_locations_v2(product_id);")
+
             conn.commit()
-            print("[ИНИЦИАЛИЗАЦИЯ] Таблицы созданы/проверены в PostgreSQL")
+            print("[ИНИЦИАЛИЗАЦИЯ] Таблицы products_v2 и product_locations_v2 успешно созданы/проверены в PostgreSQL!")
             
         except Exception as e:
             print(f"[ОШИБКА] При создании таблиц: {e}")
