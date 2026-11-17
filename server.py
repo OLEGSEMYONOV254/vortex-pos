@@ -513,6 +513,39 @@ def add_warehouse_v2_product():
             return jsonify({"success": False, "error": str(e)}), 500
         finally:
             cur.close()
+
+
+
+@app.route('/api/warehouse/v2/products', methods=['GET'])
+def get_warehouse_v2_products():
+    """Получение списка всех товаров V2 со списком их локаций и остатков"""
+    with get_db() as conn:
+        cursor = conn.cursor(cursor_factory=DictCursor)
+        try:
+            query = """
+                SELECT p.*, 
+                       COALESCE(
+                           json_agg(
+                               json_build_object('location', l.location_name, 'qty', l.quantity, 'loc_id', l.id)
+                           ) FILTER (WHERE l.id IS NOT NULL), '[]'
+                       ) as locations
+                FROM products_v2 p
+                LEFT JOIN product_locations_v2 l ON p.id = l.product_id
+                GROUP BY p.id
+                ORDER BY p.id DESC;
+            """
+            cursor.execute(query)
+            products = cursor.fetchall()
+            
+            # Конвертируем в обычные словари для JSON
+            result = [dict(row) for row in products]
+            return jsonify(result)
+
+        except Exception as e:
+            print(f"[ОШИБКА] Не удалось загрузить товары V2: {e}")
+            return jsonify({"success": False, "error": str(e)}), 500
+        finally:
+            cursor.close()
   
 @app.route("/test")
 def test():
