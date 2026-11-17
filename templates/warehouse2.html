@@ -280,7 +280,6 @@
             }
         }
 
-        // Заглушка для сохранения товара (будет отправлять на ваш эндпоинт в server.py)
         function saveNewProduct() {
             const name = document.getElementById('prodName').value;
             if (!name) {
@@ -312,9 +311,47 @@
                 locations: locations
             };
 
-            console.log("Отправка товара на сервер:", productData);
-            // Здесь в дальнейшем можно добавить fetch('/api/warehouse/v2/add', ...) для сохранения в базу данных
-            alert('Товар подготовлен к сохранению! (Подключим обработчик в server.py)');
+            // Отправляем данные на сервер
+            fetch('/api/warehouse/v2/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(productData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Товар успешно сохранен в базе данных!');
+                    // Закрываем модальное окно и очищаем форму
+                    const modalEl = document.getElementById('addProductModal');
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    modal.hide();
+                    document.getElementById('addProductForm').reset();
+                    // Сбрасываем локации до одной строки
+                    document.getElementById('locationsContainer').innerHTML = `
+                        <div class="location-row row g-2 align-items-center">
+                            <div class="col-md-7">
+                                <input type="text" class="form-control form-control-sm loc-name" placeholder="Склад №1 (Ряд А, Коробка 3)" required>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="number" step="0.01" class="form-control form-control-sm loc-qty" placeholder="Количество" value="0" required>
+                            </div>
+                            <div class="col-md-1 text-center">
+                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeLocationRow(this)" disabled><i class="bi bi-trash"></i></button>
+                            </div>
+                        </div>
+                    `;
+                    // Здесь можно вызвать функцию перезагрузки таблицы товаров
+                } else {
+                    alert('Ошибка при сохранении: ' + (data.error || 'Неизвестная ошибка'));
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка сети:', error);
+                let message = error && error.message ? error.message : String(error);
+                alert('Произошла ошибка связи с сервером: ' + message);
+            });
         }
     </script>
 </body>
