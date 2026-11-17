@@ -462,57 +462,100 @@ def sklad_2():
 
 @app.route('/api/warehouse/v2/add', methods=['POST'])
 def add_warehouse_v2_product():
-    """Эндпоинт для добавления товара со всеми характеристиками и местами хранения (Склад V2)"""
+    """Эндпоинт для добавления товара. Если артикул уже существует, суммирует остатки."""
     data = request.json
     if not data or not data.get('name'):
         return jsonify({"success": False, "error": "Наименование товара обязательно"}), 400
 
-    with get_db() as conn:
-        cur = conn.cursor()
-        try:
-            # 1. Вставляем основные характеристики товара в products_v2
-            insert_product_query = """
-                INSERT INTO products_v2 
-                (name, article, thread_name, thread_pitch, hose_diameter, angle_degrees, wholesale_price, retail_price, category, unit)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                RETURNING id;
-            """
-            cur.execute(insert_product_query, (
-                data.get('name'),
-                data.get('article') or None,
-                data.get('thread_name'),
-                data.get('thread_pitch'),
-                data.get('hose_diameter'),
-                data.get('angle_degrees', 0),
-                data.get('wholesale_price', 0.0),
-                data.get('retail_price', 0.0),
-                data.get('category'),
-                data.get('unit', 'шт')
-            ))
-            
-            product_id = cur.fetchone()[0]
+    name = data.get('name')
+    article = data.get('article') or None
+    thread_name = data.get('thread_name')
+    thread_pitch = data.get('thread_pitch')
+    hose_diameter = data.get('hose_diameter')
+    angle_degrees = data.get('angle_degrees', 0)
+    wholesale_price = data.get('wholesale_price', 0.0)
+    retail_price = data.get('retail_price', 0.0)
+    category = data.get('category')
+    unit = data.get('unit', 'шт')
+    locations = data.get('locations', [])
 
-            # 2. Вставляем места хранения и остатки в product_locations_v2
-            locations = data.get('locations', [])
+    with get_db() as conn:
+        cursor = conn.cursor()
+        try:
+            product_id = None
+
+            # 1. Если передан артикул, проверяем, есть ли уже такой товар в базе
+            if article:
+                cursor.execute("SELECT id FROM products_v2 WHERE article = %s;", (article,))
+                existing_product = cursor.fetchone()
+                if existing_product:
+                    product_id = existing_product[0]
+
+            # 2. Если товар найден по артикулу — обновляем его основные данные и добавляем новые остатки
+            if product_id:
+                update_query = """
+                    UPDATE products_v2 
+                    SET name = %s, thread_name = %s, thread_pitch = %s, 
+                        hose_diameter = %s, angle_degrees = %s, wholesale_price = %s, 
+                        retail_price = %s, category = %s, unit = %s
+                    WHERE id = %s;
+                """
+                cursor.execute(update_query, (
+                    name, thread_name, thread_pitch, hose_diameter, 
+                    angle_degrees, wholesale_price, retail_price, category, unit, product_id
+                ))
+            else:
+                # 3. Если товара нет — создаем новую запись
+                insert_product_query = """
+                    INSERT INTO products_v2 
+                    (name, article, thread_name, thread_pitch, hose_diameter, angle_degrees, wholesale_price, retail_price, category, unit)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    RETURNING id;
+                """
+                cursor.execute(insert_product_query, (
+                    name, article, thread_name, thread_pitch, hose_diameter, 
+                    angle_degrees, wholesale_price, retail_price, category, unit
+                ))
+                product_id = cursor.fetchone()[0]
+
+            # 4. Обрабатываем локации и остатки
             for loc in locations:
                 loc_name = loc.get('location_name')
-                quantity = loc.get('quantity', 0.0)
+                quantity = float(loc.get('quantity', 0.0))
                 if loc_name:
-                    insert_loc_query = """
-                        INSERT INTO product_locations_v2 (product_id, location_name, quantity)
-                        VALUES (%s, %s, %s);
-                    """
-                    cur.execute(insert_loc_query, (product_id, loc_name, quantity))
+                    # Проверяем, есть ли уже этот товар на конкретно этой локации/складе
+                    cursor.execute(
+                        "SELECT id, quantity FROM product_locations_v2 WHERE product_id = %s AND location_name = %s;",
+                        (product_id, loc_name)
+                    )
+                    loc_record = cursor.fetchone()
+
+                    if loc_record:
+                        # Если локация уже есть — прибавляем количество к существующему
+                        loc_id, current_qty = loc_record
+                        new_qty = float(current_qty) + quantity
+                        cursor.execute(
+                            "UPDATE product_locations_v2 SET quantity = %s WHERE id = %s;",
+                            (new_qty, loc_id)
+                        )
+                    else:
+                        # Если такой локации у товара еще не было — создаем запись
+                        insert_loc_query = """
+                            INSERT INTO product_locations_v2 (product_id, location_name, quantity)
+                            VALUES (%s, %s, %s);
+                        """
+                        cursor.execute(insert_loc_query, (product_id, loc_name, quantity))
 
             conn.commit()
-            return jsonify({"success": True, "product_id": product_id, "message": "Товар успешно добавлен на склад V2!"})
+            action_type = "обновлен и остатки суммированы" if existing_product else "успешно добавлен"
+            return jsonify({"success": True, "product_id": product_id, "message": f"Товар {action_type}!"})
 
         except Exception as e:
             conn.rollback()
-            print(f"[ОШИБКА] Не удалось добавить товар V2: {e}")
+            print(f"[ОШИБКА] Не удалось обработать товар V2: {e}")
             return jsonify({"success": False, "error": str(e)}), 500
         finally:
-            cur.close()
+            cursor.close()
 
 
 
