@@ -479,6 +479,9 @@ def add_warehouse_v2_product():
     unit = data.get('unit', 'шт')
     locations = data.get('locations', [])
 
+  # ---> ВСТАВИТЬ СЮДА (проверяем, что пришло с фронтенда) <---
+    print(f"[ADD V2 DEBUG] name={name!r}, article={article!r}, locations={locations}")
+
     with get_db() as conn:
         cursor = conn.cursor()
         try:
@@ -496,6 +499,9 @@ def add_warehouse_v2_product():
 
             if existing_product:
                 product_id = existing_product[0]
+
+          # ---> ВСТАВИТЬ СЮДА (проверяем, нашёлся ли товар в базе) <---
+            print(f"[ADD V2 DEBUG] existing_product={existing_product}, product_id={product_id}")
 
             # 2. Если товар найден — обновляем его карточку (но остатки пока не трогаем, их обработаем ниже)
             if product_id:
