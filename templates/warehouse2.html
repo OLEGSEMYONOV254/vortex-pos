@@ -678,6 +678,34 @@
             });
         }
 
+        // Полный сброс формы добавления товара перед открытием модалки
+        const addProductModalEl = document.getElementById('addProductModal');
+        if (addProductModalEl) {
+            addProductModalEl.addEventListener('show.bs.modal', function () {
+                document.getElementById('addProductForm').reset();
+                document.getElementById('locationsContainer').innerHTML = `
+                    <div class="location-row row g-2 align-items-center">
+                        <div class="col-md-7">
+                            <input type="text" class="form-control form-control-sm loc-name" placeholder="Склад №1 (Ряд А, Коробка 3)" required>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="number" step="0.01" class="form-control form-control-sm loc-qty" placeholder="Количество" value="0" required>
+                        </div>
+                        <div class="col-md-1 text-center">
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeLocationRow(this)" disabled><i class="bi bi-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Убираем фокус при скрытии модалки, чтобы не было предупреждения aria-hidden
+            addProductModalEl.addEventListener('hide.bs.modal', function () {
+                if (document.activeElement && addProductModalEl.contains(document.activeElement)) {
+                    document.activeElement.blur();
+                }
+            });
+        }
+
         // Запускаем загрузку товаров при открытии страницы
         document.addEventListener('DOMContentLoaded', loadWarehouseProducts);
     </script>
