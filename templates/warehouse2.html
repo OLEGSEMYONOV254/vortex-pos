@@ -75,25 +75,15 @@
             background-color: #2563eb;
             color: #ffffff;
         }
-        
+
         .location-row {
-            background: rgba(255,255,255,0.02);
+            background: rgba(255, 255, 255, 0.02);
             border: 1px dashed var(--border-color);
             border-radius: 8px;
             padding: 10px;
             margin-bottom: 8px;
         }
 
-        :root {
-            --bg-body: #0f1115;
-            --bg-surface: #181b22;
-            --border-color: #2d323b;
-            --text-main: #e2e8f0;
-            --text-muted: #94a3b8;
-        }
-        body { background-color: var(--bg-body); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; }
-        .card-custom { background-color: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 10px; }
-    
         /* Мобильная оптимизация (скрываем десктопную таблицу на узких экранах и показываем карточки) */
         @media (max-width: 768px) {
             .desktop-table-container { display: none !important; }
@@ -113,9 +103,8 @@
     <!-- Навигация -->
     <nav class="navbar navbar-custom px-4 py-3 mb-4">
         <div class="container-fluid d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-3 flex-wrap">
                 <a href="/kassa" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> На кассу</a>
-                <!-- Кнопка перехода на страницу детальных остатков -->
                 <a href="/detal_ostatki" class="btn btn-outline-warning btn-sm me-2">
                     <i class="bi bi-exclamation-triangle-fill me-1"></i> Детальные остатки (Анализ)
                 </a>
@@ -129,7 +118,7 @@
 
     <!-- Основной контент -->
     <div class="container-fluid px-4">
-        
+
         <!-- Панель управления -->
         <div class="row mb-4 g-3">
             <div class="col-md-6">
@@ -141,7 +130,7 @@
                 </div>
             </div>
             <div class="col-md-6 text-md-end">
-                <button class="btn btn-custom-primary px-4" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                <button type="button" class="btn btn-custom-primary px-4" data-bs-toggle="modal" data-bs-target="#addProductModal">
                     <i class="bi bi-plus-lg me-1"></i> Добавить новый товар
                 </button>
             </div>
@@ -153,27 +142,28 @@
         </div>
 
         <!-- Таблица товаров -->
-        <div class="card card-custom p-0 overflow-hidden">
-            <div class="table-responsive">
-                <table class="table table-custom m-0 align-middle">
-                    <thead>
-                        <tr>
-                            <th class="ps-4">Наименование / Характеристики</th>
-                            <th>Артикул</th>
-                            <th>Резьба / Рукав</th>
-                            <th>Места хранения и остатки</th>
-                            <th>Общий остаток</th>
-                            <th>Цены (Опт / Розница)</th>
-                            <th class="text-end pe-4">Действия</th>
-                        </tr>
-                    </thead>
-                    <tbody id="warehouseTableBody">
-                        <!-- Динамические строки будут загружаться через JS -->
-                        <tr>
-                            <td colspan="6" class="text-center text-muted py-4">Загрузка данных склада...</td>
-                        </tr>
-                    </tbody>
-                </table>
+        <div class="desktop-table-container">
+            <div class="card card-custom p-0 overflow-hidden">
+                <div class="table-responsive">
+                    <table class="table table-custom m-0 align-middle">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">Наименование / Характеристики</th>
+                                <th>Артикул</th>
+                                <th>Резьба / Рукав</th>
+                                <th>Места хранения и остатки</th>
+                                <th>Общий остаток</th>
+                                <th>Цены (Опт / Розница)</th>
+                                <th class="text-end pe-4">Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="warehouseTableBody">
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-4">Загрузка данных склада...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -231,7 +221,7 @@
                                 <label class="form-label small text-muted">Категория</label>
                                 <input type="text" class="form-control form-control-sm bg-dark text-white border-secondary" id="editProdCategory">
                             </div>
-    
+
                             <!-- Места хранения при редактировании -->
                             <div class="col-md-12 mt-4">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
@@ -247,7 +237,7 @@
                 </div>
                 <div class="modal-footer border-top border-secondary">
                     <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Отмена</button>
-                    <button type="button" class="btn btn-warning btn-sm" onclick="saveEditedProduct()">Сохранить изменения</button>
+                    <button type="button" class="btn btn-warning btn-sm" id="saveEditBtn" onclick="saveEditedProduct()">Сохранить изменения</button>
                 </div>
             </div>
         </div>
@@ -325,35 +315,21 @@
 
                         <hr class="border-secondary opacity-25 my-4">
 
-                        <!-- Места хранения и остатки (можно добавлять несколько) -->
+                        <!-- Места хранения и остатки -->
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <label class="form-label text-muted small m-0 fw-bold">Места расположения и остатки:</label>
                             <button type="button" class="btn btn-sm btn-outline-primary" onclick="addLocationRow()">
                                 <i class="bi bi-plus-circle me-1"></i> Добавить место хранения
                             </button>
                         </div>
-                        
-                        <div id="locationsContainer">
-                            <!-- Первая строка локации по умолчанию -->
-                            <div class="location-row row g-2 align-items-center">
-                                <div class="col-md-7">
-                                    <input type="text" class="form-control form-control-sm loc-name" placeholder="Склад №1 (Ряд А, Коробка 3)" required>
-                                </div>
-                                <div class="col-md-4">
-                                    <input type="number" step="0.01" class="form-control form-control-sm loc-qty" placeholder="Количество" value="0" required>
-                                </div>
-                                <div class="col-md-1 text-center">
-                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeLocationRow(this)" disabled><i class="bi bi-trash"></i></button>
-                                </div>
-                            </div>
-                        </div>
 
+                        <div id="locationsContainer"></div>
                     </form>
                 </div>
-                
+
                 <div class="modal-footer border-top border-secondary border-opacity-25">
                     <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Отмена</button>
-                    <button type="button" class="btn btn-custom-primary btn-sm px-4" onclick="saveNewProduct()">Сохранить товар</button>
+                    <button type="button" class="btn btn-custom-primary btn-sm px-4" id="saveNewBtn" onclick="saveNewProduct()">Сохранить товар</button>
                 </div>
             </div>
         </div>
@@ -364,63 +340,84 @@
     <script>
         let allProductsCache = [];
 
-        
-        // Функция добавления новой строчки локации в модальном окне
+        function getDefaultLocationRowHtml(canRemove = false) {
+            return `
+                <div class="location-row row g-2 align-items-center">
+                    <div class="col-md-7">
+                        <input type="text" class="form-control form-control-sm loc-name" placeholder="Склад №1 (Ряд А, Коробка 3)" required>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="number" step="0.01" class="form-control form-control-sm loc-qty" placeholder="Количество" value="0" required>
+                    </div>
+                    <div class="col-md-1 text-center">
+                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeLocationRow(this)" ${canRemove ? '' : 'disabled'}><i class="bi bi-trash"></i></button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function resetAddFormState() {
+            const form = document.getElementById('addProductForm');
+            if (form) form.reset();
+            const container = document.getElementById('locationsContainer');
+            if (container) container.innerHTML = getDefaultLocationRowHtml(false);
+        }
+
         function addLocationRow() {
             const container = document.getElementById('locationsContainer');
-            const row = document.createElement('div');
-            row.className = 'location-row row g-2 align-items-center';
-            row.innerHTML = `...`;
-            container.appendChild(row);
+            const temp = document.createElement('div');
+            temp.innerHTML = getDefaultLocationRowHtml(true).trim();
+            container.appendChild(temp.firstElementChild);
         }
 
         function removeLocationRow(btn) {
             const row = btn.closest('.location-row');
-            if (document.querySelectorAll('.location-row').length > 1) {
+            if (row && row.parentElement && row.parentElement.querySelectorAll('.location-row').length > 1) {
                 row.remove();
             }
         }
 
-        // ==========================================
-        // 1. ВСТАВЬТЕ В ЭТО МЕСТО ФУНКЦИЮ СОХРАНЕНИЯ:
-        // ==========================================
         function saveNewProduct() {
-            const name = document.getElementById('prodName').value;
+            const nameInput = document.getElementById('prodName');
+            const name = nameInput.value.trim();
             if (!name) {
                 alert('Введите наименование товара!');
+                nameInput.focus();
                 return;
             }
 
-            // Собираем массив локаций
             const locations = [];
-            document.querySelectorAll('.location-row').forEach(row => {
-                const locName = row.querySelector('.loc-name').value;
+            document.querySelectorAll('#locationsContainer .location-row').forEach(row => {
+                const locName = row.querySelector('.loc-name').value.trim();
                 const locQty = row.querySelector('.loc-qty').value;
                 if (locName) {
-                    locations.push({ location_name: locName, quantity: parseFloat(locQty) || 0 });
+                    locations.push({
+                        location_name: locName,
+                        quantity: parseFloat(locQty) || 0
+                    });
                 }
             });
 
             const productData = {
                 name: name,
-                article: document.getElementById('prodArticle').value,
-                thread_name: document.getElementById('prodThreadName').value,
-                thread_pitch: document.getElementById('prodThreadPitch').value,
-                hose_diameter: document.getElementById('prodHoseDia').value,
-                angle_degrees: parseInt(document.getElementById('prodAngle').value) || 0,
+                article: document.getElementById('prodArticle').value.trim(),
+                thread_name: document.getElementById('prodThreadName').value.trim(),
+                thread_pitch: document.getElementById('prodThreadPitch').value.trim(),
+                hose_diameter: document.getElementById('prodHoseDia').value.trim(),
+                angle_degrees: parseInt(document.getElementById('prodAngle').value, 10) || 0,
                 wholesale_price: parseFloat(document.getElementById('prodWholesale').value) || 0,
                 retail_price: parseFloat(document.getElementById('prodRetail').value) || 0,
-                category: document.getElementById('prodCategory').value,
+                category: document.getElementById('prodCategory').value.trim(),
                 unit: document.getElementById('prodUnit').value,
                 locations: locations
             };
 
-            // Отправляем данные на сервер
+            const saveBtn = document.getElementById('saveNewBtn');
+            if (saveBtn) saveBtn.disabled = true;
+
             fetch('/api/warehouse/v2/add', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(productData)
             })
             .then(response => response.json())
@@ -428,145 +425,151 @@
                 if (data.success) {
                     alert('Товар успешно сохранен в базе данных!');
                     const modalEl = document.getElementById('addProductModal');
-                    const modal = bootstrap.Modal.getInstance(modalEl);
-                    modal.hide();
-                    document.getElementById('addProductForm').reset();
-                    
-                    // Сбрасываем локации до одной строки
-                    document.getElementById('locationsContainer').innerHTML = `
-                        <div class="location-row row g-2 align-items-center">
-                            <div class="col-md-7">
-                                <input type="text" class="form-control form-control-sm loc-name" placeholder="Склад №1 (Ряд А, Коробка 3)" required>
-                            </div>
-                            <div class="col-md-4">
-                                <input type="number" step="0.01" class="form-control form-control-sm loc-qty" placeholder="Количество" value="0" required>
-                            </div>
-                            <div class="col-md-1 text-center">
-                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeLocationRow(this)" disabled><i class="bi bi-trash"></i></button>
-                            </div>
-                        </div>
-                    `;
-                    
-                    // А ТАКЖЕ ВЫЗЫВАЕМ ПЕРЕЗАГРУЗКУ ТАБЛИЦЫ, ЧТОБЫ ТОВАР СРАЗУ ПОЯВИЛСЯ НА ЭКРАНЕ:
+                    if (document.activeElement && modalEl.contains(document.activeElement)) {
+                        document.activeElement.blur();
+                    }
+                    bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+                    resetAddFormState();
                     loadWarehouseProducts();
-
                 } else {
                     alert('Ошибка при сохранении: ' + (data.error || 'Неизвестная ошибка'));
                 }
             })
             .catch(error => {
                 console.error('Ошибка сети:', error);
-                let message = error && error.message ? error.message : String(error);
+                const message = error && error.message ? error.message : String(error);
                 alert('Произошла ошибка связи с сервером: ' + message);
+            })
+            .finally(() => {
+                if (saveBtn) saveBtn.disabled = false;
             });
         }
 
-        // ==========================================
-        // 2. И СРАЗУ ПОД НЕЙ ДОБАВЬТЕ ФУНКЦИЮ ЗАГРУЗКИ:
-        // ==========================================
+        function renderWarehouseProducts(products) {
+            const tbody = document.getElementById('warehouseTableBody');
+            const mobileContainer = document.getElementById('mobileWarehouseCards');
+
+            tbody.innerHTML = '';
+            mobileContainer.innerHTML = '';
+
+            if (!products || products.length === 0) {
+                const emptyHtml = `<div class="text-center text-muted py-4 card card-custom">Товары не найдены.</div>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted py-4">Товары не найдены.</td></tr>`;
+                mobileContainer.innerHTML = emptyHtml;
+                return;
+            }
+
+            products.forEach(prod => {
+                const specs = [];
+                if (prod.thread_name) specs.push(`Резьба: ${prod.thread_name}`);
+                if (prod.thread_pitch) specs.push(`Шаг: ${prod.thread_pitch}`);
+                if (prod.hose_diameter) specs.push(`Рукав: ${prod.hose_diameter}`);
+                if (prod.angle_degrees) specs.push(`Угол: ${prod.angle_degrees}°`);
+                const specsText = specs.join(' | ');
+
+                let locationsHtml = '';
+                if (prod.locations && prod.locations.length > 0) {
+                    locationsHtml = prod.locations.map(loc =>
+                        `<div class="small text-muted"><i class="bi bi-geo-alt me-1 text-primary"></i>${loc.location}: <strong class="text-white">${loc.qty} ${prod.unit}</strong></div>`
+                    ).join('');
+                } else {
+                    locationsHtml = '<span class="text-muted small">Места не указаны</span>';
+                }
+
+                let qtyBadgeClass = 'text-success';
+                const totalVal = parseFloat(prod.total_qty) || 0;
+                if (totalVal < 500) qtyBadgeClass = 'text-danger fw-bold';
+                else if (totalVal < 1000) qtyBadgeClass = 'text-warning fw-bold';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="ps-4">
+                        <div class="fw-bold">${prod.name}</div>
+                        <div class="small text-muted">${specsText}</div>
+                        ${prod.category ? `<span class="badge bg-secondary bg-opacity-25 text-info mt-1">${prod.category}</span>` : ''}
+                    </td>
+                    <td><code class="text-warning">${prod.article || '—'}</code></td>
+                    <td>
+                        <div class="small">${prod.thread_name || '—'}</div>
+                        <div class="text-muted small">${prod.hose_diameter ? 'Ду: ' + prod.hose_diameter : ''}</div>
+                    </td>
+                    <td>${locationsHtml}</td>
+                    <td><span class="${qtyBadgeClass} fs-6">${prod.total_qty} ${prod.unit}</span></td>
+                    <td>
+                        <div class="small text-success">Опт: ${prod.wholesale_price} ₸</div>
+                        <div class="small text-info">Розн: ${prod.retail_price} ₸</div>
+                    </td>
+                    <td class="text-end pe-4">
+                        <button type="button" class="btn btn-sm btn-outline-warning" onclick="openEditModal(${prod.id})" title="Редактировать"><i class="bi bi-pencil"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'card card-custom p-3';
+                cardDiv.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <h6 class="fw-bold mb-1 text-white">${prod.name}</h6>
+                            <code class="text-warning small">Артикул: ${prod.article || '—'}</code>
+                        </div>
+                        <div class="text-end">
+                            <span class="${qtyBadgeClass} fs-5">${prod.total_qty} ${prod.unit}</span>
+                        </div>
+                    </div>
+                    ${specsText ? `<div class="small text-muted mb-2">${specsText}</div>` : ''}
+                    <div class="bg-dark bg-opacity-50 p-2 rounded mb-2 border border-secondary border-opacity-25">
+                        <div class="small text-warning fw-bold mb-1"><i class="bi bi-boxes me-1"></i> Распределение по складам:</div>
+                        ${locationsHtml}
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center text-small pt-1 border-top border-secondary border-opacity-25">
+                        <div>
+                            <span class="text-success small me-2">Опт: <strong>${prod.wholesale_price} ₸</strong></span>
+                            <span class="text-info small">Розн: <strong>${prod.retail_price} ₸</strong></span>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-warning py-0 px-2" onclick="openEditModal(${prod.id})">
+                            <i class="bi bi-pencil"></i> Ред.
+                        </button>
+                    </div>
+                `;
+                mobileContainer.appendChild(cardDiv);
+            });
+        }
+
+        function filterWarehouseProducts() {
+            const query = (document.getElementById('searchProduct').value || '').trim().toLowerCase();
+            if (!query) {
+                renderWarehouseProducts(allProductsCache);
+                return;
+            }
+
+            const filtered = allProductsCache.filter(prod => {
+                const haystack = [
+                    prod.name,
+                    prod.article,
+                    prod.thread_name,
+                    prod.thread_pitch,
+                    prod.hose_diameter,
+                    prod.category
+                ].filter(Boolean).join(' ').toLowerCase();
+                return haystack.includes(query);
+            });
+
+            renderWarehouseProducts(filtered);
+        }
+
         function loadWarehouseProducts() {
             fetch('/api/warehouse/v2/products')
                 .then(response => response.json())
                 .then(products => {
-                    allProductsCache = products;
-                    const tbody = document.getElementById('warehouseTableBody');
-                    const mobileContainer = document.getElementById('mobileWarehouseCards');
-                    
-                    tbody.innerHTML = '';
-                    mobileContainer.innerHTML = '';
-
-                    if (!products || products.length === 0) {
-                        const emptyHtml = `<div class="text-center text-muted py-4 card card-custom">Склад пуст. Добавьте первый товар!</div>`;
-                        tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted py-4">Склад пуст. Добавьте первый товар!</td></tr>`;
-                        mobileContainer.innerHTML = emptyHtml;
-                        return;
-                    }
-
-                    products.forEach(prod => {
-                        let specs = [];
-                        if (prod.thread_name) specs.push(`Резьба: ${prod.thread_name}`);
-                        if (prod.thread_pitch) specs.push(`Шаг: ${prod.thread_pitch}`);
-                        if (prod.hose_diameter) specs.push(`Рукав: ${prod.hose_diameter}`);
-                        if (prod.angle_degrees) specs.push(`Угол: ${prod.angle_degrees}°`);
-                        const specsText = specs.join(' | ');
-
-                        let locationsHtml = '';
-                        if (prod.locations && prod.locations.length > 0) {
-                            locationsHtml = prod.locations.map(loc => 
-                                `<div class="small text-muted"><i class="bi bi-geo-alt me-1 text-primary"></i>${loc.location}: <strong class="text-white">${loc.qty} ${prod.unit}</strong></div>`
-                            ).join('');
-                        } else {
-                            locationsHtml = '<span class="text-muted small">Места не указаны</span>';
-                        }
-
-                        // Цвет общего остатка в зависимости от количества (поддерживает логику светофора)
-                        let qtyBadgeClass = 'text-success';
-                        let totalVal = parseFloat(prod.total_qty) || 0;
-                        if (totalVal < 500) qtyBadgeClass = 'text-danger fw-bold';
-                        else if (totalVal < 1000) qtyBadgeClass = 'text-warning fw-bold';
-
-                        // 1. Строка для десктопной таблицы
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td class="ps-4">
-                                <div class="fw-bold">${prod.name}</div>
-                                <div class="small text-muted">${specsText}</div>
-                                ${prod.category ? `<span class="badge bg-secondary bg-opacity-25 text-info mt-1">${prod.category}</span>` : ''}
-                            </td>
-                            <td><code class="text-warning">${prod.article || '—'}</code></td>
-                            <td>
-                                <div class="small">${prod.thread_name || '—'}</div>
-                                <div class="text-muted small">${prod.hose_diameter ? 'Ду: ' + prod.hose_diameter : ''}</div>
-                            </td>
-                            <td>${locationsHtml}</td>
-                            <td><span class="${qtyBadgeClass} fs-6">${prod.total_qty} ${prod.unit}</span></td>
-                            <td>
-                                <div class="small text-success">Опт: ${prod.wholesale_price} ₸</div>
-                                <div class="small text-info">Розн: ${prod.retail_price} ₸</div>
-                            </td>
-                            <td class="text-end pe-4">
-                                <button class="btn btn-sm btn-outline-warning" onclick="openEditModal(${prod.id})" title="Редактировать"><i class="bi bi-pencil"></i></button>
-                            </td>
-                        `;
-                        tbody.appendChild(tr);
-
-                        // 2. Карточка для мобильных устройств (Android / iOS)
-                        const cardDiv = document.createElement('div');
-                        cardDiv.className = 'card card-custom p-3';
-                        cardDiv.innerHTML = `
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <div>
-                                    <h6 class="fw-bold mb-1 text-white">${prod.name}</h6>
-                                    <code class="text-warning small">Артикул: ${prod.article || '—'}</code>
-                                </div>
-                                <div class="text-end">
-                                    <span class="${qtyBadgeClass} fs-5">${prod.total_qty} ${prod.unit}</span>
-                                </div>
-                            </div>
-                            ${specsText ? `<div class="small text-muted mb-2">${specsText}</div>` : ''}
-                            <div class="bg-dark bg-opacity-50 p-2 rounded mb-2 border border-secondary border-opacity-25">
-                                <div class="small text-warning fw-bold mb-1"><i class="bi bi-boxes me-1"></i> Распределение по складам:</div>
-                                ${locationsHtml}
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center text-small pt-1 border-top border-secondary border-opacity-25">
-                                <div>
-                                    <span class="text-success small me-2">Опт: <strong>${prod.wholesale_price} ₸</strong></span>
-                                    <span class="text-info small">Розн: <strong>${prod.retail_price} ₸</strong></span>
-                                </div>
-                                <button class="btn btn-sm btn-outline-warning py-0 px-2" onclick="openEditModal(${prod.id})">
-                                    <i class="bi bi-pencil"></i> Ред.
-                                </button>
-                            </div>
-                        `;
-                        mobileContainer.appendChild(cardDiv);
-                    });
+                    allProductsCache = Array.isArray(products) ? products : [];
+                    filterWarehouseProducts();
                 })
                 .catch(error => {
                     console.error('Ошибка загрузки:', error);
                 });
         }
 
-        // Открытие модального окна и заполнение данными выбранного товара
         function openEditModal(productId) {
             const prod = allProductsCache.find(p => p.id === productId);
             if (!prod) return;
@@ -583,7 +586,6 @@
             document.getElementById('editProdUnit').value = prod.unit || 'шт';
             document.getElementById('editProdCategory').value = prod.category || '';
 
-            // Заполняем локации
             const container = document.getElementById('editLocationsContainer');
             container.innerHTML = '';
 
@@ -595,9 +597,8 @@
                 appendEditLocationRow('', 0);
             }
 
-            // Показываем модальное окно
-            const modal = new bootstrap.Modal(document.getElementById('editProductModal'));
-            modal.show();
+            const modalEl = document.getElementById('editProductModal');
+            bootstrap.Modal.getOrCreateInstance(modalEl).show();
         }
 
         function appendEditLocationRow(locationName = '', quantity = 0) {
@@ -622,38 +623,44 @@
             appendEditLocationRow('', 0);
         }
 
-        // Сохранение отредактированного товара
         function saveEditedProduct() {
             const productId = document.getElementById('editProdId').value;
-            const name = document.getElementById('editProdName').value;
+            const nameInput = document.getElementById('editProdName');
+            const name = nameInput.value.trim();
             if (!name) {
                 alert('Наименование товара обязательно!');
+                nameInput.focus();
                 return;
             }
 
-            // Собираем локации
             const locations = [];
             document.querySelectorAll('#editLocationsContainer .location-row').forEach(row => {
-                const locName = row.querySelector('.loc-name').value;
+                const locName = row.querySelector('.loc-name').value.trim();
                 const locQty = row.querySelector('.loc-qty').value;
                 if (locName) {
-                    locations.push({ location_name: locName, quantity: parseFloat(locQty) || 0 });
+                    locations.push({
+                        location_name: locName,
+                        quantity: parseFloat(locQty) || 0
+                    });
                 }
             });
 
             const productData = {
                 name: name,
-                article: document.getElementById('editProdArticle').value,
-                thread_name: document.getElementById('editProdThreadName').value,
-                thread_pitch: document.getElementById('editProdThreadPitch').value,
-                hose_diameter: document.getElementById('editProdHoseDia').value,
-                angle_degrees: parseInt(document.getElementById('editProdAngle').value) || 0,
+                article: document.getElementById('editProdArticle').value.trim(),
+                thread_name: document.getElementById('editProdThreadName').value.trim(),
+                thread_pitch: document.getElementById('editProdThreadPitch').value.trim(),
+                hose_diameter: document.getElementById('editProdHoseDia').value.trim(),
+                angle_degrees: parseInt(document.getElementById('editProdAngle').value, 10) || 0,
                 wholesale_price: parseFloat(document.getElementById('editProdWholesale').value) || 0,
                 retail_price: parseFloat(document.getElementById('editProdRetail').value) || 0,
-                category: document.getElementById('editProdCategory').value,
+                category: document.getElementById('editProdCategory').value.trim(),
                 unit: document.getElementById('editProdUnit').value,
                 locations: locations
             };
+
+            const saveBtn = document.getElementById('saveEditBtn');
+            if (saveBtn) saveBtn.disabled = true;
 
             fetch(`/api/warehouse/v2/update/${productId}`, {
                 method: 'PUT',
@@ -665,9 +672,11 @@
                 if (data.success) {
                     alert('Товар успешно обновлен!');
                     const modalEl = document.getElementById('editProductModal');
-                    const modal = bootstrap.Modal.getInstance(modalEl);
-                    modal.hide();
-                    loadWarehouseProducts(); // Перезагружаем таблицу
+                    if (document.activeElement && modalEl.contains(document.activeElement)) {
+                        document.activeElement.blur();
+                    }
+                    bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+                    loadWarehouseProducts();
                 } else {
                     alert('Ошибка при обновлении: ' + (data.error || 'Неизвестная ошибка'));
                 }
@@ -675,30 +684,18 @@
             .catch(error => {
                 console.error('Ошибка сети:', error);
                 alert('Произошла ошибка связи с сервером');
+            })
+            .finally(() => {
+                if (saveBtn) saveBtn.disabled = false;
             });
         }
 
-        // Полный сброс формы добавления товара перед открытием модалки
         const addProductModalEl = document.getElementById('addProductModal');
         if (addProductModalEl) {
             addProductModalEl.addEventListener('show.bs.modal', function () {
-                document.getElementById('addProductForm').reset();
-                document.getElementById('locationsContainer').innerHTML = `
-                    <div class="location-row row g-2 align-items-center">
-                        <div class="col-md-7">
-                            <input type="text" class="form-control form-control-sm loc-name" placeholder="Склад №1 (Ряд А, Коробка 3)" required>
-                        </div>
-                        <div class="col-md-4">
-                            <input type="number" step="0.01" class="form-control form-control-sm loc-qty" placeholder="Количество" value="0" required>
-                        </div>
-                        <div class="col-md-1 text-center">
-                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeLocationRow(this)" disabled><i class="bi bi-trash"></i></button>
-                        </div>
-                    </div>
-                `;
+                resetAddFormState();
             });
 
-            // Убираем фокус при скрытии модалки, чтобы не было предупреждения aria-hidden
             addProductModalEl.addEventListener('hide.bs.modal', function () {
                 if (document.activeElement && addProductModalEl.contains(document.activeElement)) {
                     document.activeElement.blur();
@@ -706,8 +703,24 @@
             });
         }
 
-        // Запускаем загрузку товаров при открытии страницы
-        document.addEventListener('DOMContentLoaded', loadWarehouseProducts);
+        const editProductModalEl = document.getElementById('editProductModal');
+        if (editProductModalEl) {
+            editProductModalEl.addEventListener('hide.bs.modal', function () {
+                if (document.activeElement && editProductModalEl.contains(document.activeElement)) {
+                    document.activeElement.blur();
+                }
+            });
+        }
+
+        const searchInputEl = document.getElementById('searchProduct');
+        if (searchInputEl) {
+            searchInputEl.addEventListener('input', filterWarehouseProducts);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            resetAddFormState();
+            loadWarehouseProducts();
+        });
     </script>
 </body>
 </html>
